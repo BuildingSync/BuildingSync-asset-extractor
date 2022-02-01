@@ -79,7 +79,7 @@ class BSyncProcessor:
 
   def set_namespaces(self):
     """set namespaces from xml file"""
-    
+
     with open(self.filename, mode='rb') as file:
 
       namespaces = {node[0]: node[1] for _, node in etree.iterparse(file, events=['start-ns'])}
@@ -107,6 +107,11 @@ class BSyncProcessor:
     """ return asset data """
     return self.asset_data
 
+  def save(self, filename: str):
+    """ save assets data to JSON file """
+    with open(filename, 'w') as outfile:
+      json.dump(self.asset_data, outfile, indent=4)
+  
   def parse_xml(self):
     """parse xml file"""
     with open(self.filename, mode='rb') as file:

@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from buildingsync_preimporter.processor import BSyncProcessor
 
 filename = 'tests/files/testfile.xml'
+out_file = 'assets_output.json'
 
 bp = BSyncProcessor(filename)
 bp.extract()
+bp.save(out_file)
