@@ -34,38 +34,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
 from buildingsync_preimporter.processor import BSyncProcessor
-from buildingsync_preimporter import __version__
 
-import json
-import unittest
-from pathlib import Path
+filename = 'tests/files/testfile.xml'
 
-class TestBSyncProcessor(unittest.TestCase):
-  def setUp(self):
-    self.testfile = Path(__file__).parent / 'files' / 'testfile.xml'
-    print("TESTFILE: {}".format(self.testfile))
-    self.bp = BSyncProcessor(self.testfile)
-
-  def test_version(self):
-    assert __version__ == '0.1.0'
-
-  def test_initialize_and_parse(self):
-    ns = self.bp.get_namespaces()
-    print('namespaces: {}'.format(ns))
-    self.assertIn('auc', ns)
-
-    doc = self.bp.get_doc()
-    self.assertIsNotNone(doc)
-
-  def test_extract(self):
-    num_assets_to_extract = 8
-    num_sections_in_testfile = 3
-
-    self.bp.extract()
-    sections = self.bp.get_sections()
-    self.assertEqual(len(sections), num_sections_in_testfile)
-
-    assets = self.bp.get_assets()
-    self.assertEqual(len(assets), num_assets_to_extract)
-    self.assertIn('primary_lamp', assets)
-
+bp = BSyncProcessor(filename)
+bp.extract()
