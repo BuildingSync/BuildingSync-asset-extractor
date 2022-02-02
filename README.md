@@ -51,9 +51,28 @@ To test usage:
 
 ## TODO
 1. thermal zones: when spaces are listed within them with spaces (or multiple thermal zones), this would change the average setpoint calculations. Is this an exception or a normal case to handle?
-1. Add pre-commit
 1. How to handle User Defined Fields
 
+## Developing
+
+### Pre-commit
+
+This project uses `pre-commit <https://pre-commit.com/>`_ to ensure code consistency.
+To enable pre-commit on every commit run the following from the command line from within the git checkout of the
+GMT:
+
+```bash
+  pre-commit install
+```
+
+To run pre-commit against the files without calling git commit, then run the following. This is useful when cleaning up the repo before committing.
+
+```bash
+  pre-commit run --all-files
+```
+### Testing
+
+poetry run pytest
 
 ## Releasing
 

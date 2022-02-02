@@ -128,4 +128,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# test files
 *.log
+assets_output.json
+output/

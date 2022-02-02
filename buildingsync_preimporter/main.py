@@ -33,10 +33,36 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+import os
+
 from buildingsync_preimporter.processor import BSyncProcessor
 
 filename = 'tests/files/testfile.xml'
-out_file = 'assets_output.json'
+# out_file = 'assets_output.json'
+
+# filename = 'ASHRAE 211 Export.xml'  															# !!! doesn't work: no 'auc:' prefixes
+# filename ='AT_example_AS_conversion_audit_report.xml'							# !!! works
+# filename ='AT_example_NYC_audit_report_property.xml'							# !!! works
+# filename ='AT_example_SF_audit_report.xml'												# !!! works
+# filename ='BuildingSync Website Invalid Schema.xml'								# !!! works (nothing returned)
+# filename ='BuildingSync Website Valid Schema.xml'									# !!! works (nothing returned)
+# filename ='CMS Woodlawn Campus.xml'																# !!! doesn't work: no 'auc:' prefixes
+# filename ='DC GSA Headquarters.xml'																# !!! doesn't work: no 'auc:' prefixes
+# filename ='Golden Test File.xml'																	# !!! doesn't work: no 'auc:' prefixes
+# filename ='LL87.xml' 																							# !! !doesn't work: no 'auc:' prefixes
+# filename ='Multi-Facility Shared Systems.xml' 										# !!! doesn't work: no 'auc:' prefixes
+# filename ='Multi_building_gbxml_externalreference_geometry.xml' 	# !!! doesn't work: no 'auc:' prefixes
+# filename ='MultitenantBySubsections.xml'													# !!! doesn't work: no 'auc:' prefixes
+# filename ='NIST Gaithersburg Campus.xml'													# !!! doesn't work: no 'auc:' prefixes
+# filename ='Norfolk Federal Building.xml'													# !!! doesn't work: no 'auc:' prefixes
+# filename ='Reference Building - Primary School.xml'								# !!! doesn't work: no 'auc:' prefixes
+# filename ='Richmond Federal Building.xml'													# !!! doesn't work: no 'auc:' prefixes
+# filename ='Single_building_gbxml_externalreference_geometry.xml'  # !!! doesn't work: no 'auc:' prefixes
+
+out_file = 'output/' + os.path.basename(os.path.splitext(os.path.basename(filename))[0]) + '.json'
+
+filename = '../bsync-schema/examples/' + filename
+print("filename: {}".format(filename))
 
 bp = BSyncProcessor(filename)
 bp.extract()

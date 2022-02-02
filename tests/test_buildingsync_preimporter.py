@@ -33,39 +33,52 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
-from buildingsync_preimporter.processor import BSyncProcessor
-from buildingsync_preimporter import __version__
-
-import json
 import unittest
 from pathlib import Path
+from shutil import rmtree
+
+from buildingsync_preimporter import __version__
+from buildingsync_preimporter.processor import BSyncProcessor
+
 
 class TestBSyncProcessor(unittest.TestCase):
-  def setUp(self):
-    self.testfile = Path(__file__).parent / 'files' / 'testfile.xml'
-    print("TESTFILE: {}".format(self.testfile))
-    self.bp = BSyncProcessor(self.testfile)
+    def setUp(self):
+        self.testfile = Path(__file__).parent / 'files' / 'testfile.xml'
+        self.output_dir = Path(__file__).parent / 'output'
+        self.out_file = 'testoutput.json'
 
-  def test_version(self):
-    assert __version__ == '0.1.0'
+        # create output dir
+        if self.output_dir.exists():
+            rmtree(self.output_dir)
+        self.output_dir.mkdir(parents=True)
 
-  def test_initialize_and_parse(self):
-    ns = self.bp.get_namespaces()
-    print('namespaces: {}'.format(ns))
-    self.assertIn('auc', ns)
+        print("TESTFILE: {}".format(self.testfile))
+        self.bp = BSyncProcessor(self.testfile)
 
-    doc = self.bp.get_doc()
-    self.assertIsNotNone(doc)
+    def test_version(self):
+        assert __version__ == '0.1.0'
 
-  def test_extract(self):
-    num_assets_to_extract = 8
-    num_sections_in_testfile = 3
+    def test_initialize_and_parse(self):
+        ns = self.bp.get_namespaces()
+        print('namespaces: {}'.format(ns))
+        self.assertIn('auc', ns)
 
-    self.bp.extract()
-    sections = self.bp.get_sections()
-    self.assertEqual(len(sections), num_sections_in_testfile)
+        doc = self.bp.get_doc()
+        self.assertIsNotNone(doc)
 
-    assets = self.bp.get_assets()
-    self.assertEqual(len(assets), num_assets_to_extract)
-    self.assertIn('primary_lamp', assets)
+    def test_extract(self):
+        num_assets_to_extract = 8
+        num_sections_in_testfile = 3
 
+        self.bp.extract()
+        sections = self.bp.get_sections()
+        self.assertEqual(len(sections), num_sections_in_testfile)
+
+        assets = self.bp.get_assets()
+        self.assertEqual(len(assets), num_assets_to_extract)
+        self.assertIn('primary_lamp', assets)
+
+    def test_save(self):
+        filename = self.output_dir / self.out_file
+        self.bp.save(filename)
+        self.assertTrue(filename.exists())
