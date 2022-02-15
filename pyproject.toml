@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "buildingsync_preimporter"
+name = "buildingsync-asset-extractor"
 version = "0.1.0"
-description = "BuildingSync Preimporter"
+description = "BuildingSync Asset Extractor (BAE)"
 authors = ["Katherine Fleming <katherine.fleming@nrel.gov>"]
 license = "BSD4"
 
 readme = "README.md"
 
 homepage = "https://buildingsync.net"
-repository = "https://github.com/BuildingSync/BuildingSync-preimporter"
-documentation = "https://github.com/BuildingSync/BuildingSync-preimporter"
+repository = "https://github.com/BuildingSync/BuildingSync-asset-extractor"
+documentation = "https://github.com/BuildingSync/BuildingSync-asset-extractor"
 keywords = ["BuildingSync", "Building Data Exchange"]
 
 [tool.poetry.dependencies]

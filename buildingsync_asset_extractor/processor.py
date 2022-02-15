@@ -53,8 +53,10 @@ file_handler.setFormatter(formatter)
 
 # add file handler to logger
 logger.addHandler(file_handler)
-
 logger.addHandler(logging.StreamHandler(sys.stdout))
+
+# BuildingSync Schema location
+BUILDINGSYNC_SCHEMA_URL = "http://buildingsync.net/schemas/bedes-auc/2019"
 
 
 # Processor class loads an XML file and extracts assets
@@ -67,13 +69,14 @@ class BSyncProcessor:
         # takes in a XML file to process
 
         self.filename = filename
-        self.config_filename = 'buildingsync_preimporter/config/asset_definitions.json'
+        self.config_filename = 'buildingsync_asset_extractor/config/asset_definitions.json'
         self.namespaces = {}
         self.doc = None
         self.sections = {}
         self.asset_data = {}
 
         # set namespaces
+        self.key = None
         self.set_namespaces()
 
         # parse file
@@ -85,11 +88,24 @@ class BSyncProcessor:
         with open(self.filename, mode='rb') as file:
 
             namespaces = {node[0]: node[1] for _, node in etree.iterparse(file, events=['start-ns'])}
+
             for key, value in namespaces.items():
-                # for now only register the 'auc:' namespace
-                if key == 'auc':
-                    self.namespaces[key] = value
-                    etree.register_namespace(key, value)
+                # only register the namespace that matches BUILDGINSYNC_SCHEMA_URL
+                # NOTE: lxml/xpath is strange: if no named namespace, you have assign it a default
+                # otherwise to matches are ever found in the schema with the xpath() method
+                if value == BUILDINGSYNC_SCHEMA_URL:
+                    self.key = key
+                    if self.key != '':
+                        self.namespaces[key] = value
+                        etree.register_namespace(key, value)
+                        # also add the colon
+                        self.key = self.key + ":"
+                    else:
+                        # make up a prefix since it's blank and assign it the key
+                        key = 'auc'
+                        self.namespaces[key] = value
+                        etree.register_namespace(key, value)
+                        self.key = 'auc:'
 
             logger.debug("Namespaces set to: {}".format(self.namespaces))
             if not namespaces:
@@ -112,34 +128,56 @@ class BSyncProcessor:
         return self.asset_data
 
     def save(self, filename: str):
-        """ save assets data to JSON file """
+        """ save assets data to JSON file
+            :param filename: str, filename to save
+        """
         with open(filename, 'w') as outfile:
             json.dump(self.asset_data, outfile, indent=4)
+
+        logger.info('Assets saved to {}'.format(filename))
 
     def parse_xml(self):
         """parse xml file"""
         with open(self.filename, mode='rb') as file:
             self.doc = etree.parse(file)
 
+    def convert_to_ns(self, path: str):
+        """ modify the path to include the namespace (ns) prefix specified in the xml file
+            :param path: str, xml xpath
+            returns modified path
+        """
+        # print('original  path: {}'.format(path))
+        parts = path.split('/')
+        for i, p in enumerate(parts):
+            if p != "" and p != ".":
+                parts[i] = self.key + p
+
+        newpath = "/".join(parts)
+
+        if not newpath.startswith('/') and not newpath.startswith('.'):
+            newpath = self.key + newpath
+
+        return newpath
+
     def process_sections(self):
         """process Sections to get sqft info to calculate primary and secondary sqft served
            Grab breakdown within each section (Gross, Tenant, Unconditioned, etc)
         """
         # TODO: add try blocks
-        r = self.xp(self.doc, '/auc:BuildingSync/auc:Facilities/auc:Facility/auc:Sites/auc:Site/' +
-                    'auc:Buildings/auc:Building/auc:Sections/auc:Section')
+        r = self.xp(self.doc, '/BuildingSync/Facilities/Facility/Sites/Site/' +
+                    'Buildings/Building/Sections/Section')
         for item in r:
             id = item.get('ID')
             self.sections[id] = {}
 
             self.sections[id]['type'] = None
-            types = self.xp(item, './auc:SectionType')
+            types = self.xp(item, './SectionType')
             if types:
                 self.sections[id]['type'] = types[0].text
 
             self.sections[id]['areas'] = {}
 
-            fas = self.xp(item, './auc:FloorAreas/auc:FloorArea')
+            fas = self.xp(item, './FloorAreas/FloorArea')
             for fa in fas:
                 fatype = None
                 faval = 0
@@ -186,7 +224,7 @@ class BSyncProcessor:
             matches = self.xp(item, './/' + asset['key'])
             if matches:
                 # found a match for asset
-                years = self.xp(item, './/' + 'auc:YearInstalled')
+                years = self.xp(item, './/YearInstalled')
                 if years:
                     results.append(years[0].text)
 
@@ -213,7 +251,7 @@ class BSyncProcessor:
         found = None
         items = self.xp(self.doc, asset['parent_path'])
         for item in items:
-            matches = self.xp(item, './/'+asset['key'])
+            matches = self.xp(item, './/' + asset['key'])
             if matches:
                 total += len(matches)
                 found = 1
@@ -236,7 +274,7 @@ class BSyncProcessor:
             matches = self.xp(item, './/' + asset['key'])
 
             # special processing for UDFs
-            if asset['key'] == 'auc:UserDefinedField':
+            if asset['key'].endswith('UserDefinedField'):
                 matches = self.find_udf_values(matches, asset['name'])
 
             for match in matches:
@@ -246,7 +284,7 @@ class BSyncProcessor:
                     results[label] = 0
 
                 # get sqft this asset applies to (2 methods)
-                if asset['parent_path'].endswith('auc:Section'):
+                if asset['parent_path'].endswith('Section'):
                     # 1: key is within a Section element
                     # within a section, grab ID to retrieve sqft
                     id = item.get('ID')
@@ -254,7 +292,7 @@ class BSyncProcessor:
 
                 else:
                     # 2: assume linked sections
-                    linked_sections = self.xp(item, './/auc:LinkedSectionID')
+                    linked_sections = self.xp(item, './/' + 'LinkedSectionID')
                     for ls in linked_sections:
                         sqft_total += self.compute_sqft(ls)
 
@@ -338,7 +376,9 @@ class BSyncProcessor:
         """use xpath function and specify namespace
         Returns results of xpath operation
         """
-        return element.xpath(path, namespaces=self.namespaces)
+        newpath = self.convert_to_ns(path)
+        # print("newpath: {}".format(newpath))
+        return element.xpath(newpath, namespaces=self.namespaces)
 
     def retrieve_sqft(self, section_id: str):
         """ retrieves square footage give the sectionID
@@ -361,18 +401,18 @@ class BSyncProcessor:
         """
         sid = section.get('IDref')
         sqft = 0
-        floor_areas = self.xp(section, './/auc:FloorAreas/auc:FloorArea')
+        floor_areas = self.xp(section, './/FloorAreas/FloorArea')
         for f in floor_areas:
             # get types and percentages and add to running total
-            the_type = self.xp(f, './/auc:FloorAreaType')[0].text
+            the_type = self.xp(f, './/FloorAreaType')[0].text
             # this could be percentage or value
-            percent = self.xp(f, './/auc:FloorAreaPercentage')
+            percent = self.xp(f, './/FloorAreaPercentage')
             if percent:
                 logger.debug('type: {}, section: {}, areas: {}'.format(the_type, sid, self.sections[sid]['areas']))
                 sqft += float(percent[0].text) * self.sections[sid]['areas'][the_type] / 100
             else:
                 # get value instead
-                val = self.xp(f, './/auc:FloorAreaValue')
+                val = self.xp(f, './/FloorAreaValue')
                 if val:
                     sqft += float(val[0].text)
 
