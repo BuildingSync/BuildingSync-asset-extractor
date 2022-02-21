@@ -1,0 +1,3566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BuildingSync xmlns="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://buildingsync.net/schemas/bedes-auc/2019 ../BuildingSync.xsd" version="2.4.0">
+  <Facilities>
+    <Facility ID="Facility-69928597382680">
+      <Sites>
+        <Site ID="SiteType-69928597378280">
+          <Buildings>
+            <Building ID="BuildingType-69928596381380">
+              <PremisesName>Example San Francisco Audit Report </PremisesName>
+              <PremisesNotes>Example San Francisco audit report building for import/export.  Input data entered may not necessarily be considered reflective of a typical building.  &#13;
+This example is configured to import and export with BuildingSync version 2.2.0.  The building will also successfully convert to an Asset Score building for modeling.  </PremisesNotes>
+              <PremisesIdentifiers>
+                <PremisesIdentifier>
+                  <IdentifierLabel>Custom</IdentifierLabel>
+                  <IdentifierCustomName>Atlanta Building ID</IdentifierCustomName>
+                  <IdentifierValue/>
+                </PremisesIdentifier>
+                <PremisesIdentifier>
+                  <IdentifierLabel>Custom</IdentifierLabel>
+                  <IdentifierCustomName>City Custom Building ID</IdentifierCustomName>
+                  <IdentifierValue>1234/5678</IdentifierValue>
+                </PremisesIdentifier>
+                <PremisesIdentifier>
+                  <IdentifierLabel>Custom</IdentifierLabel>
+                  <IdentifierCustomName>Portfolio Manager Building ID</IdentifierCustomName>
+                  <IdentifierValue>62</IdentifierValue>
+                </PremisesIdentifier>
+              </PremisesIdentifiers>
+              <Address>
+                <StreetAddressDetail>
+                  <Simplified>
+                    <StreetAddress>123 Example Street</StreetAddress>
+                  </Simplified>
+                </StreetAddressDetail>
+                <City>San Francisco</City>
+                <State>CA</State>
+                <PostalCode>94104</PostalCode>
+              </Address>
+              <Ownership>Property management company</Ownership>
+              <ConditionedFloorsAboveGrade>4</ConditionedFloorsAboveGrade>
+              <ConditionedFloorsBelowGrade>1</ConditionedFloorsBelowGrade>
+              <BuildingAutomationSystem>true</BuildingAutomationSystem>
+              <HistoricalLandmark>true</HistoricalLandmark>
+              <FloorAreas>
+                <FloorArea>
+                  <FloorAreaType>Cooled only</FloorAreaType>
+                  <FloorAreaValue>40000.0</FloorAreaValue>
+                </FloorArea>
+                <FloorArea>
+                  <FloorAreaType>Gross</FloorAreaType>
+                  <FloorAreaValue>200000.0</FloorAreaValue>
+                </FloorArea>
+                <FloorArea>
+                  <FloorAreaType>Heated and Cooled</FloorAreaType>
+                  <FloorAreaValue>100000.0</FloorAreaValue>
+                </FloorArea>
+                <FloorArea>
+                  <FloorAreaType>Heated only</FloorAreaType>
+                  <FloorAreaValue>60000.0</FloorAreaValue>
+                </FloorArea>
+              </FloorAreas>
+              <TotalExteriorAboveGradeWallArea>25000.0</TotalExteriorAboveGradeWallArea>
+              <TotalExteriorBelowGradeWallArea>15000.0</TotalExteriorBelowGradeWallArea>
+              <OverallWindowToWallRatio>0.30000001192092896</OverallWindowToWallRatio>
+              <YearOfConstruction>1950</YearOfConstruction>
+              <YearOfLastEnergyAudit>2015</YearOfLastEnergyAudit>
+              <YearOfLastMajorRemodel>2010</YearOfLastMajorRemodel>
+              <PercentOccupiedByOwner>20.0</PercentOccupiedByOwner>
+              <PercentLeasedByOwner>80.0</PercentLeasedByOwner>
+              <Sections>
+                <Section ID="Section-69928595298960">
+                  <SectionType>Whole building</SectionType>
+                  <FootprintShape>L-Shape</FootprintShape>
+                  <Sides>
+                    <Side>
+                      <DoorID IDref="FenestrationSystemType-99179560"/>
+                    </Side>
+                    <Side>
+                      <WallID IDref="WallSystemType-69928423734500"/>
+                    </Side>
+                    <Side>
+                      <WindowID IDref="FenestrationSystemType-69928414143620"/>
+                    </Side>
+                  </Sides>
+                  <Roofs>
+                    <Roof>
+                      <RoofID IDref="RoofSystemType-69928424029620">
+                        <RoofCondition>Good</RoofCondition>
+                      </RoofID>
+                    </Roof>
+                    <Roof>
+                      <RoofID IDref="RoofSystemType-69928423796660">
+                        <SkylightIDs>
+                          <SkylightID IDref="FenestrationSystemType-69928423826520"/>
+                        </SkylightIDs>
+                      </RoofID>
+                    </Roof>
+                  </Roofs>
+                  <ExteriorFloors>
+                    <ExteriorFloor>
+                      <ExteriorFloorID IDref="ExteriorFloorSystemType-98132460"/>
+                    </ExteriorFloor>
+                  </ExteriorFloors>
+                  <Foundations>
+                    <Foundation>
+                      <FoundationID IDref="FoundationSystemType-69928423661700"/>
+                    </Foundation>
+                  </Foundations>
+                </Section>
+                <Section ID="Section-69928578013460">
+                  <SectionType>Space function</SectionType>
+                  <OccupancyClassification>Office</OccupancyClassification>
+                  <OccupancyLevels>
+                    <OccupancyLevel>
+                      <OccupantQuantityType>Peak total occupants</OccupantQuantityType>
+                      <OccupantQuantity>350</OccupantQuantity>
+                    </OccupancyLevel>
+                  </OccupancyLevels>
+                  <TypicalOccupantUsages>
+                    <TypicalOccupantUsage>
+                      <TypicalOccupantUsageValue>50.0</TypicalOccupantUsageValue>
+                      <TypicalOccupantUsageUnits>Hours per week</TypicalOccupantUsageUnits>
+                    </TypicalOccupantUsage>
+                    <TypicalOccupantUsage>
+                      <TypicalOccupantUsageValue>52.0</TypicalOccupantUsageValue>
+                      <TypicalOccupantUsageUnits>Weeks per year</TypicalOccupantUsageUnits>
+                    </TypicalOccupantUsage>
+                  </TypicalOccupantUsages>
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Gross</FloorAreaType>
+                      <FloorAreaValue>150000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Conditioned</FloorAreaType>
+                      <FloorAreaValue>150000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaValue>15000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaValue>135000.0</FloorAreaValue>
+                    </FloorArea>
+                  </FloorAreas>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Floor Area For Gross Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Miscellaneous Electric Load</FieldName>
+                      <FieldValue>1.5</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Miscellaneous Electric Load Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Occupancy Classification Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Percentage Dwellings Occupied Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Principal HVAC System Type</FieldName>
+                      <FieldValue>Packaged Rooftop Air Conditioner</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Principal Lighting System Type</FieldName>
+                      <FieldValue>T8</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Of Dwellings Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Section Notes For Not Applicable</FieldName>
+                      <FieldValue/>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                  <ThermalZones>
+                    <ThermalZone ID="ThermalZoneType-69928476227560">
+                      <HVACScheduleIDs>
+                        <HVACScheduleID IDref="ScheduleType-69928476271760"/>
+                      </HVACScheduleIDs>
+                      <SetpointTemperatureHeating>72</SetpointTemperatureHeating>
+                      <SetpointTemperatureCooling>78</SetpointTemperatureCooling>
+                    </ThermalZone>
+                  </ThermalZones>
+                </Section>
+                <Section ID="Section-101919600">
+                  <SectionType>Space function</SectionType>
+                  <OccupancyClassification>Food service</OccupancyClassification>
+                  <OccupancyLevels>
+                    <OccupancyLevel>
+                      <OccupantQuantityType>Peak total occupants</OccupantQuantityType>
+                      <OccupantQuantity>60</OccupantQuantity>
+                    </OccupancyLevel>
+                  </OccupancyLevels>
+                  <TypicalOccupantUsages>
+                    <TypicalOccupantUsage>
+                      <TypicalOccupantUsageValue>45.0</TypicalOccupantUsageValue>
+                      <TypicalOccupantUsageUnits>Hours per week</TypicalOccupantUsageUnits>
+                    </TypicalOccupantUsage>
+                    <TypicalOccupantUsage>
+                      <TypicalOccupantUsageValue>50.0</TypicalOccupantUsageValue>
+                      <TypicalOccupantUsageUnits>Weeks per year</TypicalOccupantUsageUnits>
+                    </TypicalOccupantUsage>
+                  </TypicalOccupantUsages>
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Gross</FloorAreaType>
+                      <FloorAreaValue>50000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Conditioned</FloorAreaType>
+                      <FloorAreaValue>50000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaValue>5000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaValue>45000.0</FloorAreaValue>
+                    </FloorArea>
+                  </FloorAreas>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Floor Area For Gross Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Miscellaneous Electric Load</FieldName>
+                      <FieldValue>1.1</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Miscellaneous Electric Load Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Occupancy Classification Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Percentage Dwellings Occupied Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Principal HVAC System Type</FieldName>
+                      <FieldValue>Packaged Terminal Air Conditioner</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Principal Lighting System Type</FieldName>
+                      <FieldValue>LED</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Of Dwellings Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Section Notes For Not Applicable</FieldName>
+                      <FieldValue/>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                  <ThermalZones>
+                    <ThermalZone ID="ThermalZoneType-69928425128280">
+                      <HVACScheduleIDs>
+                        <HVACScheduleID IDref="ScheduleType-69928425172900"/>
+                      </HVACScheduleIDs>
+                      <SetpointTemperatureHeating>70</SetpointTemperatureHeating>
+                      <SetpointTemperatureCooling>75</SetpointTemperatureCooling>
+                    </ThermalZone>
+                  </ThermalZones>
+                </Section>
+              </Sections>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Alternative Roof Surface Construction Method</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Alternative Roof Surface Construction Method Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Calculate Annual Energy Use Summary</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Electricity Is Direct metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Electricity Is Direct metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Electricity Is Master meter with sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Electricity Is Master meter with sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Electricity Is Master meter without sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Electricity Is Master meter without sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Natural gas Is Direct metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Natural gas Is Direct metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Natural gas Is Master meter with sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Natural gas Is Master meter with sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Natural gas Is Master meter without sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Commercial Tenant Metering Configuration For Natural gas Is Master meter without sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Conditioned Floors Above Grade Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Conditioned Floors Below Grade Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Demising Above Grade Wall Area</FieldName>
+                  <FieldValue>12000.0</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Floor Area For Cooled only Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Floor Area For Gross Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Floor Area For Heated only Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Floor Area For Heated and Cooled Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Metering Year Start Dates</FieldName>
+                  <FieldValue>2016-01-01</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Multi Tenant</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Multi Tenant Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Number Of Facilities On Site Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation Operation Average Annual Hours Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System For Fuel cell Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System For Microturbine Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System For PV Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System For Reciprocating engine Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System For Turbine Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System For Wind Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Generation System Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Renewable Peak Generating Capacity Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Renewable System</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Renewable System For Solar Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Onsite Renewable System Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Other Energy Generation Technology</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Other Energy Generation Technology Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Percentage Onsite Generation Peak Generating Capacity Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Percentage Skylight Area</FieldName>
+                  <FieldValue>4.0</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Identifier For Atlanta Building ID Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Identifier For City Custom Building ID Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Identifier For Portfolio Manager Building ID Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Notes For Not Applicable</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Notes For Shared Metering Not Applicable</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Notes For Space functions For Not Applicable</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Notes For Tenant Metering Configuration For Not Applicable</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Premises Notes Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Electricity Is Direct metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Electricity Is Direct metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Electricity Is Master meter with sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Electricity Is Master meter with sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Electricity Is Master meter without sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Electricity Is Master meter without sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Natural gas Is Direct metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Natural gas Is Direct metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Natural gas Is Master meter with sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Natural gas Is Master meter with sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Natural gas Is Master meter without sub metering</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Residential Tenant Metering Configuration For Natural gas Is Master meter without sub metering Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Retrocommissioning Date Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Roof Area</FieldName>
+                  <FieldValue>20000.0</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Chilled water</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Chilled water Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Fuel oil</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Fuel oil Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Heating</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Heating Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meter For District steam</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meter For District steam Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meter For Electricity</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meter For Electricity Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meters For Multiple buildings on a single lot</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meters For Multiple buildings on a single lot Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meters For Multiple buildings on multiple lots</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meters For Multiple buildings on multiple lots Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meter For Natural gas</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Shared Meter For Natural gas Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Spaces Excluded From Gross Floor Area</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Spaces Excluded From Gross Floor Area Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Terrace R Value Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Validate 100% Lighting Status</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Validate 100% Lighting Status Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Year Of Last Energy Audit Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Year Of Last Major Remodel Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Building>
+          </Buildings>
+        </Site>
+      </Sites>
+      <Systems>
+        <HVACSystems>
+          <HVACSystem ID="HVACSystemType-69928414315060">
+            <Plants>
+              <HeatingPlants>
+                <HeatingPlant ID="HeatingPlantType-69928465536840">
+                  <Boiler>
+                    <BoilerType>Hot water</BoilerType>
+                    <DraftType>Unknown</DraftType>
+                    <CondensingOperation>Condensing</CondensingOperation>
+                    <OutputCapacity>200000.0</OutputCapacity>
+                    <CapacityUnits>kBtu/hr</CapacityUnits>
+                    <AnnualHeatingEfficiencyValue>70.0</AnnualHeatingEfficiencyValue>
+                    <AnnualHeatingEfficiencyUnits>Thermal Efficiency</AnnualHeatingEfficiencyUnits>
+                    <Quantity>1</Quantity>
+                  </Boiler>
+                  <HeatingPlantCondition>Average</HeatingPlantCondition>
+                  <Location>Mechanical Room</Location>
+                  <YearInstalled>2010</YearInstalled>
+                  <PrimaryFuel>Fuel oil no 1</PrimaryFuel>
+                  <BuildingAutomationSystem>true</BuildingAutomationSystem>
+                  <ControlSystemTypes>
+                    <ControlSystemType>
+                      <Digital/>
+                    </ControlSystemType>
+                  </ControlSystemTypes>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Annual Heating Efficiency Units Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Annual Heating Efficiency Value Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Building Automation System Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Control Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Quantity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Control System Type For Digital Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Control System Type For Pneumatic Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Draft Type Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Plant Condition Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Plant Notes</FieldName>
+                      <FieldValue>See attachment for details</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Plant Notes Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Input Capacity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Location Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Output Capacity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </HeatingPlant>
+              </HeatingPlants>
+              <CoolingPlants>
+                <CoolingPlant ID="CoolingPlantType-69928471484020">
+                  <Chiller>
+                    <ChillerType>Vapor compression</ChillerType>
+                    <ChillerCompressorDriver>Electric Motor</ChillerCompressorDriver>
+                    <ChillerCompressorType>Screw</ChillerCompressorType>
+                    <CondenserPlantIDs>
+                      <CondenserPlantID IDref="CondenserPlantType-69928414323180"/>
+                    </CondenserPlantIDs>
+                    <AnnualCoolingEfficiencyValue>2.5</AnnualCoolingEfficiencyValue>
+                    <AnnualCoolingEfficiencyUnits>COP</AnnualCoolingEfficiencyUnits>
+                    <Capacity>300000.0</Capacity>
+                    <CapacityUnits>kBtu/hr</CapacityUnits>
+                    <ChilledWaterResetControl>Other</ChilledWaterResetControl>
+                    <Quantity>1</Quantity>
+                  </Chiller>
+                  <CoolingPlantCondition>Poor</CoolingPlantCondition>
+                  <Location>Mechanical Room</Location>
+                  <YearInstalled>1991</YearInstalled>
+                  <PrimaryFuel>Electricity</PrimaryFuel>
+                  <BuildingAutomationSystem>false</BuildingAutomationSystem>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Annual Cooling Efficiency Units Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Annual Cooling Efficiency Value Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Building Automation System Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Capacity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Chilled Water Reset Control Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Chiller Compressor Driver Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Plant Condition Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Plant Notes</FieldName>
+                      <FieldValue>needs replacing</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Plant Notes Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Condenser Plant ID Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Condenser Type</FieldName>
+                      <FieldValue>Water Cooled</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Condenser Type Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Control System Type For Digital Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Control System Type For Pneumatic Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Location Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </CoolingPlant>
+              </CoolingPlants>
+              <CondenserPlants>
+                <CondenserPlant ID="CondenserPlantType-69928414323180">
+                  <WaterCooled>
+                    <WaterCooledCondenserType>Cooling tower</WaterCooledCondenserType>
+                    <WaterCooledCondenserFlowControl>Fixed Flow</WaterCooledCondenserFlowControl>
+                    <CoolingTowerFanControl>Single Speed</CoolingTowerFanControl>
+                  </WaterCooled>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Cooling Tower Fan Control Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Water Cooled Condenser Flow Control Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </CondenserPlant>
+              </CondenserPlants>
+            </Plants>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+          </HVACSystem>
+          <HVACSystem ID="HVACSystemType-69928467186520">
+            <HeatingAndCoolingSystems>
+              <ZoningSystemType>Multi zone</ZoningSystemType>
+              <HeatingSources>
+                <HeatingSource ID="HeatingSource-69928418033920">
+                  <HeatingSourceType>
+                    <SourceHeatingPlantID IDref="HeatingPlantType-69928465536840"/>
+                  </HeatingSourceType>
+                  <CapacityUnits>kBtu/hr</CapacityUnits>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Annual Heating Efficiency Units Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Annual Heating Efficiency Value Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Control Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Quantity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Draft Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heat Pump Sink Source Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Source Condition Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Source Notes</FieldName>
+                      <FieldValue/>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Source Notes Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Location Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Output Capacity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Primary Fuel Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Source Heating Plant ID Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </HeatingSource>
+              </HeatingSources>
+              <CoolingSources>
+                <CoolingSource ID="CoolingSource-69928418231400">
+                  <CoolingSourceType>
+                    <CoolingPlantID IDref="CoolingPlantType-69928471484020"/>
+                  </CoolingSourceType>
+                  <CapacityUnits>kBtu/hr</CapacityUnits>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Annual Cooling Efficiency Units Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Annual Cooling Efficiency Value Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Capacity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Plant ID Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Source Condition Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Source Notes</FieldName>
+                      <FieldValue/>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Source Notes Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Location Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Primary Fuel Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </CoolingSource>
+              </CoolingSources>
+              <Deliveries>
+                <Delivery ID="Delivery-69928457595620">
+                  <DeliveryType>
+                    <CentralAirDistribution>
+                      <AirDeliveryType>Central fan</AirDeliveryType>
+                      <TerminalUnit>VAV terminal box not fan powered with reheat</TerminalUnit>
+                      <ReheatSource>Heating plant</ReheatSource>
+                      <ReheatPlantID IDref="HeatingPlantType-69928465536840"/>
+                    </CentralAirDistribution>
+                  </DeliveryType>
+                  <HeatingSourceID IDref="HeatingSource-69928418033920"/>
+                  <CoolingSourceID IDref="CoolingSource-69928418231400"/>
+                </Delivery>
+                <Delivery ID="Delivery-69928464812220">
+                  <DeliveryType>
+                    <ZoneEquipment>
+                      <FanBased>
+                        <AirSideEconomizer ID="AirSideEconomizer-69928464802780">
+                          <AirSideEconomizerType>Dry bulb temperature</AirSideEconomizerType>
+                        </AirSideEconomizer>
+                        <SupplyAirTemperatureResetControl>false</SupplyAirTemperatureResetControl>
+                        <StaticPressureResetControl>true</StaticPressureResetControl>
+                      </FanBased>
+                    </ZoneEquipment>
+                  </DeliveryType>
+                  <HeatingSourceID IDref="HeatingSource-69928418033920"/>
+                  <CoolingSourceID IDref="CoolingSource-69928418231400"/>
+                </Delivery>
+              </Deliveries>
+            </HeatingAndCoolingSystems>
+            <OtherHVACSystems>
+              <OtherHVACSystem ID="OtherHVACSystemType-69928464787240">
+                <OtherHVACType>
+                  <MechanicalVentilation>
+                    <VentilationType>Energy recovery ventilator</VentilationType>
+                    <DemandControlVentilation>true</DemandControlVentilation>
+                  </MechanicalVentilation>
+                </OtherHVACType>
+                <LinkedDeliveryIDs>
+                  <LinkedDeliveryID IDref="Delivery-69928457595620"/>
+                  <LinkedDeliveryID IDref="Delivery-69928464812220"/>
+                </LinkedDeliveryIDs>
+              </OtherHVACSystem>
+            </OtherHVACSystems>
+            <HVACControlSystemTypes>
+              <HVACControlSystemType>Digital</HVACControlSystemType>
+              <HVACControlSystemType>Pneumatic</HVACControlSystemType>
+            </HVACControlSystemTypes>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-69928578013460">
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                  </FloorAreas>
+                </LinkedSectionID>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Central Distribution Type</FieldName>
+                <FieldValue>Forced Air</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Demand Control Ventilation Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Corridor</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Corridor Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Kitchen</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Kitchen Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Other</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Other Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Parking</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Parking Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Restroom</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Restroom Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Minimum Air Flow Fraction</FieldName>
+                <FieldValue>0.3</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Minimum Air Flow Fraction Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Central Distribution Type</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Central Distribution Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Distribution Equipment Type</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Distribution Equipment Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Outdoor Air Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Packaged Terminal Equipment Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Static Pressure Reset Control Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Air Temperature Reset Control Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Common area</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Common area Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Corridor</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Corridor Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Other</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Other Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Tenant Spaces</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Tenant Spaces Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Terminal Unit Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Ventilation System &gt; 5 hp</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Ventilation Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </HVACSystem>
+          <HVACSystem ID="HVACSystemType-69928417662640">
+            <HeatingAndCoolingSystems>
+              <ZoningSystemType>Single zone</ZoningSystemType>
+              <HeatingSources>
+                <HeatingSource ID="HeatingSource-69928416736660">
+                  <HeatingSourceType>
+                    <Furnace/>
+                  </HeatingSourceType>
+                  <AnnualHeatingEfficiencyValue>65.0</AnnualHeatingEfficiencyValue>
+                  <AnnualHeatingEfficiencyUnits>Thermal Efficiency</AnnualHeatingEfficiencyUnits>
+                  <OutputCapacity>1000.0</OutputCapacity>
+                  <CapacityUnits>kBtu/hr</CapacityUnits>
+                  <PrimaryFuel>Natural gas</PrimaryFuel>
+                  <HeatingSourceCondition>Good</HeatingSourceCondition>
+                  <Controls>
+                    <Control>
+                      <Thermostat>
+                        <ControlStrategy>Manual</ControlStrategy>
+                      </Thermostat>
+                    </Control>
+                  </Controls>
+                  <Location>Interior</Location>
+                  <YearInstalled>2015</YearInstalled>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Annual Heating Efficiency Units Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Annual Heating Efficiency Value Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Control Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Quantity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Burner Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Draft Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heat Pump Sink Source Type Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Source Condition Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Source Notes</FieldName>
+                      <FieldValue>PTAC</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Heating Source Notes Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Location Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Output Capacity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Primary Fuel Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Source Heating Plant ID Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                  <Quantity>10</Quantity>
+                </HeatingSource>
+              </HeatingSources>
+              <CoolingSources>
+                <CoolingSource ID="CoolingSource-69928417047580">
+                  <CoolingSourceType>
+                    <DX/>
+                  </CoolingSourceType>
+                  <AnnualCoolingEfficiencyValue>3.0</AnnualCoolingEfficiencyValue>
+                  <AnnualCoolingEfficiencyUnits>COP</AnnualCoolingEfficiencyUnits>
+                  <Capacity>1000.0</Capacity>
+                  <CapacityUnits>kBtu/hr</CapacityUnits>
+                  <PrimaryFuel>Electricity</PrimaryFuel>
+                  <CoolingSourceCondition>Good</CoolingSourceCondition>
+                  <Controls>
+                    <Control>
+                      <Thermostat>
+                        <ControlStrategy>Manual</ControlStrategy>
+                      </Thermostat>
+                    </Control>
+                  </Controls>
+                  <Location>Interior</Location>
+                  <YearInstalled>2000</YearInstalled>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Annual Cooling Efficiency Units Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Annual Cooling Efficiency Value Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Capacity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Plant ID Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Source Condition Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Source Notes</FieldName>
+                      <FieldValue>PTAC</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Cooling Source Notes Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Location Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Primary Fuel Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Quantity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                    <UserDefinedField>
+                      <FieldName>Year Installed Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                  <Quantity>10</Quantity>
+                </CoolingSource>
+              </CoolingSources>
+              <Deliveries>
+                <Delivery ID="Delivery-69928417571820">
+                  <DeliveryType>
+                    <CentralAirDistribution>
+                      <AirDeliveryType>Local fan</AirDeliveryType>
+                    </CentralAirDistribution>
+                  </DeliveryType>
+                  <HeatingSourceID IDref="HeatingSource-69928416736660"/>
+                  <CoolingSourceID IDref="CoolingSource-69928417047580"/>
+                </Delivery>
+                <Delivery ID="Delivery-69928417555400">
+                  <DeliveryType>
+                    <ZoneEquipment>
+                      <FanBased>
+                        <SupplyAirTemperatureResetControl>false</SupplyAirTemperatureResetControl>
+                        <StaticPressureResetControl>false</StaticPressureResetControl>
+                      </FanBased>
+                    </ZoneEquipment>
+                  </DeliveryType>
+                  <HeatingSourceID IDref="HeatingSource-69928416736660"/>
+                  <CoolingSourceID IDref="CoolingSource-69928417047580"/>
+                </Delivery>
+              </Deliveries>
+            </HeatingAndCoolingSystems>
+            <OtherHVACSystems>
+              <OtherHVACSystem ID="OtherHVACSystemType-69928417480020">
+                <OtherHVACType>
+                  <MechanicalVentilation>
+                    <DemandControlVentilation>false</DemandControlVentilation>
+                  </MechanicalVentilation>
+                </OtherHVACType>
+                <LinkedDeliveryIDs>
+                  <LinkedDeliveryID IDref="Delivery-69928417571820"/>
+                  <LinkedDeliveryID IDref="Delivery-69928417555400"/>
+                </LinkedDeliveryIDs>
+              </OtherHVACSystem>
+              <OtherHVACSystem ID="OtherHVACSystemType-69928416476880">
+                <OtherHVACType>
+                  <NaturalVentilation/>
+                </OtherHVACType>
+                <LinkedDeliveryIDs>
+                  <LinkedDeliveryID IDref="Delivery-69928417571820"/>
+                  <LinkedDeliveryID IDref="Delivery-69928417555400"/>
+                </LinkedDeliveryIDs>
+              </OtherHVACSystem>
+            </OtherHVACSystems>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-101919600">
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                  </FloorAreas>
+                </LinkedSectionID>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Central Distribution Type</FieldName>
+                <FieldValue>None (unitized heating/cooling)</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Demand Control Ventilation Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Corridor</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Corridor Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Kitchen</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Kitchen Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Other</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Other Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Parking</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Parking Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Restroom</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Exhaust Ventilation For Restroom Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Minimum Air Flow Fraction Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Central Distribution Type</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Central Distribution Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Distribution Equipment Type</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Distribution Equipment Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Outdoor Air Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Packaged Terminal Equipment Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Static Pressure Reset Control Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Air Temperature Reset Control Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Common area</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Common area Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Corridor</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Corridor Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Other</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Other Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Tenant Spaces</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Supply Ventilation For Tenant Spaces Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Terminal Unit Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Ventilation System &gt; 5 hp</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Ventilation Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </HVACSystem>
+        </HVACSystems>
+        <LightingSystems>
+          <LightingSystem ID="LightingSystemType-97124620">
+            <LampType>
+              <LinearFluorescent>
+                <LampLabel>T8</LampLabel>
+                <LampLength>Unknown</LampLength>
+              </LinearFluorescent>
+            </LampType>
+            <BallastType>Premium Electronic</BallastType>
+            <InstallationType>Recessed</InstallationType>
+            <LampPower>40</LampPower>
+            <NumberOfLampsPerLuminaire>4</NumberOfLampsPerLuminaire>
+            <OutsideLighting>false</OutsideLighting>
+            <Controls>
+              <Control>
+                <AdvancedPowerStrip>
+                  <ControlStrategy>Advanced</ControlStrategy>
+                </AdvancedPowerStrip>
+              </Control>
+              <Control>
+                <OtherControlTechnology>
+                  <ControlStrategy>EMCS</ControlStrategy>
+                </OtherControlTechnology>
+              </Control>
+              <Control>
+                <Manual>
+                  <ControlStrategy>Manual On/Off</ControlStrategy>
+                </Manual>
+              </Control>
+              <Control>
+                <Occupancy>
+                  <ControlStrategy>Occupancy Sensors</ControlStrategy>
+                </Occupancy>
+              </Control>
+              <Control>
+                <Timer>
+                  <ControlStrategy>Chronological</ControlStrategy>
+                </Timer>
+              </Control>
+            </Controls>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-69928578013460">
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaPercentage>100.0</FloorAreaPercentage>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaPercentage>100.0</FloorAreaPercentage>
+                    </FloorArea>
+                  </FloorAreas>
+                </LinkedSectionID>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Lighting System Name</FieldName>
+                <FieldValue>Fixture 1</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>LED Application Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Lighting Power Density For Section-69928578013460</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Common Areas Lighting Power Density For Section-69928578013460</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Tenant Areas Lighting Power Density For Section-69928578013460</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Quantity Of Luminaires For Section-69928578013460</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Common Areas Quantity Of Luminaires For Section-69928578013460</FieldName>
+                <FieldValue>250</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Tenant Areas Quantity Of Luminaires For Section-69928578013460</FieldName>
+                <FieldValue>1500</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </LightingSystem>
+          <LightingSystem ID="LightingSystemType-88332280">
+            <LampType>
+              <SolidStateLighting>
+                <LampLabel>LED</LampLabel>
+              </SolidStateLighting>
+            </LampType>
+            <BallastType>Electromagnetic</BallastType>
+            <InstallationType>Suspended</InstallationType>
+            <LampPower>15</LampPower>
+            <NumberOfLampsPerLuminaire>1</NumberOfLampsPerLuminaire>
+            <OutsideLighting>false</OutsideLighting>
+            <Controls>
+              <Control>
+                <AdvancedPowerStrip>
+                  <ControlStrategy>Advanced</ControlStrategy>
+                </AdvancedPowerStrip>
+              </Control>
+              <Control>
+                <OtherControlTechnology>
+                  <ControlStrategy>EMCS</ControlStrategy>
+                </OtherControlTechnology>
+              </Control>
+              <Control>
+                <Occupancy>
+                  <ControlStrategy>Occupancy Sensors</ControlStrategy>
+                </Occupancy>
+              </Control>
+              <Control>
+                <OtherControlTechnology>
+                  <ControlStrategy>Other</ControlStrategy>
+                </OtherControlTechnology>
+              </Control>
+              <Control>
+                <Daylighting>
+                  <ControlSensor>Photocell</ControlSensor>
+                </Daylighting>
+              </Control>
+              <Control>
+                <Timer>
+                  <ControlStrategy>Chronological</ControlStrategy>
+                </Timer>
+              </Control>
+            </Controls>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-101919600">
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaValue>60000.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Gross</FloorAreaType>
+                      <FloorAreaValue>0.0</FloorAreaValue>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaValue>50000.0</FloorAreaValue>
+                    </FloorArea>
+                  </FloorAreas>
+                </LinkedSectionID>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Lighting System Name</FieldName>
+                <FieldValue>Fixture 2</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>LED Application Type</FieldName>
+                <FieldValue>A Lamp</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>LED Application Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Lighting Power Density For Section-101919600</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Common Areas Lighting Power Density For Section-101919600</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Tenant Areas Lighting Power Density For Section-101919600</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Quantity Of Luminaires For Section-101919600</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Common Areas Quantity Of Luminaires For Section-101919600</FieldName>
+                <FieldValue>120</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Tenant Areas Quantity Of Luminaires For Section-101919600</FieldName>
+                <FieldValue>360</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </LightingSystem>
+        </LightingSystems>
+        <DomesticHotWaterSystems>
+          <DomesticHotWaterSystem ID="DomesticHotWaterSystemType-69928593056500">
+            <DomesticHotWaterType>
+              <Instantaneous>
+                <InstantaneousWaterHeatingSource>
+                  <Combustion>
+                    <DraftBoundary>Direct</DraftBoundary>
+                  </Combustion>
+                </InstantaneousWaterHeatingSource>
+              </Instantaneous>
+            </DomesticHotWaterType>
+            <WaterHeaterEfficiencyType>AFUE</WaterHeaterEfficiencyType>
+            <WaterHeaterEfficiency>65.0</WaterHeaterEfficiency>
+            <YearInstalled>2010</YearInstalled>
+            <PrimaryFuel>Natural gas</PrimaryFuel>
+            <Location>Mechanical Room</Location>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-69928578013460">
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                  </FloorAreas>
+                </LinkedSectionID>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Draft Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Heating Plant ID Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Hot Water Distribution Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Location Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Primary Fuel Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Storage Tank Insulation R Value Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Storage Tank Insulation Thickness Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Tank Volume Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Water Heater Efficiency Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Water Heater Efficiency Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Year Installed Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </DomesticHotWaterSystem>
+          <DomesticHotWaterSystem ID="DomesticHotWaterSystemType-69928465244840">
+            <DomesticHotWaterType>
+              <StorageTank>
+                <TankHeatingType>
+                  <Direct>
+                    <DirectTankHeatingSource>
+                      <Combustion/>
+                    </DirectTankHeatingSource>
+                  </Direct>
+                </TankHeatingType>
+                <StorageTankInsulationRValue>20.0</StorageTankInsulationRValue>
+                <StorageTankInsulationThickness>2.0</StorageTankInsulationThickness>
+              </StorageTank>
+            </DomesticHotWaterType>
+            <WaterHeaterEfficiencyType>Thermal Efficiency</WaterHeaterEfficiencyType>
+            <WaterHeaterEfficiency>60.0</WaterHeaterEfficiency>
+            <YearInstalled>2010</YearInstalled>
+            <PrimaryFuel>Electricity</PrimaryFuel>
+            <Location>Closet</Location>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-101919600">
+                  <FloorAreas>
+                    <FloorArea>
+                      <FloorAreaType>Common</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                    <FloorArea>
+                      <FloorAreaType>Tenant</FloorAreaType>
+                      <FloorAreaPercentage>100</FloorAreaPercentage>
+                    </FloorArea>
+                  </FloorAreas>
+                </LinkedSectionID>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Draft Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Heating Plant ID Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Hot Water Distribution Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Location Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Primary Fuel Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Storage Tank Insulation R Value Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Storage Tank Insulation Thickness Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Tank Volume Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Water Heater Efficiency Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Water Heater Efficiency Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Year Installed Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </DomesticHotWaterSystem>
+        </DomesticHotWaterSystems>
+        <PumpSystems>
+          <PumpSystem ID="PumpSystemType-69928414300260">
+            <PumpControlType>Constant Volume</PumpControlType>
+            <LinkedSystemIDs>
+              <LinkedSystemID IDref="CondenserPlantType-69928414323180"/>
+            </LinkedSystemIDs>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Pump Control Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </PumpSystem>
+          <PumpSystem ID="PumpSystemType-69928464668200">
+            <PumpControlType>Constant Volume</PumpControlType>
+            <LinkedSystemIDs>
+              <LinkedSystemID IDref="CoolingPlantType-69928471484020"/>
+            </LinkedSystemIDs>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Pump Control Type Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </PumpSystem>
+        </PumpSystems>
+        <FanSystems>
+          <FanSystem ID="FanSystemType-69928458933020">
+            <FanEfficiency>60.0</FanEfficiency>
+            <FanControlType>Variable Volume</FanControlType>
+            <LinkedSystemIDs>
+              <LinkedSystemID IDref="HVACSystemType-69928467186520"/>
+            </LinkedSystemIDs>
+          </FanSystem>
+          <FanSystem ID="FanSystemType-69928417184520">
+            <FanControlType>Constant Volume</FanControlType>
+            <LinkedSystemIDs>
+              <LinkedSystemID IDref="HVACSystemType-69928417662640"/>
+            </LinkedSystemIDs>
+          </FanSystem>
+        </FanSystems>
+        <MotorSystems>
+          <MotorSystem ID="MotorSystemType-69928467824140">
+            <MotorEfficiency>60.0</MotorEfficiency>
+            <LinkedSystemIDs>
+              <LinkedSystemID IDref="HVACSystemType-69928467186520"/>
+            </LinkedSystemIDs>
+          </MotorSystem>
+        </MotorSystems>
+        <WallSystems>
+          <WallSystem ID="WallSystemType-69928423734500">
+            <ExteriorWallConstruction>Wood frame</ExteriorWallConstruction>
+            <ExteriorWallFinish>Other</ExteriorWallFinish>
+            <WallInsulations>
+              <WallInsulation>
+                <WallInsulationRValue>15.0</WallInsulationRValue>
+              </WallInsulation>
+            </WallInsulations>
+          </WallSystem>
+        </WallSystems>
+        <RoofSystems>
+          <RoofSystem ID="RoofSystemType-69928424029620">
+            <RoofConstruction>Built up</RoofConstruction>
+            <BlueRoof>true</BlueRoof>
+            <CoolRoof>true</CoolRoof>
+            <GreenRoof>true</GreenRoof>
+            <RoofInsulations>
+              <RoofInsulation>
+                <RoofInsulationRValue>15.0</RoofInsulationRValue>
+              </RoofInsulation>
+            </RoofInsulations>
+            <DeckType>Concrete</DeckType>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Blue Roof Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Cool Roof Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Green Roof Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </RoofSystem>
+          <RoofSystem ID="RoofSystemType-69928423796660"/>
+        </RoofSystems>
+        <FenestrationSystems>
+          <FenestrationSystem ID="FenestrationSystemType-99179560">
+            <FenestrationType>
+              <Door/>
+            </FenestrationType>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Other Exterior Door Type</FieldName>
+                <FieldValue/>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </FenestrationSystem>
+          <FenestrationSystem ID="FenestrationSystemType-69928423826520">
+            <FenestrationType>
+              <Skylight/>
+            </FenestrationType>
+            <GlassType>Plastic</GlassType>
+            <FenestrationUFactor>1.0</FenestrationUFactor>
+            <SolarHeatGainCoefficient>0.4</SolarHeatGainCoefficient>
+            <VisibleTransmittance>0.4</VisibleTransmittance>
+          </FenestrationSystem>
+          <FenestrationSystem ID="FenestrationSystemType-69928414143620">
+            <FenestrationType>
+              <Window/>
+            </FenestrationType>
+            <FenestrationFrameMaterial>Vinyl</FenestrationFrameMaterial>
+            <FenestrationOperation>true</FenestrationOperation>
+            <TightnessFitCondition>Average</TightnessFitCondition>
+            <GlassType>Low e</GlassType>
+            <FenestrationGasFill>Air</FenestrationGasFill>
+            <FenestrationGlassLayers>Triple pane</FenestrationGlassLayers>
+            <FenestrationUFactor>0.9</FenestrationUFactor>
+            <SolarHeatGainCoefficient>0.3</SolarHeatGainCoefficient>
+            <VisibleTransmittance>0.3</VisibleTransmittance>
+          </FenestrationSystem>
+        </FenestrationSystems>
+        <ExteriorFloorSystems>
+          <ExteriorFloorSystem ID="ExteriorFloorSystemType-98132460">
+            <ExteriorFloorRValue>19.0</ExteriorFloorRValue>
+            <ExteriorFloorFramingMaterial>Wood</ExteriorFloorFramingMaterial>
+          </ExteriorFloorSystem>
+        </ExteriorFloorSystems>
+        <FoundationSystems>
+          <FoundationSystem ID="FoundationSystemType-69928423661700">
+            <GroundCouplings>
+              <GroundCoupling>
+                <Basement>
+                  <FoundationWallRValue>12.0</FoundationWallRValue>
+                </Basement>
+              </GroundCoupling>
+            </GroundCouplings>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Foundation Wall R Value Is Not Applicable</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Linked Wall ID</FieldName>
+                <FieldValue>WallSystemType-69928423734500</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </FoundationSystem>
+        </FoundationSystems>
+        <CriticalITSystems>
+          <CriticalITSystem ID="CriticalITSystemType-69928425070200">
+            <ITSystemType>Server</ITSystemType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Occupancy Classification</FieldName>
+                <FieldValue>Data center</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Gross Floor Area Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>IT Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Metering</FieldName>
+                <FieldValue>false</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Metering Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Power Usage Effectiveness Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </CriticalITSystem>
+          <CriticalITSystem ID="CriticalITSystemType-69928425012380">
+            <ITSystemType>Other</ITSystemType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Occupancy Classification</FieldName>
+                <FieldValue>Trading floor</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Gross Floor Area Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>IT Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </CriticalITSystem>
+          <CriticalITSystem ID="CriticalITSystemType-69928424972640">
+            <ITSystemType>Other</ITSystemType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Occupancy Classification</FieldName>
+                <FieldValue>TV studio</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Gross Floor Area Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>IT Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </CriticalITSystem>
+          <CriticalITSystem ID="CriticalITSystemType-69928424942260">
+            <ITSystemType>UPS</ITSystemType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Occupancy Classification</FieldName>
+                <FieldValue>Data center</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>IT Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </CriticalITSystem>
+        </CriticalITSystems>
+        <PlugLoads>
+          <PlugLoad ID="PlugElectricLoadType-69928424327860">
+            <PlugLoadType>Broadcast Antenna</PlugLoadType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Plug Load Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </PlugLoad>
+          <PlugLoad ID="PlugElectricLoadType-69928424280960">
+            <PlugLoadType>Kitchen Equipment</PlugLoadType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Gross Floor Area Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Plug Load Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </PlugLoad>
+          <PlugLoad ID="PlugElectricLoadType-69928424241040">
+            <PlugLoadType>Other</PlugLoadType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Plug Load Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Plug Load Total Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </PlugLoad>
+          <PlugLoad ID="PlugElectricLoadType-69928424197180">
+            <PlugLoadType>Signage Display</PlugLoadType>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Plug Load Peak Power Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </PlugLoad>
+        </PlugLoads>
+        <ProcessLoads>
+          <ProcessLoad ID="ProcessGasElectricLoadType-69928425813300">
+            <ProcessLoadType>Miscellaneous Gas Load</ProcessLoadType>
+            <WeightedAverageLoad>0.5</WeightedAverageLoad>
+            <LinkedPremises>
+              <Section>
+                <LinkedSectionID IDref="Section-69928578013460"/>
+              </Section>
+            </LinkedPremises>
+          </ProcessLoad>
+          <ProcessLoad ID="ProcessGasElectricLoadType-69928425259980">
+            <ProcessLoadType>Miscellaneous Gas Load</ProcessLoadType>
+            <WeightedAverageLoad>0.4</WeightedAverageLoad>
+            <LinkedPremises>
+              <Section>
+                <LinkedSectionID IDref="Section-101919600"/>
+              </Section>
+            </LinkedPremises>
+          </ProcessLoad>
+        </ProcessLoads>
+        <ConveyanceSystems>
+          <ConveyanceSystem ID="ConveyanceSystemType-98908380">
+            <ConveyanceSystemType>Elevator</ConveyanceSystemType>
+            <Quantity>3</Quantity>
+            <YearOfManufacture>2006</YearOfManufacture>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+              <Section>
+                <LinkedSectionID IDref="Section-69928578013460"/>
+              </Section>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Elevator Type</FieldName>
+                <FieldValue>Hydraulic</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </ConveyanceSystem>
+        </ConveyanceSystems>
+        <OnsiteStorageTransmissionGenerationSystems>
+          <OnsiteStorageTransmissionGenerationSystem ID="OnsiteStorageTransmissionGenerationSystemType-69928424844140">
+            <BackupGenerator>true</BackupGenerator>
+            <DemandReduction>false</DemandReduction>
+            <CapacityUnits>kBtu/hr</CapacityUnits>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Capacity Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Demand Reduction Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Output Resource Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Other Energy Generation Technology Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Year Installed Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </OnsiteStorageTransmissionGenerationSystem>
+          <OnsiteStorageTransmissionGenerationSystem ID="OnsiteStorageTransmissionGenerationSystemType-69928424606680">
+            <BackupGenerator>false</BackupGenerator>
+            <DemandReduction>false</DemandReduction>
+            <CapacityUnits>kBtu/hr</CapacityUnits>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+            <UserDefinedFields>
+              <UserDefinedField>
+                <FieldName>Capacity Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Demand Reduction Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Output Resource Type Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+              <UserDefinedField>
+                <FieldName>Year Installed Is Not Applicable</FieldName>
+                <FieldValue>true</FieldValue>
+              </UserDefinedField>
+            </UserDefinedFields>
+          </OnsiteStorageTransmissionGenerationSystem>
+        </OnsiteStorageTransmissionGenerationSystems>
+        <AirInfiltrationSystems>
+          <AirInfiltrationSystem ID="AirInfiltrationSystem-99627300">
+            <Tightness>Very Leaky</Tightness>
+            <LinkedPremises>
+              <Building>
+                <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+              </Building>
+            </LinkedPremises>
+          </AirInfiltrationSystem>
+        </AirInfiltrationSystems>
+      </Systems>
+      <Schedules>
+        <Schedule ID="ScheduleType-69928476271760">
+          <ScheduleDetails>
+            <ScheduleDetail>
+              <DayType>Weekday</DayType>
+              <DayStartTime>06:00:00</DayStartTime>
+              <DayEndTime>18:00:00</DayEndTime>
+            </ScheduleDetail>
+          </ScheduleDetails>
+        </Schedule>
+        <Schedule ID="ScheduleType-69928425172900">
+          <ScheduleDetails>
+            <ScheduleDetail>
+              <DayType>Saturday</DayType>
+              <DayStartTime>07:00:00</DayStartTime>
+              <DayEndTime>23:00:00</DayEndTime>
+            </ScheduleDetail>
+            <ScheduleDetail>
+              <DayType>Weekday</DayType>
+              <DayStartTime>22:00:00</DayStartTime>
+              <DayEndTime>22:00:00</DayEndTime>
+            </ScheduleDetail>
+          </ScheduleDetails>
+        </Schedule>
+      </Schedules>
+      <Measures>
+        <Measure ID="MeasureType-69928410027140">
+          <SystemCategoryAffected>Heating System</SystemCategoryAffected>
+          <LinkedPremises>
+            <Building>
+              <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+            </Building>
+          </LinkedPremises>
+          <TechnologyCategories>
+            <TechnologyCategory>
+              <BoilerPlantImprovements>
+                <MeasureName>Replace boiler</MeasureName>
+              </BoilerPlantImprovements>
+            </TechnologyCategory>
+          </TechnologyCategories>
+          <MeasureScaleOfApplication>Entire building</MeasureScaleOfApplication>
+          <LongDescription>Install high eff boiler</LongDescription>
+          <MeasureSavingsAnalysis>
+            <FundingFromIncentives>10000.0</FundingFromIncentives>
+          </MeasureSavingsAnalysis>
+          <UsefulLife>20.0</UsefulLife>
+          <MeasureTotalFirstCost>300000.0</MeasureTotalFirstCost>
+          <Recommended>true</Recommended>
+          <UserDefinedFields>
+            <UserDefinedField>
+              <FieldName>Shared Resource Affected</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Rebate Available</FieldName>
+              <FieldValue>true</FieldValue>
+            </UserDefinedField>
+          </UserDefinedFields>
+        </Measure>
+        <Measure ID="MeasureType-69928473851240">
+          <SystemCategoryAffected>Lighting</SystemCategoryAffected>
+          <LinkedPremises>
+            <Building>
+              <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+            </Building>
+          </LinkedPremises>
+          <TechnologyCategories>
+            <TechnologyCategory>
+              <LightingImprovements>
+                <MeasureName>Retrofit with light emitting diode technologies</MeasureName>
+              </LightingImprovements>
+            </TechnologyCategory>
+          </TechnologyCategories>
+          <MeasureScaleOfApplication>Common areas</MeasureScaleOfApplication>
+          <LongDescription>Replace T8 with LED</LongDescription>
+          <MeasureSavingsAnalysis>
+            <FundingFromIncentives>500.0</FundingFromIncentives>
+          </MeasureSavingsAnalysis>
+          <UsefulLife>15.0</UsefulLife>
+          <MeasureTotalFirstCost>2500.0</MeasureTotalFirstCost>
+          <ImplementationStatus>Proposed</ImplementationStatus>
+          <UserDefinedFields>
+            <UserDefinedField>
+              <FieldName>Shared Resource Affected</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Rebate Available</FieldName>
+              <FieldValue>true</FieldValue>
+            </UserDefinedField>
+          </UserDefinedFields>
+        </Measure>
+      </Measures>
+      <Reports>
+        <Report ID="ReportType-69928413907660">
+          <Scenarios>
+            <Scenario ID="ScenarioType-69928412069700">
+              <ScenarioNotes/>
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <Benchmark>
+                  <BenchmarkType>
+                    <PortfolioManager/>
+                  </BenchmarkType>
+                  <BenchmarkYear>2015</BenchmarkYear>
+                </Benchmark>
+              </ScenarioType>
+              <AllResourceTotals>
+                <AllResourceTotal ID="AllResourceTotalType-69928412037580">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUseIntensity>89.0</SiteEnergyUseIntensity>
+                  <EnergyCost>75.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Site Energy Use Intensity Is Not Applicable</FieldName>
+                      <FieldValue>false</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+              </AllResourceTotals>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Benchmark Value Is Not Applicable</FieldName>
+                  <FieldValue>true</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Benchmark Year Is Not Applicable</FieldName>
+                  <FieldValue>false</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>San Francisco Affidavit Benchmark Affirmation</FieldName>
+                  <FieldValue>affirm the historical energy use data in ENERGY STAR Portfolio Manager is complete for the calendar year prior to the audit and consistent with my observations. Gross floor area herein is accurate within +/-3%, and is consistent with Portfolio Manager.</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>San Francisco Affidavit Benchmark Signature</FieldName>
+                  <FieldValue>A. Example Auditor</FieldValue>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>San Francisco Affidavit Benchmark Not Verified Reason</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+                <UserDefinedField>
+                  <FieldName>Scenario Notes For Not Applicable</FieldName>
+                  <FieldValue/>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928461341960">
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <CurrentBuilding/>
+              </ScenarioType>
+              <ResourceUses>
+                <ResourceUse ID="ResourceUseType-69928461326500">
+                  <SharedResourceSystem>Unknown</SharedResourceSystem>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>GHG Emissions Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </ResourceUse>
+              </ResourceUses>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928461296660">
+              <TemporalStatus>Current</TemporalStatus>
+              <Normalization>Weather normalized</Normalization>
+              <ScenarioType>
+                <CurrentBuilding/>
+              </ScenarioType>
+              <AllResourceTotals>
+                <AllResourceTotal ID="AllResourceTotalType-69928461286600">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Source</ResourceBoundary>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Source Energy Use Intensity Is Not Applicable</FieldName>
+                      <FieldValue>true</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+              </AllResourceTotals>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928461264600">
+              <TemporalStatus>Target</TemporalStatus>
+              <ScenarioType>
+                <Target/>
+              </ScenarioType>
+              <AllResourceTotals>
+                <AllResourceTotal ID="AllResourceTotalType-69928461255360">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUseIntensity>80.0</SiteEnergyUseIntensity>
+                  <EnergyCost>70.0</EnergyCost>
+                </AllResourceTotal>
+              </AllResourceTotals>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928458091620">
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <Other/>
+              </ScenarioType>
+              <ResourceUses>
+                <ResourceUse ID="ResourceUseType-69928458153260">
+                  <EnergyResource>Fuel oil no 1</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>Gallons</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                </ResourceUse>
+              </ResourceUses>
+              <TimeSeriesData>
+                <TimeSeries ID="TimeSeriesType-69928458108300">
+                  <ReadingType>Point</ReadingType>
+                  <TimeSeriesReadingQuantity>Energy</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-09-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-09-02T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Day</IntervalFrequency>
+                  <IntervalReading>500.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458153260"/>
+                </TimeSeries>
+              </TimeSeriesData>
+              <AllResourceTotals>
+                <AllResourceTotal ID="AllResourceTotalType-69928458096780">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <EnergyCost>2500.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928458108300</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+              </AllResourceTotals>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Other Scenario Type</FieldName>
+                  <FieldValue>Audit Template Energy Deliveries</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928411598220">
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <Other/>
+              </ScenarioType>
+              <ResourceUses>
+                <ResourceUse ID="ResourceUseType-69928458027140">
+                  <EnergyResource>Electricity</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>kWh</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                </ResourceUse>
+              </ResourceUses>
+              <TimeSeriesData>
+                <TimeSeries ID="TimeSeriesType-69928457990000">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-01-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-02-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928470102440">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-02-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-03-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928470074700">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-03-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-04-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928470046200">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-04-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-05-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928470019640">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-05-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-06-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928469986680">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-06-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-07-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928469951300">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-07-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-08-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928411742800">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-08-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-09-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928411711920">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-09-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-10-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928411678960">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-10-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-11-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928411646420">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-11-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2016-12-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+                <TimeSeries ID="TimeSeriesType-69928411618700">
+                  <ReadingType>Peak</ReadingType>
+                  <TimeSeriesReadingQuantity>Voltage</TimeSeriesReadingQuantity>
+                  <StartTimestamp>2016-12-01T00:00:00+00:00</StartTimestamp>
+                  <EndTimestamp>2017-01-01T00:00:00+00:00</EndTimestamp>
+                  <IntervalFrequency>Other</IntervalFrequency>
+                  <IntervalReading>0.0</IntervalReading>
+                  <ResourceUseID IDref="ResourceUseType-69928458027140"/>
+                </TimeSeries>
+              </TimeSeriesData>
+              <AllResourceTotals>
+                <AllResourceTotal ID="AllResourceTotalType-69928457979880">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>366.35406494140625</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928457990000</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928470092180">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>381.0082092285156</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928470102440</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928470063420">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>322.3915710449219</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928470074700</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928470036700">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>263.77490234375</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928470046200</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928470007840">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>249.12075805664062</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928470019640</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928469975000">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>205.15826416015625</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928469986680</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928469938720">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>212.4853515625</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928469951300</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928411731920">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>225.67410278320312</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928411742800</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928411698780">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>175.84994506835938</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928411711920</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928411669360">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>199.29660034179688</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928411678960</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928411635600">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>271.10198974609375</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928411646420</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+                <AllResourceTotal ID="AllResourceTotalType-69928411604620">
+                  <EndUse>All end uses</EndUse>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <SiteEnergyUse>293.083251953125</SiteEnergyUse>
+                  <EnergyCost>0.0</EnergyCost>
+                  <UserDefinedFields>
+                    <UserDefinedField>
+                      <FieldName>Linked Time Series ID</FieldName>
+                      <FieldValue>TimeSeriesType-69928411618700</FieldValue>
+                    </UserDefinedField>
+                  </UserDefinedFields>
+                </AllResourceTotal>
+              </AllResourceTotals>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Other Scenario Type</FieldName>
+                  <FieldValue>Audit Template Energy Meter Readings</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928411534680">
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <Other/>
+              </ScenarioType>
+              <ResourceUses>
+                <ResourceUse ID="ResourceUseType-69928411436160">
+                  <EnergyResource>Electricity</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>kWh</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                  <UtilityIDs>
+                    <UtilityID IDref="UtilityType-69928411498560"/>
+                  </UtilityIDs>
+                </ResourceUse>
+              </ResourceUses>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Other Scenario Type</FieldName>
+                  <FieldValue>Audit Template Energy Supply Sources</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928411395100">
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <Other/>
+              </ScenarioType>
+              <ResourceUses>
+                <ResourceUse ID="ResourceUseType-69928458403980">
+                  <EnergyResource>Electricity</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>kWh</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                  <EndUse>Cooling</EndUse>
+                  <AnnualFuelUseNativeUnits>2000.0</AnnualFuelUseNativeUnits>
+                </ResourceUse>
+                <ResourceUse ID="ResourceUseType-69928458339320">
+                  <EnergyResource>Fuel oil no 1</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>Gallons</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                  <EndUse>Heating</EndUse>
+                  <AnnualFuelUseNativeUnits>480.0</AnnualFuelUseNativeUnits>
+                </ResourceUse>
+                <ResourceUse ID="ResourceUseType-69928458282800">
+                  <EnergyResource>Electricity</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>kWh</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                  <EndUse>Total lighting</EndUse>
+                  <AnnualFuelUseNativeUnits>1000.0</AnnualFuelUseNativeUnits>
+                </ResourceUse>
+                <ResourceUse ID="ResourceUseType-69928411068580">
+                  <EnergyResource>Electricity</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>kWh</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                  <EndUse>All end uses</EndUse>
+                  <AnnualFuelUseNativeUnits>3000.0</AnnualFuelUseNativeUnits>
+                </ResourceUse>
+                <ResourceUse ID="ResourceUseType-69928411039680">
+                  <EnergyResource>Fuel oil no 1</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>Gallons</ResourceUnits>
+                  <SharedResourceSystem>Not shared</SharedResourceSystem>
+                  <EndUse>All end uses</EndUse>
+                  <AnnualFuelUseNativeUnits>480.0</AnnualFuelUseNativeUnits>
+                </ResourceUse>
+              </ResourceUses>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Other Scenario Type</FieldName>
+                  <FieldValue>Audit Template Energy Uses</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928411777680">
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <Other/>
+              </ScenarioType>
+              <ResourceUses>
+                <ResourceUse ID="ResourceUseType-69928411565760">
+                  <EnergyResource>Electricity</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>kWh</ResourceUnits>
+                  <EndUse>All end uses</EndUse>
+                </ResourceUse>
+                <ResourceUse ID="ResourceUseType-69928413123840">
+                  <EnergyResource>Fuel oil no 1</EnergyResource>
+                  <ResourceBoundary>Site</ResourceBoundary>
+                  <ResourceUnits>Gallons</ResourceUnits>
+                  <EndUse>All end uses</EndUse>
+                </ResourceUse>
+              </ResourceUses>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Other Scenario Type</FieldName>
+                  <FieldValue>Audit Template Available Energy</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928416386240">
+              <ScenarioName>HVAC Upgrade</ScenarioName>
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <PackageOfMeasures ID="PackageOfMeasures-69928416352020">
+                  <MeasureIDs>
+                    <MeasureID IDref="MeasureType-69928410027140"/>
+                  </MeasureIDs>
+                  <AnnualSavingsCost>20000</AnnualSavingsCost>
+                  <AnnualSavingsByFuels>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Electricity</EnergyResource>
+                      <ResourceUnits>kWh</ResourceUnits>
+                      <AnnualSavingsNativeUnits>15000.0</AnnualSavingsNativeUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Natural gas</EnergyResource>
+                      <ResourceUnits>therms</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>District chilled water</EnergyResource>
+                      <ResourceUnits>Ton-hour</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>District hot water</EnergyResource>
+                      <ResourceUnits>therms</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>District steam</EnergyResource>
+                      <ResourceUnits>Mlbs</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 1</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                      <AnnualSavingsNativeUnits>400.0</AnnualSavingsNativeUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 2</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 4</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 5 (light)</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 5 (heavy)</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 6</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Diesel</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Gasoline</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Kerosene</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Liquid propane</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Propane</EnergyResource>
+                      <ResourceUnits>kcf</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Dual fuel</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Thermal-Onsite generated</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Electricity-Onsite generated</EnergyResource>
+                      <ResourceUnits>kWh</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Thermal-Exported</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Electricity-Exported</EnergyResource>
+                      <ResourceUnits>kWh</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other delivered-Onsite generated</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other delivered-Exported</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other metered-Exported</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other metered-Onsite generated</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Biofuel B5</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Biofuel B10</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Biofuel B20</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                  </AnnualSavingsByFuels>
+                  <AnnualPeakElectricityReduction>1500.0</AnnualPeakElectricityReduction>
+                </PackageOfMeasures>
+              </ScenarioType>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Recommended Resource Savings Category</FieldName>
+                  <FieldValue>Potential Capital Recommendations</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+            <Scenario ID="ScenarioType-69928409807860">
+              <ScenarioName>Lighting retrofit</ScenarioName>
+              <TemporalStatus>Current</TemporalStatus>
+              <ScenarioType>
+                <PackageOfMeasures ID="PackageOfMeasures-69928409784260">
+                  <MeasureIDs>
+                    <MeasureID IDref="MeasureType-69928473851240"/>
+                  </MeasureIDs>
+                  <AnnualSavingsCost>4000</AnnualSavingsCost>
+                  <AnnualSavingsByFuels>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Electricity</EnergyResource>
+                      <ResourceUnits>kWh</ResourceUnits>
+                      <AnnualSavingsNativeUnits>9000.0</AnnualSavingsNativeUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Natural gas</EnergyResource>
+                      <ResourceUnits>therms</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>District chilled water</EnergyResource>
+                      <ResourceUnits>Ton-hour</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>District hot water</EnergyResource>
+                      <ResourceUnits>therms</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>District steam</EnergyResource>
+                      <ResourceUnits>Mlbs</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 1</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                      <AnnualSavingsNativeUnits>300.0</AnnualSavingsNativeUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 2</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 4</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 5 (light)</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 5 (heavy)</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Fuel oil no 6</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Diesel</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Gasoline</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Kerosene</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Liquid propane</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Propane</EnergyResource>
+                      <ResourceUnits>kcf</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Dual fuel</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Thermal-Onsite generated</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Electricity-Onsite generated</EnergyResource>
+                      <ResourceUnits>kWh</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Thermal-Exported</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Electricity-Exported</EnergyResource>
+                      <ResourceUnits>kWh</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other delivered-Onsite generated</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other delivered-Exported</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other metered-Exported</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Other metered-Onsite generated</EnergyResource>
+                      <ResourceUnits>kBtu</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Biofuel B5</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Biofuel B10</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                    <AnnualSavingsByFuel>
+                      <EnergyResource>Biofuel B20</EnergyResource>
+                      <ResourceUnits>Gallons</ResourceUnits>
+                    </AnnualSavingsByFuel>
+                  </AnnualSavingsByFuels>
+                  <AnnualPeakElectricityReduction>800.0</AnnualPeakElectricityReduction>
+                </PackageOfMeasures>
+              </ScenarioType>
+              <LinkedPremises>
+                <Building>
+                  <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+                </Building>
+              </LinkedPremises>
+              <UserDefinedFields>
+                <UserDefinedField>
+                  <FieldName>Recommended Resource Savings Category</FieldName>
+                  <FieldValue>Low Cost and No Cost Recommendations</FieldValue>
+                </UserDefinedField>
+              </UserDefinedFields>
+            </Scenario>
+          </Scenarios>
+          <AuditDates>
+            <AuditDate>
+              <Date>2019-06-01</Date>
+              <DateType>Custom</DateType>
+              <CustomDateType>Level 1: Walk-through</CustomDateType>
+            </AuditDate>
+            <AuditDate>
+              <Date>2019-07-01</Date>
+              <DateType>Custom</DateType>
+              <CustomDateType>Level 2: Energy Survey and Analysis</CustomDateType>
+            </AuditDate>
+          </AuditDates>
+          <ASHRAEAuditLevel>Level 2: Energy Survey and Analysis</ASHRAEAuditLevel>
+          <RetrocommissioningAudit>false</RetrocommissioningAudit>
+          <Qualifications>
+            <Qualification ID="Qualification-69928413587460">
+              <AuditorQualification>Association of Energy Engineers Certified Energy Auditor (CEA)</AuditorQualification>
+              <AuditorQualificationNumber>123456</AuditorQualificationNumber>
+              <AuditorQualificationState>CA</AuditorQualificationState>
+              <CertificationExpirationDate>2030-10-01</CertificationExpirationDate>
+              <CertifiedAuditTeamMemberContactID IDref="ContactType-69928413663720"/>
+            </Qualification>
+          </Qualifications>
+          <Utilities>
+            <Utility ID="UtilityType-69928411498560">
+              <RateSchedules>
+                <RateSchedule ID="RateSchedule-69928411493200">
+                  <RateStructureName>monthly</RateStructureName>
+                </RateSchedule>
+              </RateSchedules>
+              <MeteringConfiguration>Direct metering</MeteringConfiguration>
+              <UtilityAccountNumber>123456</UtilityAccountNumber>
+            </Utility>
+          </Utilities>
+          <AuditorContactID IDref="ContactType-69928413663720"/>
+          <LinkedPremisesOrSystem>
+            <Building>
+              <LinkedBuildingID IDref="BuildingType-69928596381380"/>
+            </Building>
+          </LinkedPremisesOrSystem>
+          <UserDefinedFields>
+            <UserDefinedField>
+              <FieldName>Audit Date For Level 1: Walk-through Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Date For Level 2: Energy Survey and Analysis Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Date For Level 3: Detailed Survey and Analysis Is Not Applicable</FieldName>
+              <FieldValue>true</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Filing Status</FieldName>
+              <FieldValue>Initial Filing</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Filing Status Is Not Applicable</FieldName>
+              <FieldValue>true</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Notes</FieldName>
+              <FieldValue/>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Notes For Not Applicable</FieldName>
+              <FieldValue/>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Notes Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Team Notes</FieldName>
+              <FieldValue/>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Team Notes Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Audit Template Report Type</FieldName>
+              <FieldValue>San Francisco Report</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Auditor Years Of Experience</FieldName>
+              <FieldValue>3</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Early Compliance</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Early Compliance Is Not Applicable</FieldName>
+              <FieldValue>true</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Required Audit Year Is Not Applicable</FieldName>
+              <FieldValue>true</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>San Francisco Affidavit Whole Audit Signature</FieldName>
+              <FieldValue>A. Example Auditor</FieldValue>
+            </UserDefinedField>
+          </UserDefinedFields>
+        </Report>
+      </Reports>
+      <Contacts>
+        <Contact ID="ContactType-69928413663720">
+          <ContactRoles>
+            <ContactRole>Energy Auditor</ContactRole>
+          </ContactRoles>
+          <ContactName>A. Example Auditor</ContactName>
+          <ContactCompany>Auditor Company Example</ContactCompany>
+          <Address>
+            <StreetAddressDetail>
+              <Simplified>
+                <StreetAddress>123 Example Street</StreetAddress>
+              </Simplified>
+            </StreetAddressDetail>
+            <City>New York</City>
+            <State>NY</State>
+            <PostalCode>10118</PostalCode>
+          </Address>
+          <ContactTelephoneNumbers>
+            <ContactTelephoneNumber>
+              <TelephoneNumber>111-111-1111</TelephoneNumber>
+            </ContactTelephoneNumber>
+          </ContactTelephoneNumbers>
+          <ContactEmailAddresses>
+            <ContactEmailAddress>
+              <EmailAddress>a.example.auditor@aol.com</EmailAddress>
+            </ContactEmailAddress>
+          </ContactEmailAddresses>
+          <UserDefinedFields>
+            <UserDefinedField>
+              <FieldName>City Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Company Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Email Address Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Name Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Telephone Number Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Postal Code Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>State Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Street Address Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Role For ReportType-69928413907660</FieldName>
+              <FieldValue>Energy Auditor</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Role For Qualification-69928413587460</FieldName>
+              <FieldValue>Energy Auditor</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contributor Contact ID For Qualification-69928413587460</FieldName>
+              <FieldValue>ContactType-69928413663720</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contributor Contact Role For Qualification-69928413587460</FieldName>
+              <FieldValue>Energy Auditor</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Other Qualification Type For Qualification-69928413587460</FieldName>
+              <FieldValue/>
+            </UserDefinedField>
+          </UserDefinedFields>
+        </Contact>
+        <Contact ID="ContactType-69928413449760">
+          <ContactRoles>
+            <ContactRole>Owner</ContactRole>
+          </ContactRoles>
+          <ContactName>A. Example Building Owner</ContactName>
+          <ContactCompany>Building Owner Company Example</ContactCompany>
+          <Address>
+            <StreetAddressDetail>
+              <Simplified>
+                <StreetAddress>123 Example Street</StreetAddress>
+              </Simplified>
+            </StreetAddressDetail>
+            <City>New York</City>
+            <State>NY</State>
+            <PostalCode>10118</PostalCode>
+          </Address>
+          <ContactTelephoneNumbers>
+            <ContactTelephoneNumber>
+              <TelephoneNumber>111-111-1111</TelephoneNumber>
+            </ContactTelephoneNumber>
+          </ContactTelephoneNumbers>
+          <ContactEmailAddresses>
+            <ContactEmailAddress>
+              <EmailAddress>a.example.owner@aol.com</EmailAddress>
+            </ContactEmailAddress>
+          </ContactEmailAddresses>
+          <UserDefinedFields>
+            <UserDefinedField>
+              <FieldName>City Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Company Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Email Address Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Name Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Telephone Number Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Postal Code Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>State Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Street Address Is Not Applicable</FieldName>
+              <FieldValue>false</FieldValue>
+            </UserDefinedField>
+            <UserDefinedField>
+              <FieldName>Contact Role For ReportType-69928413907660</FieldName>
+              <FieldValue>Owner</FieldValue>
+            </UserDefinedField>
+          </UserDefinedFields>
+        </Contact>
+      </Contacts>
+    </Facility>
+  </Facilities>
+</BuildingSync>

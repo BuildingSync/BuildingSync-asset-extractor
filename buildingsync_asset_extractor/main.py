@@ -1,4 +1,7 @@
-BuildingSync®, Copyright (c) 2015-2022, Alliance for Sustainable Energy, LLC, and other contributors.
+"""
+*********************************************************************************************************
+:copyright (c) BuildingSync®, Copyright (c) 2015-2022, Alliance for Sustainable Energy, LLC,
+and other contributors.
 
 All rights reserved.
 
@@ -28,3 +31,16 @@ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVI
 OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*********************************************************************************************************
+"""
+
+from buildingsync_asset_extractor.processor import BSyncProcessor
+
+filename = 'tests/files/testfile.xml'
+out_file = 'assets_output.json'
+
+print("filename: {}".format(filename))
+
+bp = BSyncProcessor(filename)
+bp.extract()
+bp.save(out_file)

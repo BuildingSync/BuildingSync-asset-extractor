@@ -1,0 +1,40 @@
+{
+  "definitions": [
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems/LightingSystem",
+      "key": "LampLabel",
+      "name": "Lamp",
+      "type": "sqft"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",
+      "key": "LightingSystem",
+      "name": "LightingSystems",
+      "type": "num"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
+      "key": "UserDefinedField",
+      "name": "Principal HVAC System Type",
+      "type": "sqft"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
+      "key": "ThermalZone/SetpointTemperatureHeating",
+      "name": "AverageHeatingSetpoint",
+      "type": "avg_sqft"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
+      "key": "ThermalZone/SetpointTemperatureCooling",
+      "name": "AverageCoolingSetpoint",
+      "type": "avg_sqft"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/Plants/HeatingPlants/HeatingPlant",
+      "key": "Boiler",
+      "name": "Boiler",
+      "type": "age_oldest"
+    }
+  ]
+}
