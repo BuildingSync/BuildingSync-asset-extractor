@@ -19,16 +19,7 @@ repos:
       - id: pretty-format-json
         args: ['--autofix', '--no-sort-keys']
   - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.4
+    rev: v5.10.1
     hooks:
       - id: isort
-        args: ['-m 3']  # vertical hanging
-  - repo: local
-    hooks:
-      - id: modelica-fmt
-        name: Modelica Formatter
-        types: [file]
-        files: \.(mo|mot)$
-        entry: poetry run format_modelica_files
-        language: system
-        pass_filenames: false
+        args: ['-m=VERTICAL_HANGING_INDENT']  # vertical hanging
