@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "http://json-schema.org/building-asset-definitions/asset_definitions.json#",
+  "title": "BAE Asset Definitions",
+  "description": "BuildingSync Asset Extractor Asset Definitions Schema",
+  "type": "object",
+  "properties": {
+    "assets": {
+      "description": "Array of Extracted Assets",
+      "type": "array",
+      "items": {
+        "ref": "#/definitions/asset"
+      }
+    }
+  },
+  "definitions": {
+    "asset": {
+      "description": "Extracted Asset",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the extracted asset",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value of the extracted asset",
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "units": {
+          "definition": "Units associated with the specified asset.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

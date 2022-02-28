@@ -47,6 +47,8 @@ class TestBSyncProcessor(unittest.TestCase):
         self.no_ns_testfile = Path(__file__).parent / 'files' / 'testfile2.xml'
         self.output_dir = Path(__file__).parent / 'output'
         self.out_file = 'testoutput.json'
+        self.num_assets_to_extract = 8
+        self.num_sections_in_testfile = 3
 
         # create output dir
         if self.output_dir.exists():
@@ -68,45 +70,67 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertIsNotNone(doc)
 
     def test_extract(self):
-        num_assets_to_extract = 8
-        num_sections_in_testfile = 3
 
         self.bp.extract()
         sections = self.bp.get_sections()
-        self.assertEqual(len(sections), num_sections_in_testfile)
+        self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = self.bp.get_assets()
-        self.assertEqual(len(assets), num_assets_to_extract)
+        assets = assets['assets']
+        self.assertEqual(len(assets), self.num_assets_to_extract)
+
         # test that assets of each type were calculated
-        self.assertIn('primary_lamp', assets)
-        self.assertEqual(assets['primary_lamp'], 'T8')
-        self.assertEqual(assets['primary_principal_hvac_system_type'], 'Packaged Rooftop Air Conditioner')
-        self.assertEqual(assets['secondary_principal_hvac_system_type'], 'Packaged Terminal Air Conditioner')
-        self.assertEqual(assets['total_lighting_systems'], 2)
-        self.assertEqual(assets['average_heating_setpoint'], 71.5)
-        self.assertEqual(assets['oldest_installed_boiler'], '2010')
+        # sqft
+        lamp = next((item for item in assets if item["name"] == "Primary Lamp"), None)
+        self.assertEqual('Primary Lamp', lamp['name'])
+        self.assertEqual(lamp['value'], 'T8')
+        # num
+        cnt = next((item for item in assets if item["name"] == "Total Lighting Systems"), None)
+        self.assertEqual(cnt['value'], 2)
+        # avg_sqft
+        avgHeat = next((item for item in assets if item["name"] == "Average Heating Setpoint"), None)
+        self.assertEqual(avgHeat['value'], 71.5)
+        # age
+        age = next((item for item in assets if item["name"] == "Oldest Boiler"), None)
+        self.assertEqual(age['value'], '2010')
+
+    def test_set_asset_defs(self):
+        num_assets_to_extract = 9
+        test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'
+        self.bp.set_asset_defs_file(test_assets_file)
+        self.bp.extract()
+        assets = self.bp.get_assets()
+        assets = assets['assets']
+        print("ASSETS: {}".format(assets))
+        self.assertEqual(len(assets), num_assets_to_extract)
+        fake = next((item for item in assets if item["name"] == "Fake Testing Asset"), None)
+        self.assertEqual(fake['value'], '2010')
 
     def test_extract_no_ns(self):
         # test that assets from files without a namespace prefix can be extracted
         bp2 = BSyncProcessor(self.no_ns_testfile)
 
-        num_assets_to_extract = 8
-        num_sections_in_testfile = 3
-
         bp2.extract()
         sections = bp2.get_sections()
-        self.assertEqual(len(sections), num_sections_in_testfile)
+        self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = bp2.get_assets()
-        self.assertEqual(len(assets), num_assets_to_extract)
+        assets = assets['assets']
+        self.assertEqual(len(assets), self.num_assets_to_extract)
         # test that assets of each type were calculated
-        self.assertIn('primary_lamp', assets)
-        self.assertEqual(assets['primary_lamp'], 'T8')
-        self.assertEqual(assets['primary_principal_hvac_system_type'], 'Packaged Rooftop Air Conditioner')
-        self.assertEqual(assets['secondary_principal_hvac_system_type'], 'Packaged Terminal Air Conditioner')
-        self.assertEqual(assets['total_lighting_systems'], 2)
-        self.assertEqual(assets['average_heating_setpoint'], 71.5)
-        self.assertEqual(assets['oldest_installed_boiler'], '2010')
+        # sqft
+        lamp = next((item for item in assets if item["name"] == "Primary Lamp"), None)
+        self.assertEqual('Primary Lamp', lamp['name'])
+        self.assertEqual(lamp['value'], 'T8')
+        # num
+        cnt = next((item for item in assets if item["name"] == "Total Lighting Systems"), None)
+        self.assertEqual(cnt['value'], 2)
+        # avg_sqft
+        avgHeat = next((item for item in assets if item["name"] == "Average Heating Setpoint"), None)
+        self.assertEqual(avgHeat['value'], 71.5)
+        # age
+        age = next((item for item in assets if item["name"] == "Oldest Boiler"), None)
+        self.assertEqual(age['value'], '2010')
 
     def test_save(self):
         filename = self.output_dir / self.out_file
