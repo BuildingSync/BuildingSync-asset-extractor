@@ -12,7 +12,7 @@
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",
       "key": "LightingSystem",
       "name": "LightingSystems",
-      "export_name": "Total Lighting Systems",
+      "export_name": "Number of Lighting Systems",
       "type": "num",
       "units": null
     },
@@ -45,6 +45,14 @@
       "key": "Boiler",
       "name": "Boiler",
       "export_name": "Oldest Boiler",
+      "type": "age_oldest",
+      "units": null
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/Plants/HeatingPlants/HeatingPlant",
+      "key": "Boiler",
+      "name": "FakeTestingAsset",
+      "export_name": "Fake Testing Asset",
       "type": "age_oldest",
       "units": null
     }

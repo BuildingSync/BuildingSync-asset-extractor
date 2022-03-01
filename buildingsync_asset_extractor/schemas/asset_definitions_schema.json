@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "http://json-schema.org/building-asset-definitions/asset_definitions.json#",
+  "title": "BAE Asset Definitions",
+  "description": "BuildingSync Asset Extractor Asset Definitions Schema",
+  "type": "object",
+  "properties": {
+    "asset_definitions": {
+      "description": "Array of Asset Definitions to Extract from a BuildingSync File",
+      "type": "array",
+      "items": {
+        "ref": "#/definitions/asset"
+      }
+    }
+  },
+  "definitions": {
+    "asset": {
+      "description": "Asset to extract",
+      "type": "object",
+      "properties": {
+        "parent_path": {
+          "definition": "The XML path within which to look for a particular key. There could be multiple instances of the key within the path.",
+          "type": "string"
+        },
+        "key": {
+          "definition": "The key to look for within the specified path.",
+          "type": "string"
+        },
+        "name": {
+          "definition": "The name of the asset to extract. For UserDefinedField key, this should match the value of FieldName exactly.",
+          "type": "string"
+        },
+        "exported_name": {
+          "definition": "The name of the exported asset. This name will be exported as is except for assets of type 'sqft', in which case 'primary' and 'secondary' will prepend the name",
+          "type": "string"
+        },
+        "type": {
+          "definition": "The type of extraction to perform. Options are: 'age_oldest' to extract the age of the oldest specified asset, 'age_youngest' to extract the age of the most recent specified asset,'avg_sqft' to calculate a weighted average value of a specified asset, 'num' to count the number of specified assets found, and 'sqft' to extract primary and secondary value of a specified asset based on the floor area served.",
+          "type": "string",
+          "enum": [
+            "age_oldest",
+            "age_youngest",
+            "avg_sqft",
+            "num",
+            "sqft"
+          ]
+        },
+        "units": {
+          "definition": "Units associated with the specified asset.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

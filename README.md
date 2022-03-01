@@ -74,7 +74,7 @@ To run pre-commit against the files without calling git commit, then run the fol
 ```
 ### Testing
 
-poetry run pytest
+	poetry run pytest
 
 ## Releasing
 
@@ -92,3 +92,26 @@ If everything looks good, publish to pypi:
 ```bash
 poetry publish
 ```
+
+## Assets Definitions File
+
+This file is used to specify what assets to extract from a BuildingSync XML file. By default, the file found in `config/asset_definitions.json` is used, but a custom file can be specified with the `set_asset_defs_file` method in the `BSyncProcessor` class.
+
+There are currently 5 types of assets that can be extracted:
+
+1. sqft: Sqft assets take into account the floor area served by a specific asset and returns 'Primary' and 'Secondary' values.  For example: Primary HVAC System and Secondary HVAC System.
+
+1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value.  For example:  Average Heating Setpoint.
+
+1. num: Num assets count the total number of the specified asset found.  For example, Total number of lighting systems.
+
+1. age_oldest and age_youngest: These types return the oldest or youngest asset of a specific type.  For example: Oldest Boiler.
+
+The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
+
+
+## Extracted Assets File
+
+The schema for the extracted assets JSON file is in `schemas/extracted_assets_schema.json`.
+
+This file lists the extracted assets information in name, value, units triples.  Names will match the `export_name` listed in the asset_definitions JSON file, except for assets of type 'sqft', which will be prepended by 'Primary' and 'Secondary'.

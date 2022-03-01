@@ -37,6 +37,7 @@ import json
 import logging
 import re
 import sys
+from typing import Optional
 
 from lxml import etree
 
@@ -57,23 +58,31 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 
 # BuildingSync Schema location
 BUILDINGSYNC_SCHEMA_URL = "http://buildingsync.net/schemas/bedes-auc/2019"
+DEFAULT_ASSETS_DEF_FILE = 'buildingsync_asset_extractor/config/asset_definitions.json'
 
 
 # Processor class loads an XML file and extracts assets
 class BSyncProcessor:
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, asset_defs_filename: Optional[str] = None):
         """class instantiator
           :param filename: str, xml to parse
+          :param asset_defs_filename: Optional(str), asset definition file
         """
         # takes in a XML file to process
 
         self.filename = filename
-        self.config_filename = 'buildingsync_asset_extractor/config/asset_definitions.json'
+        # use default asset definitions file unless otherwise specified
+        self.config_filename = DEFAULT_ASSETS_DEF_FILE
+        if asset_defs_filename:
+            self.config_filename = asset_defs_filename
+
+        self.parse_asset_definitions()
+
         self.namespaces = {}
         self.doc = None
         self.sections = {}
-        self.asset_data = {}
+        self.asset_data = {'assets': []}
 
         # set namespaces
         self.key = None
@@ -81,6 +90,16 @@ class BSyncProcessor:
 
         # parse file
         self.parse_xml()
+
+    def parse_asset_definitions(self):
+        # parse asset definitions
+        with open(self.config_filename, mode='rb') as file:
+            self.asset_defs = json.load(file)
+
+    def set_asset_defs_file(self, asset_defs_filename: str):
+        # set and parse
+        self.config_filename = asset_defs_filename
+        self.parse_asset_definitions()
 
     def set_namespaces(self):
         """set namespaces from xml file"""
@@ -199,10 +218,7 @@ class BSyncProcessor:
         self.process_sections()
 
         # process json file
-        with open(self.config_filename, mode='rb') as file:
-            asset_defs = json.load(file)
-
-        for asset in asset_defs['definitions']:
+        for asset in self.asset_defs['asset_definitions']:
             logger.debug("...processing {}".format(asset['name']))
             if 'sqft' in asset['type']:
                 self.process_sqft_asset(asset, asset['type'])
@@ -212,6 +228,10 @@ class BSyncProcessor:
                 self.process_age_asset(asset, asset['type'])
 
         logger.debug('Assets: {}'.format(self.asset_data))
+
+    def export_asset(self, name: str, value, units: str):
+        """ export asset to asset_data """
+        self.asset_data['assets'].append({'name': name, 'value': value, 'units': units})
 
     def process_age_asset(self, asset: dict, process_type: str):
         """ retrieves the 'YearInstalled' element of an equipment type
@@ -228,21 +248,19 @@ class BSyncProcessor:
                 if years:
                     results.append(years[0].text)
 
-        # get seed name
-        keyname = self.clean_name(asset['name'])
-
         # process results
         value = None
         if process_type.endswith('oldest'):
             s_res = sorted(results, reverse=True)
             if s_res:
                 value = s_res[0]
-            self.asset_data['oldest_installed_' + keyname] = value
+
         elif process_type.endswith('youngest'):
             s_res = sorted(results)
             if s_res:
                 value = s_res
-            self.asset_data['youngest_installed_' + keyname] = value
+
+        self.export_asset(asset['export_name'], value, asset['units'])
 
     def process_count_asset(self, asset: dict):
         """ process count asset """
@@ -256,11 +274,10 @@ class BSyncProcessor:
                 total += len(matches)
                 found = 1
 
-        keyname = self.clean_name(asset['name'])
         # add null key if nothing found
         if not found:
             total = None
-        self.asset_data['total_' + keyname] = total
+        self.export_asset(asset['export_name'], total, asset['units'])
 
     def process_sqft_asset(self, asset: dict, process_type: str):
         """ process sqft asset
@@ -301,39 +318,37 @@ class BSyncProcessor:
         # store results
         logger.debug("process type: {}".format(process_type))
         if process_type == 'sqft':
-            self.format_sqft_results(asset['name'], results)
+            self.format_sqft_results(asset['export_name'], results, asset['units'])
         elif process_type == 'avg_sqft':
-            self.format_avg_sqft_results(asset['name'], results)
+            self.format_avg_sqft_results(asset['export_name'], results, asset['units'])
 
-    def format_sqft_results(self, name: str, results: list):
+    def format_sqft_results(self, name: str, results: list, units: str):
         """ return primary and secondary for top 2 results by sqft """
+        # NOTE: this is the only method that modifies the export name '
+        # by appending 'primary' and 'secondary'
 
         # filter and sort results
         filtered_res = {k: v for k, v in results.items() if v != 0}
         s_res = dict(sorted(filtered_res.items(), key=lambda kv: kv[1], reverse=True))
         logger.debug('sorted results with zeros removed: {}'.format(s_res))
 
-        # clean the seed keyname
-        keyname = self.clean_name(name)
         value = None
         value2 = None
 
         s_keys = list(s_res.keys())
         if s_keys:
             value = s_keys[0]
-        self.asset_data['primary_' + keyname] = value
+        self.export_asset('Primary ' + name, value, units)
         if (len(s_keys) > 1):
             value2 = s_keys[1]
-        self.asset_data['secondary_' + keyname] = value2
+        self.export_asset('Secondary ' + name, value2, units)
 
-    def format_avg_sqft_results(self, name: str, results: list):
+    def format_avg_sqft_results(self, name: str, results: list, units: str):
         """ weighted average of results """
 
         # in this case the result keys will convert to numbers
         # to calculate the weighted average
 
-        # clean the seed keyname
-        keyname = self.clean_name(name)
         total = None
 
         if results:
@@ -345,7 +360,7 @@ class BSyncProcessor:
             total = running_sum / total_sqft
 
         # add to assets
-        self.asset_data[keyname] = total
+        self.export_asset(name, total, units)
 
     def find_udf_values(self, matches: list, name: str):
         """ processes a list of UDF matches
