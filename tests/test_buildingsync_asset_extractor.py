@@ -35,7 +35,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 import unittest
 from pathlib import Path
-from shutil import rmtree
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
@@ -46,13 +45,12 @@ class TestBSyncProcessor(unittest.TestCase):
         self.no_ns_testfile = Path(__file__).parent / 'files' / 'testfile2.xml'
         self.output_dir = Path(__file__).parent / 'output'
         self.out_file = 'testoutput.json'
+        self.out_file_2 = 'testoutput_2.json'
         self.num_assets_to_extract = 8
         self.num_sections_in_testfile = 3
 
         # create output dir
-        if self.output_dir.exists():
-            rmtree(self.output_dir)
-        self.output_dir.mkdir(parents=True)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         print("TESTFILE: {}".format(self.testfile))
         self.bp = BSyncProcessor(self.testfile)
@@ -66,6 +64,9 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertIsNotNone(doc)
 
     def test_extract(self):
+        filename = self.output_dir / self.out_file_2
+        if filename.exists():
+            filename.unlink()
 
         self.bp.extract()
         sections = self.bp.get_sections()
@@ -89,6 +90,9 @@ class TestBSyncProcessor(unittest.TestCase):
         # age
         age = next((item for item in assets if item["name"] == "Oldest Boiler"), None)
         self.assertEqual(age['value'], '2010')
+
+        filename = self.output_dir / self.out_file_2
+        self.bp.save(filename)
 
     def test_set_asset_defs(self):
         num_assets_to_extract = 9
@@ -130,5 +134,7 @@ class TestBSyncProcessor(unittest.TestCase):
 
     def test_save(self):
         filename = self.output_dir / self.out_file
+        if filename.exists():
+            filename.unlink()
         self.bp.save(filename)
         self.assertTrue(filename.exists())
