@@ -35,11 +35,11 @@
           "type": "string"
         },
         "type": {
-          "definition": "The type of extraction to perform. Options are: 'age_oldest' to extract the age of the oldest specified asset, 'age_youngest' to extract the age of the most recent specified asset,'avg_sqft' to calculate a weighted average value of a specified asset, 'num' to count the number of specified assets found, and 'sqft' to extract primary and secondary value of a specified asset based on the floor area served.",
+          "definition": "The type of extraction to perform. Options are: 'age_oldest' to extract the age of the oldest specified asset, 'age_newest' to extract the age of the most recent specified asset,'avg_sqft' to calculate a weighted average value of a specified asset, 'num' to count the number of specified assets found, and 'sqft' to extract primary and secondary value of a specified asset based on the floor area served.",
           "type": "string",
           "enum": [
             "age_oldest",
-            "age_youngest",
+            "age_newest",
             "avg_sqft",
             "num",
             "sqft"

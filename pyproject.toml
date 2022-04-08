@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "buildingsync-asset-extractor"
-version = "0.1.0"
+version = "0.1.1"
 description = "BuildingSync Asset Extractor (BAE)"
 authors = ["Katherine Fleming <katherine.fleming@nrel.gov>"]
 license = "BSD4"

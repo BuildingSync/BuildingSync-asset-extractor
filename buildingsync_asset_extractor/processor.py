@@ -235,7 +235,7 @@ class BSyncProcessor:
 
     def process_age_asset(self, asset: dict, process_type: str):
         """ retrieves the 'YearInstalled' element of an equipment type
-            returns either the oldest or youngest, as specified.
+            returns either the oldest or newest, as specified.
         """
         results = []
         items = self.xp(self.doc, asset['parent_path'])
@@ -255,7 +255,7 @@ class BSyncProcessor:
             if s_res:
                 value = s_res[0]
 
-        elif process_type.endswith('youngest'):
+        elif process_type.endswith('newest'):
             s_res = sorted(results)
             if s_res:
                 value = s_res

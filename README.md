@@ -37,7 +37,7 @@ The pre-importer will identify assets defined in the `asset_definitions.json` fi
 
 1. `avg_sqft`. The avg_sqft method will return a weighted average value for all assets of the specified type found based on the area they serve.
 
-1. `age_oldest` and `age_youngest`. The age method will retrieve the 'YearInstalled' element of a specified equipment type and return either the oldest or youngest, as specified.
+1. `age_oldest` and `age_newest`. The age method will retrieve the 'YearInstalled' element of a specified equipment type and return either the oldest or newest, as specified.
 
 To test usage:
 
@@ -53,7 +53,28 @@ This will extract assets from `tests/files/testfile.xml` and save the results to
 
 ## TODO
 1. thermal zones: when spaces are listed within them with spaces (or multiple thermal zones), this would change the average setpoint calculations. Is this an exception or a normal case to handle?
-1. How to handle User Defined Fields
+
+## Assets Definitions File
+
+This file is used to specify what assets to extract from a BuildingSync XML file. By default, the file found in `config/asset_definitions.json` is used, but a custom file can be specified with the `set_asset_defs_file` method in the `BSyncProcessor` class.
+
+There are currently 5 types of assets that can be extracted:
+
+1. sqft: Sqft assets take into account the floor area served by a specific asset and returns 'Primary' and 'Secondary' values.  For example: Primary HVAC System and Secondary HVAC System.
+
+1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value.  For example:  Average Heating Setpoint.
+
+1. num: Num assets count the total number of the specified asset found.  For example, Total number of lighting systems.
+
+1. age_oldest and age_newest: These types return the oldest or newest asset of a specific type.  For example: Oldest Boiler.
+
+The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
+
+## Extracted Assets File
+
+The schema for the extracted assets JSON file is in `schemas/extracted_assets_schema.json`.
+
+This file lists the extracted assets information in name, value, units triples.  Names will match the `export_name` listed in the asset_definitions JSON file, except for assets of type 'sqft', which will be prepended by 'Primary' and 'Secondary'.
 
 ## Developing
 
@@ -93,25 +114,8 @@ If everything looks good, publish to pypi:
 poetry publish
 ```
 
-## Assets Definitions File
+If you have environment variables setup for PYPI token username and password:
 
-This file is used to specify what assets to extract from a BuildingSync XML file. By default, the file found in `config/asset_definitions.json` is used, but a custom file can be specified with the `set_asset_defs_file` method in the `BSyncProcessor` class.
-
-There are currently 5 types of assets that can be extracted:
-
-1. sqft: Sqft assets take into account the floor area served by a specific asset and returns 'Primary' and 'Secondary' values.  For example: Primary HVAC System and Secondary HVAC System.
-
-1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value.  For example:  Average Heating Setpoint.
-
-1. num: Num assets count the total number of the specified asset found.  For example, Total number of lighting systems.
-
-1. age_oldest and age_youngest: These types return the oldest or youngest asset of a specific type.  For example: Oldest Boiler.
-
-The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
-
-
-## Extracted Assets File
-
-The schema for the extracted assets JSON file is in `schemas/extracted_assets_schema.json`.
-
-This file lists the extracted assets information in name, value, units triples.  Names will match the `export_name` listed in the asset_definitions JSON file, except for assets of type 'sqft', which will be prepended by 'Primary' and 'Secondary'.
+```bash
+poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
+```

@@ -37,7 +37,6 @@ import unittest
 from pathlib import Path
 from shutil import rmtree
 
-from buildingsync_asset_extractor import __version__
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
 
@@ -57,9 +56,6 @@ class TestBSyncProcessor(unittest.TestCase):
 
         print("TESTFILE: {}".format(self.testfile))
         self.bp = BSyncProcessor(self.testfile)
-
-    def test_version(self):
-        assert __version__ == '0.1.0'
 
     def test_initialize_and_parse(self):
         ns = self.bp.get_namespaces()
