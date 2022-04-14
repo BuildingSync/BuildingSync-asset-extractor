@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.1.2
+
+Fix access to default asset_definitions.json file
+
 ## Version 0.1.1
 
 Changes to output structure and schema

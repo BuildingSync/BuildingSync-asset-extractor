@@ -39,6 +39,7 @@ import re
 import sys
 from typing import Optional
 
+from importlib_resources import files
 from lxml import etree
 
 # Gets or creates a logger
@@ -58,7 +59,7 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 
 # BuildingSync Schema location
 BUILDINGSYNC_SCHEMA_URL = "http://buildingsync.net/schemas/bedes-auc/2019"
-DEFAULT_ASSETS_DEF_FILE = 'buildingsync_asset_extractor/config/asset_definitions.json'
+DEFAULT_ASSETS_DEF_FILE = 'asset_definitions.json'  # in package's config directory
 
 
 # Processor class loads an XML file and extracts assets
@@ -67,17 +68,24 @@ class BSyncProcessor:
     def __init__(self, filename: str, asset_defs_filename: Optional[str] = None):
         """class instantiator
           :param filename: str, xml to parse
-          :param asset_defs_filename: Optional(str), asset definition file
+          :param asset_defs_filename: Optional(str), asset definition abs filepath
         """
         # takes in a XML file to process
 
         self.filename = filename
+
         # use default asset definitions file unless otherwise specified
-        self.config_filename = DEFAULT_ASSETS_DEF_FILE
+
         if asset_defs_filename:
             self.config_filename = asset_defs_filename
-
-        self.parse_asset_definitions()
+            # open abs path
+            with open(self.config_filename, mode='rb') as file:
+                self.asset_defs = json.load(file)
+        else:
+            self.config_filename = DEFAULT_ASSETS_DEF_FILE
+            # open with importlib.resources
+            file = files('buildingsync_asset_extractor.config').joinpath(self.config_filename).read_text()
+            self.asset_defs = json.loads(file)
 
         self.namespaces = {}
         self.doc = None
@@ -91,15 +99,11 @@ class BSyncProcessor:
         # parse file
         self.parse_xml()
 
-    def parse_asset_definitions(self):
-        # parse asset definitions
-        with open(self.config_filename, mode='rb') as file:
-            self.asset_defs = json.load(file)
-
     def set_asset_defs_file(self, asset_defs_filename: str):
         # set and parse
         self.config_filename = asset_defs_filename
-        self.parse_asset_definitions()
+        with open(self.config_filename, mode='rb') as file:
+            self.asset_defs = json.load(file)
 
     def set_namespaces(self):
         """set namespaces from xml file"""
