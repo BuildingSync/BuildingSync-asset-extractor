@@ -148,7 +148,7 @@ class BSyncProcessor:
 
     def get_assets(self):
         """ return asset data """
-        return self.asset_data
+        return self.asset_data['assets']
 
     def save(self, filename: str):
         """ save assets data to JSON file

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.1.3
+
+Modify assets array returned from get_assets()
+
 ## Version 0.1.2
 
 Fix access to default asset_definitions.json file
