@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.1.5
+
+Adding class method for accessing default asset definitions
+
 ## Version 0.1.4
 
 - Modify asset definitions array returned form get_asset_defs()

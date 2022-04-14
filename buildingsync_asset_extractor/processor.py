@@ -440,3 +440,9 @@ class BSyncProcessor:
                     sqft += float(val[0].text)
 
         return sqft
+
+    @classmethod
+    def get_default_asset_defs(cls):
+        assets_defs_filename = DEFAULT_ASSETS_DEF_FILE
+        file = files('buildingsync_asset_extractor.config').joinpath(assets_defs_filename).read_text()
+        return json.loads(file)['asset_definitions']
