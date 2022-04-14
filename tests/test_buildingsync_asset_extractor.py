@@ -63,6 +63,10 @@ class TestBSyncProcessor(unittest.TestCase):
         doc = self.bp.get_doc()
         self.assertIsNotNone(doc)
 
+    def test_return_asset_definitions(self):
+        defs = self.bp.get_asset_defs()
+        self.assertEqual(len(defs), 6)
+
     def test_extract(self):
         filename = self.output_dir / self.out_file_2
         if filename.exists():

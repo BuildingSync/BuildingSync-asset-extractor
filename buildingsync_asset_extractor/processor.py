@@ -46,10 +46,10 @@ from lxml import etree
 logger = logging.getLogger(__name__)
 
 # set log level
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # define file handler and set formatter
-file_handler = logging.FileHandler('logfile.log')
+file_handler = logging.FileHandler('bae_logfile.log')
 formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
 file_handler.setFormatter(formatter)
 
@@ -80,12 +80,12 @@ class BSyncProcessor:
             self.config_filename = asset_defs_filename
             # open abs path
             with open(self.config_filename, mode='rb') as file:
-                self.asset_defs = json.load(file)
+                self.asset_defs = json.load(file)['asset_definitions']
         else:
             self.config_filename = DEFAULT_ASSETS_DEF_FILE
             # open with importlib.resources
             file = files('buildingsync_asset_extractor.config').joinpath(self.config_filename).read_text()
-            self.asset_defs = json.loads(file)
+            self.asset_defs = json.loads(file)['asset_definitions']
 
         self.namespaces = {}
         self.doc = None
@@ -103,7 +103,11 @@ class BSyncProcessor:
         # set and parse
         self.config_filename = asset_defs_filename
         with open(self.config_filename, mode='rb') as file:
-            self.asset_defs = json.load(file)
+            self.asset_defs = json.load(file)['asset_definitions']
+
+    def get_asset_defs(self):
+        """ return asset definitions array """
+        return self.asset_defs
 
     def set_namespaces(self):
         """set namespaces from xml file"""
@@ -222,7 +226,7 @@ class BSyncProcessor:
         self.process_sections()
 
         # process json file
-        for asset in self.asset_defs['asset_definitions']:
+        for asset in self.asset_defs:
             logger.debug("...processing {}".format(asset['name']))
             if 'sqft' in asset['type']:
                 self.process_sqft_asset(asset, asset['type'])

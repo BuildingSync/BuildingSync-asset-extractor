@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 0.1.4
+
+- Modify asset definitions array returned form get_asset_defs()
+- Set logger default level to info
+
 ## Version 0.1.3
 
 Modify assets array returned from get_assets()
