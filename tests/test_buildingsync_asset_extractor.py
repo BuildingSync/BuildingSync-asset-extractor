@@ -63,6 +63,10 @@ class TestBSyncProcessor(unittest.TestCase):
         doc = self.bp.get_doc()
         self.assertIsNotNone(doc)
 
+    def test_return_asset_definitions(self):
+        defs = self.bp.get_asset_defs()
+        self.assertEqual(len(defs), 6)
+
     def test_extract(self):
         filename = self.output_dir / self.out_file_2
         if filename.exists():
@@ -73,7 +77,6 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = self.bp.get_assets()
-        assets = assets['assets']
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
         # test that assets of each type were calculated
@@ -100,7 +103,6 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp.set_asset_defs_file(test_assets_file)
         self.bp.extract()
         assets = self.bp.get_assets()
-        assets = assets['assets']
         print("ASSETS: {}".format(assets))
         self.assertEqual(len(assets), num_assets_to_extract)
         fake = next((item for item in assets if item["name"] == "Fake Testing Asset"), None)
@@ -115,7 +117,6 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = bp2.get_assets()
-        assets = assets['assets']
         self.assertEqual(len(assets), self.num_assets_to_extract)
         # test that assets of each type were calculated
         # sqft
