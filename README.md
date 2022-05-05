@@ -47,6 +47,16 @@ To test usage:
 
 This will extract assets from `tests/files/testfile.xml` and save the results to `assets_output.json`
 
+There are 2 methods of initializing the Processor: with either a filename or data
+
+```bash
+bp = BSyncProcessor(filename=filename)
+```
+
+```bash
+bp = BSyncProcessor(data=file_data)
+```
+
 ## Assumptions
 1. Assuming 1 building per file
 1. Assuming sqft method uses "Conditioned" floor area for calculations. If not present, uses "Gross"

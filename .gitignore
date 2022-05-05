@@ -132,4 +132,5 @@ dmypy.json
 # test files
 *.log
 assets_output.json
+assets_output2.json
 output/
