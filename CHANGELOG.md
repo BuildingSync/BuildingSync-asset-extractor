@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 0.1.7
+
+Update constructor to accept a filename or direct xml data
+
+## Version 0.1.6
+
+Fix logger
+
 ## Version 0.1.5
 
 Adding class method for accessing default asset definitions

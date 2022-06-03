@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import json
 import logging
 import re
-import sys
+from io import BytesIO
 from typing import Optional
 
 from importlib_resources import files
@@ -48,15 +48,6 @@ logger = logging.getLogger(__name__)
 # set log level
 logger.setLevel(logging.INFO)
 
-# define file handler and set formatter
-file_handler = logging.FileHandler('bae_logfile.log')
-formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
-file_handler.setFormatter(formatter)
-
-# add file handler to logger
-logger.addHandler(file_handler)
-logger.addHandler(logging.StreamHandler(sys.stdout))
-
 # BuildingSync Schema location
 BUILDINGSYNC_SCHEMA_URL = "http://buildingsync.net/schemas/bedes-auc/2019"
 DEFAULT_ASSETS_DEF_FILE = 'asset_definitions.json'  # in package's config directory
@@ -65,17 +56,29 @@ DEFAULT_ASSETS_DEF_FILE = 'asset_definitions.json'  # in package's config direct
 # Processor class loads an XML file and extracts assets
 class BSyncProcessor:
 
-    def __init__(self, filename: str, asset_defs_filename: Optional[str] = None):
+    def __init__(self, filename: Optional[str] = None, data: Optional[str] = None, asset_defs_filename: Optional[str] = None):
         """class instantiator
           :param filename: str, xml to parse
           :param asset_defs_filename: Optional(str), asset definition abs filepath
         """
         # takes in a XML file to process
+        if filename:
+            logger.debug("Filename passed into BAE constructor")
+            self.filename = filename
+            with open(self.filename, mode='rb') as file:
+                self.file_data = file.read()
+        elif data:
+            logger.debug("Data passed into BAE constructor")
+            self.file_data = data
+        else:
+            # no data. handle
+            raise "You must provide either a filename or xml data"
+        self.parse_xml()
 
-        self.filename = filename
+        self.initialize_vars(asset_defs_filename)
 
+    def initialize_vars(self, asset_defs_filename):
         # use default asset definitions file unless otherwise specified
-
         if asset_defs_filename:
             self.config_filename = asset_defs_filename
             # open abs path
@@ -88,16 +91,12 @@ class BSyncProcessor:
             self.asset_defs = json.loads(file)['asset_definitions']
 
         self.namespaces = {}
-        self.doc = None
         self.sections = {}
         self.asset_data = {'assets': []}
 
         # set namespaces
         self.key = None
         self.set_namespaces()
-
-        # parse file
-        self.parse_xml()
 
     def set_asset_defs_file(self, asset_defs_filename: str):
         # set and parse
@@ -112,31 +111,31 @@ class BSyncProcessor:
     def set_namespaces(self):
         """set namespaces from xml file"""
 
-        with open(self.filename, mode='rb') as file:
+        context = etree.XML(self.file_data)
+        namespaces = context.xpath('//namespace::*')
 
-            namespaces = {node[0]: node[1] for _, node in etree.iterparse(file, events=['start-ns'])}
+        for key, value in namespaces:
 
-            for key, value in namespaces.items():
-                # only register the namespace that matches BUILDGINSYNC_SCHEMA_URL
-                # NOTE: lxml/xpath is strange: if no named namespace, you have assign it a default
-                # otherwise to matches are ever found in the schema with the xpath() method
-                if value == BUILDINGSYNC_SCHEMA_URL:
-                    self.key = key
-                    if self.key != '':
-                        self.namespaces[key] = value
-                        etree.register_namespace(key, value)
-                        # also add the colon
-                        self.key = self.key + ":"
-                    else:
-                        # make up a prefix since it's blank and assign it the key
-                        key = 'auc'
-                        self.namespaces[key] = value
-                        etree.register_namespace(key, value)
-                        self.key = 'auc:'
-
-            logger.debug("Namespaces set to: {}".format(self.namespaces))
-            if not namespaces:
-                raise Exception('No namespace was found in this file. Please modify your file and try again.')
+            # only register the namespace that matches BUILDGINSYNC_SCHEMA_URL
+            # NOTE: lxml/xpath is strange: if no named namespace, you have assign it a default
+            # otherwise to matches are ever found in the schema with the xpath() method
+            if value == BUILDINGSYNC_SCHEMA_URL:
+                self.key = key
+                if self.key != '' and self.key is not None:
+                    self.namespaces[key] = value
+                    etree.register_namespace(key, value)
+                    # also add the colon
+                    self.key = self.key + ":"
+                else:
+                    # make up a prefix since it's blank and assign it the key
+                    key = 'auc'
+                    self.namespaces[key] = value
+                    etree.register_namespace(key, value)
+                    self.key = 'auc:'
+                break
+        logger.debug("Namespaces set to: {}".format(self.namespaces))
+        if not namespaces:
+            raise Exception('No namespace was found in this file. Please modify your file and try again.')
 
     def get_namespaces(self):
         """ return namespaces """
@@ -165,8 +164,7 @@ class BSyncProcessor:
 
     def parse_xml(self):
         """parse xml file"""
-        with open(self.filename, mode='rb') as file:
-            self.doc = etree.parse(file)
+        self.doc = etree.parse(BytesIO(self.file_data))
 
     def convert_to_ns(self, path: str):
         """ modify the path to include the namespace (ns) prefix specified in the xml file
@@ -400,7 +398,6 @@ class BSyncProcessor:
         Returns results of xpath operation
         """
         newpath = self.convert_to_ns(path)
-        # print("newpath: {}".format(newpath))
         return element.xpath(newpath, namespaces=self.namespaces)
 
     def retrieve_sqft(self, section_id: str):

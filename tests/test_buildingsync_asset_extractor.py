@@ -97,6 +97,23 @@ class TestBSyncProcessor(unittest.TestCase):
         filename = self.output_dir / self.out_file_2
         self.bp.save(filename)
 
+    def test_extract_data(self):
+        self.testfile = Path(__file__).parent / 'files' / 'testfile.xml'
+        with open(self.testfile, mode='rb') as file:
+            file_data = file.read()
+
+        self.bp2 = BSyncProcessor(data=file_data)
+        self.bp2.extract()
+        sections = self.bp2.get_sections()
+        self.assertEqual(len(sections), self.num_sections_in_testfile)
+
+        assets = self.bp2.get_assets()
+        self.assertEqual(len(assets), self.num_assets_to_extract)
+
+        # test 1 asset
+        age = next((item for item in assets if item["name"] == "Oldest Boiler"), None)
+        self.assertEqual(age['value'], '2010')
+
     def test_set_asset_defs(self):
         num_assets_to_extract = 9
         test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'

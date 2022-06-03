@@ -33,14 +33,24 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+import os
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
-filename = 'tests/files/testfile.xml'
-out_file = 'assets_output.json'
+filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/testfile.xml')
+out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output.json')
+out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output2.json')
 
 print("filename: {}".format(filename))
 
-bp = BSyncProcessor(filename)
+bp = BSyncProcessor(filename=filename)
 bp.extract()
 bp.save(out_file)
+
+# does it work when already loaded?
+with open(filename, mode='rb') as file:
+    file_data = file.read()
+
+bp = BSyncProcessor(data=file_data)
+bp.extract()
+bp.save(out_file2)
