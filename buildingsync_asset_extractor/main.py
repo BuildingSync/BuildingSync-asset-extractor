@@ -37,13 +37,13 @@ import os
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
-filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/testfile.xml')
+filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/completetest.xml')
 out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output.json')
 out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output2.json')
 
 print("filename: {}".format(filename))
 
-bp = BSyncProcessor(filename=filename)
+bp = BSyncProcessor(filename=filename, logger_level='DEBUG')
 bp.extract()
 bp.save(out_file)
 

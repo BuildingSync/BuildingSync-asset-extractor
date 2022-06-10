@@ -37,7 +37,9 @@ The pre-importer will identify assets defined in the `asset_definitions.json` fi
 
 1. `avg_sqft`. The avg_sqft method will return a weighted average value for all assets of the specified type found based on the area they serve.
 
-1. `age_oldest` and `age_newest`. The age method will retrieve the 'YearInstalled' element of a specified equipment type and return either the oldest or newest, as specified.
+1. `age_oldest`, `age_newest`, `age_average`. The age method will retrieve the 'YearOfManufacture' (or 'YearInstalled' if not present) element of a specified equipment type and return either the oldest or newest, or average age (year) as specified. Average age is calculated by a weighted average using the following (in order): capacity, served space area, regular average.
+
+1. `custom`. Use this method for particular asset that do not fit in the other categories; i.e. Heating Efficiency. Note that a dedicated method may need to be written to support this type of asset.
 
 To test usage:
 
@@ -76,7 +78,11 @@ There are currently 5 types of assets that can be extracted:
 
 1. num: Num assets count the total number of the specified asset found.  For example, Total number of lighting systems.
 
-1. age_oldest and age_newest: These types return the oldest or newest asset of a specific type.  For example: Oldest Boiler.
+1. age_oldest, age_newest, and age_average: These types return the oldest or newest asset, or average age of a specific type.  For example: Oldest Boiler.
+
+1. custom: For asset that need particular handling, such as Heating Efficiency. The current assets that have custom methods are:
+	- Heating System Efficiency
+	-
 
 The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
 

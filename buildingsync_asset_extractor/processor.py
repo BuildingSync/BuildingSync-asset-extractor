@@ -43,6 +43,7 @@ from importlib_resources import files
 from lxml import etree
 
 # Gets or creates a logger
+logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 # set log level
@@ -56,11 +57,21 @@ DEFAULT_ASSETS_DEF_FILE = 'asset_definitions.json'  # in package's config direct
 # Processor class loads an XML file and extracts assets
 class BSyncProcessor:
 
-    def __init__(self, filename: Optional[str] = None, data: Optional[str] = None, asset_defs_filename: Optional[str] = None):
+    def __init__(self,
+                 filename: Optional[str] = None,
+                 data: Optional[str] = None,
+                 asset_defs_filename: Optional[str] = None,
+                 logger_level: Optional[str] = 'INFO'):
         """class instantiator
           :param filename: str, xml to parse
           :param asset_defs_filename: Optional(str), asset definition abs filepath
         """
+        # set logger
+        ll = logging.INFO
+        if logger_level == 'DEBUG':
+            ll = logging.DEBUG
+        logger.setLevel(ll)
+
         # takes in a XML file to process
         if filename:
             logger.debug("Filename passed into BAE constructor")
@@ -93,6 +104,8 @@ class BSyncProcessor:
         self.namespaces = {}
         self.sections = {}
         self.asset_data = {'assets': []}
+        # TODO: do we want to round answers?
+        # self.round_digits = 4
 
         # set namespaces
         self.key = None
@@ -232,6 +245,8 @@ class BSyncProcessor:
                 self.process_count_asset(asset)
             elif 'age' in asset['type']:
                 self.process_age_asset(asset, asset['type'])
+            elif 'custom' in asset['type']:
+                self.process_custom_asset(asset)
 
         logger.debug('Assets: {}'.format(self.asset_data))
 
@@ -240,33 +255,95 @@ class BSyncProcessor:
         self.asset_data['assets'].append({'name': name, 'value': value, 'units': units})
 
     def process_age_asset(self, asset: dict, process_type: str):
-        """ retrieves the 'YearInstalled' element of an equipment type
+        """ retrieves, in order, either 'YearOfManufacture' or YearInstalled' element of an equipment type
             returns either the oldest or newest, as specified.
+            for weighted average processing order: 1) installed power (not implemented), 2) capacity, 3) served space area
         """
         results = []
         items = self.xp(self.doc, asset['parent_path'])
 
         for item in items:
             matches = self.xp(item, './/' + asset['key'])
-            if matches:
-                # found a match for asset
-                years = self.xp(item, './/YearInstalled')
-                if years:
-                    results.append(years[0].text)
+            res = {}
+            # TODO: refactor to add 2 paths: one for hvac (using hvac_search) and one straight
+            for m in matches:
+                # priority 1: YearOfManufacture
+                years = self.xp(m, './/YearOfManufacture')
+                if len(years) == 0:
+                    # priority 2: YearInstalled
+                    years = self.xp(m, './/YearInstalled')
 
+                if len(years) == 0:
+                    # cheat for HeatingSource / CoolingSource Equipment: can find plantID and look for
+                    # YearInstalled there
+                    if m.tag.endswith('HeatingSource') or m.tag.endswith('CoolingSource'):
+                        plant = self.get_plant(m)
+                        years = self.xp(plant, './/YearInstalled')
+
+                if years:
+                    match = years[0]
+                    res['value'] = match.text
+                    if process_type.endswith('average'):
+                        # check for capacity
+                        cap, cap_units = self.get_capacity(match)
+                        res['cap'] = cap
+                        res['cap_units'] = cap_units
+                        # check for sqft
+                        sqft_total = 0
+                        # EEK this will vary wildly
+                        hvac_system = item.getparent().getparent().getparent()
+                        linked_sections = self.xp(hvac_system, './/' + 'LinkedSectionID')
+                        for ls in linked_sections:
+                            sqft_total += self.compute_sqft(ls)
+                        res['sqft'] = sqft_total
+
+                    results.append(res)
+        print(f"AGE RESULTS: {results}")
+        self.format_age_results(asset['export_name'], results, process_type)
+
+    def get_plant(self, item):
+        # TODO: condenser plant?
+        plant = None
+        the_type = self.get_heat_cool_type(item.tag)
+        plantIDmatch = self.xp(item, './/' + 'Source' + the_type + 'PlantID')
+        if len(plantIDmatch) > 0:
+            # print(f"found a plant ID match: {plantIDmatch[0].attrib['IDref']}")
+            plants = self.xp(self.doc, "//" + the_type + "Plant[@ID = '" + plantIDmatch[0].attrib['IDref'] + "']")
+            # print(f"found {len(plants)} plant matches!")
+            if len(plants) > 0:
+                plant = plants[0]
+
+        return plant
+
+    def get_heat_cool_type(self, asset):
+        the_type = None
+        if 'Heating' in asset:
+            the_type = 'Heating'
+        if 'Cooling' in asset:
+            the_type = 'Cooling'
+        return the_type
+
+    def format_age_results(self, name: str, results: list, process_type):
         # process results
         value = None
         if process_type.endswith('oldest'):
-            s_res = sorted(results, reverse=True)
+            res_vals = [sub['value'] for sub in results if sub['value']]
+            print(f"res_vals: {res_vals}")
+            s_res = sorted(res_vals)
+            print(f"s_res: {s_res}")
             if s_res:
                 value = s_res[0]
+            self.export_asset(name, value, None)
 
         elif process_type.endswith('newest'):
-            s_res = sorted(results)
+            res_vals = [sub['value'] for sub in results if sub['value']]
+            s_res = sorted(res_vals, reverse=True)
             if s_res:
                 value = s_res
+            self.export_asset(name, value, None)
 
-        self.export_asset(asset['export_name'], value, asset['units'])
+        elif process_type.endswith('average'):
+            self.format_custom_avg_results(name, results)
 
     def process_count_asset(self, asset: dict):
         """ process count asset """
@@ -328,6 +405,254 @@ class BSyncProcessor:
         elif process_type == 'avg_sqft':
             self.format_avg_sqft_results(asset['export_name'], results, asset['units'])
 
+    def process_custom_asset(self, asset: dict):
+        # use this to make a 'switch statement for all custom assets'
+        # making this super explicit for now. TODO: see if we can generalize
+        custom_assets = {
+            'AnnualHeatingEfficiency': lambda: self.process_hvac(asset),
+            'PrimaryFuel': lambda: self.process_hvac(asset)
+        }
+
+        # these will get formated with the 80% function (rest will use custom avg)
+        assets_80_percent = ['PrimaryFuel']
+
+        results = custom_assets.get(asset['name'], lambda: "Invalid Arg")()
+
+        if asset['name'] in assets_80_percent:
+            self.format_80_percent_results(asset['export_name'], results)
+        else:
+            self.format_custom_avg_results(asset['export_name'], results)
+
+    def hvac_search(self, item: dict, asset: dict):
+        """ Perform a 2-level search
+            1. First look in HeatingAndCoolingSystems/<type>Sources/<type>Source
+            2. If not there, look for a plant ID and look in there
+            Can be reused for several assets
+        """
+        # method 1: find within HeatingAndCoolingSystems
+        matches = self.xp(item, './/' + asset['key'])
+        # expects 0 or 1 match
+        # print(f"number of matches for {item}: {len(matches)}")
+        if len(matches) == 0:
+            # method 2: follow Source<type>PlantID and look in there
+            plant = self.get_plant(item)
+            if plant:
+                # now get asset key within this element
+                matches = self.xp(plant, './/' + asset['key'])
+
+        return matches
+
+    def process_hvac(self, asset: dict):
+        """ Process Heating/Cooling System Assets
+            order to check in:
+            3) SPECIAL CASE - Efficiency: check under HeatingSource/HeatingSourceType/Furnace
+            and use ThermalEfficiency with units of "Thermal Efficiency"
+
+        """
+        results = []
+        matches = []
+        items = self.xp(self.doc, asset['parent_path'])
+
+        for item in items:
+
+            matches = self.hvac_search(item, asset)
+            # special case for Efficiency (3rd priority)
+            if 'Efficiency' in asset['name'] and len(matches) == 0:
+                # method 3: look for ThermalEfficiency under HeatingSourceType/<type>
+                matches = self.xp(item, './/' + 'ThermalEfficiency')
+
+            # this should be same for all methods
+            for match in matches:
+                # print(f"match: {match}, text: {match.text}")
+                unit_match = self.xp(match.getparent(), './/' + asset['key'].replace('Value', 'Units'))
+                units = None
+                if len(unit_match) > 0:
+                    units = unit_match[0].text
+                elif 'ThermalEfficiency' in match.tag:
+                    units = "Thermal Efficiency"
+
+                # check for capacity
+                cap, cap_units = self.get_capacity(match)
+
+                # check sqft (LinkedPremises & LinkedSectionID should be 3 levels up in HVACSystem)
+                # TODO: only looking for LinkedSectionID for now (not LinkedBuilding)
+                sqft_total = 0
+                hvac_system = item.getparent().getparent().getparent()
+                linked_sections = self.xp(hvac_system, './/' + 'LinkedSectionID')
+                for ls in linked_sections:
+                    sqft_total += self.compute_sqft(ls)
+
+                results.append({'value': match.text, 'units': units, 'cap': cap, 'cap_units': cap_units, 'sqft': sqft_total})
+
+        logger.debug(f"RESULTS: {results}")
+        return results
+
+    def get_capacity(self, el: dict):
+        """ Capacity order:
+        1) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/Capacity and CapacityUnits
+        2) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/OutputCapacity (deprecation soon)
+        3) HVACSystem/HeatingPlants/HeatingPlant/<tech>/Capacity and CapacityUnits
+        4) HVACSystem/HeatingPlants/HeatingPlant/<tech>/OutputCapacity (deprecation soon)
+        """
+        cap = None
+        cap_units = None
+        path = el.getparent()
+        # for ThermalEfficiency, need to go up 3 levels
+        if 'ThermalEfficiency' in el.tag:
+            path = path.getparent().getparent()
+
+        # prefer Capacity over OutputCapacity as it will be deprecated
+        matches = self.xp(path, './/' + 'Capacity')
+        if len(matches) == 0:
+            matches = self.xp(path, './/' + 'OutputCapacity')
+        if matches:
+            # expects 0 or 1
+            for idx, match in enumerate(matches):
+                cap = match.text
+                unit_match = self.xp(path, './/' + 'CapacityUnits')
+                if len(unit_match) > 0:
+                    cap_units = unit_match[0].text
+                elif 'ThermalEfficiency' in el.tag:
+                    cap_units = 'Thermal Efficiency'
+        return cap, cap_units
+
+    def format_80_percent_results(self, name: str, results: list):
+        """ format 80% rule results
+            the "primary" type returned must at least serve 80% of the area by
+            1. Capacity
+            2. Served space area
+        """
+        if len(results) == 0:
+            # export None
+            self.export_asset(name, None, None)
+            return
+
+        values, capacities, cap_units, sqfts = self.remap_results(results)
+
+        if None not in capacities or len(set(cap_units) <= 1):
+            # capacity method
+            # add all capacities
+            # pick largest one and make sure it's 80% of total
+            found = 0
+            total = sum(capacities)
+            primaries = {}
+            for res in results:
+                if res['value'] not in primaries:
+                    primaries[res['value']] = 0
+                primaries[res['value']] += float(res['cap'])
+
+            for p in primaries:
+                if float(primaries[p])/total >= 0.8:
+                    # this fuel meets the 80% threshold by capacity
+                    found = 1
+                    self.export_asset(name, p, None)
+                    return
+
+            if found == 0:
+                # nothing matched this criteria, return 'Mixed'
+                self.export_asset(name, 'mixed', None)
+                return
+
+        if None not in sqfts:
+            # sqft method
+            total = sum(sqfts)
+            primaries = {}
+            found = 0
+            for res in results:
+                if res['value'] not in primaries:
+                    primaries[res['value']] = 0
+                primaries[res['value']] += res['sqft']
+
+            for p in primaries:
+                if float(primaries[p])/total >= 0.8:
+                    # this fuel meets the 80% threshold by capacity
+                    found = 1
+                    self.export_asset(name, p, None)
+                    return
+
+            if found == 0:
+                # nothing matched this criteria, return 'Mixed'
+                self.export_asset(name, 'mixed', None)
+                return
+
+        # still here? return unknown
+        self.export_asset(name, 'unknown', None)
+        return
+
+    def remap_results(self, results: list):
+        """ Remap results from a list of dictionaries to 4 lists """
+        try:
+            values = [sub['value'] if sub['value'] is None else float(sub['value']) for sub in results]
+        except ValueError:
+            values = [sub['value'] for sub in results]
+
+        capacities = [sub['cap'] if sub['cap'] is None else float(sub['cap']) for sub in results]
+        cap_units = [sub['cap_units'] for sub in results]
+        sqfts = [sub['sqft'] if sub['sqft'] is None else float(sub['sqft']) for sub in results]
+
+        return values, capacities, cap_units, sqfts
+
+    def format_custom_avg_results(self, name: str, results: list):
+        """ format weighted average
+            1. Ensure all units are the same
+            2. Attempt to calculate with installed power (NOT IMPLEMENTED)
+            3. Attempt to calculate with capacity (cap)
+            4. Attempt to calculate with served space area (sqrt)
+        """
+
+        if len(results) == 0:
+            # export None
+            self.export_asset(name, None, None)
+            return
+
+        # 1 - check units
+        units = None
+        if 'units' in results[0].keys():
+            units = results[0]['units']
+        for res in results:
+            if 'units' in res.keys() and res['units'] != units:
+                # export "mixed" since we can't convert units
+                self.export_asset(name, 'mixed', None)
+                return
+
+        values, capacities, cap_units, sqfts = self.remap_results(results)
+
+        # print(f"values: {values}")
+        # print(f"capacities: {capacities}")
+        # print(f"length: {len(set(cap_units)) <= 1}")
+
+        # 2 - capacity
+        # check that there are capacities for all and the units are all the same
+        if None not in capacities or len(set(cap_units) <= 1):
+            # capacity methods
+            cap_total = 0
+            eff_total = 0
+            for res in results:
+                cap_total = cap_total + float(res['cap'])
+                eff_total = eff_total + (float(res['value']) * float(res['cap']))
+            total = eff_total / cap_total
+
+            # special case for average age: take the floor since partial year doesn't make sense
+            if name.lower().endswith('age'):
+                total = int(total)
+
+            self.export_asset(name, total, units)
+            return
+
+        elif None not in sqfts:
+            # sqft methods
+            remapped_res = {sub['value']: sub['sqft'] for sub in results}
+            self.format_avg_sqft_results(name, remapped_res, units)
+            return
+        else:
+            # just average
+            total = sum(values)/len(values)
+            # special case for average age: take the floor since partial year doesn't make sense
+            if name.lower().endswith('age'):
+                total = int(total)
+            self.export_asset(name, total, units)
+            return
+
     def format_sqft_results(self, name: str, results: list, units: str):
         """ return primary and secondary for top 2 results by sqft """
         # NOTE: this is the only method that modifies the export name '
@@ -364,6 +689,10 @@ class BSyncProcessor:
             for k, v in results.items():
                 running_sum += float(k) * v
             total = running_sum / total_sqft
+
+        # special case for average age: take the floor since partial year doesn't make sense
+        if name.lower().endswith('age'):
+            total = int(total)
 
         # add to assets
         self.export_asset(name, total, units)
