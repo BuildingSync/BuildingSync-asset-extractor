@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.1.8
+
+Fix bug in section floor area type checking
+
 ## Version 0.1.7
 
 Update constructor to accept a filename or direct xml data
