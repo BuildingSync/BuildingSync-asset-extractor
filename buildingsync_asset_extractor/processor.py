@@ -405,11 +405,11 @@ class BSyncProcessor:
             assumes 'Conditioned' if it exists; otherwise uses the 'Gross' floor area
             returns square footage
         """
-        if self.sections[section_id] and self.sections[section_id]['areas']:
+        if section_id in self.sections and 'areas' in self.sections[section_id]:
             areas = self.sections[section_id]['areas']
-            if areas['Conditioned']:
+            if 'Conditioned' in areas:
                 return areas['Conditioned']
-            elif areas['Gross']:
+            elif 'Gross' in areas:
                 return areas['Gross']
 
         raise Exception('Error retrieving section sqft...No Conditioned area or Gross area found for section {}'.format(section_id))
