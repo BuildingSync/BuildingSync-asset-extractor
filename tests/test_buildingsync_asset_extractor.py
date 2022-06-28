@@ -80,7 +80,6 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = self.bp.get_assets()
-        print("ASSETS: {}".format(assets))
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
         # test that assets of each type were calculated
@@ -151,7 +150,6 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp.set_asset_defs_file(self.test_assets_file)
         self.bp.extract()
         assets = self.bp.get_assets()
-        print("ASSETS: {}".format(assets))
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
     def test_extract_no_ns(self):
@@ -165,7 +163,6 @@ class TestBSyncProcessor(unittest.TestCase):
         assets = self.bp2.get_assets()
         self.assertEqual(len(assets), self.num_assets_to_extract)
         # test that assets of each type were calculated
-        print(f"Assets166: {assets}")
         # num
         cnt = next((item for item in assets if item["name"] == "Number of Lighting Systems"), None)
         self.assertTrue(isinstance(cnt['value'], int))
