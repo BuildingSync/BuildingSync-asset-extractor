@@ -1581,7 +1581,7 @@ This example is configured to import and export with BuildingSync version 2.2.0.
                     </auc:Control>
                   </auc:Controls>
                   <auc:Location>Interior</auc:Location>
-                  <auc:YearInstalled>2000</auc:YearInstalled>
+                  <auc:YearInstalled>2005</auc:YearInstalled>
                   <auc:UserDefinedFields>
                     <auc:UserDefinedField>
                       <auc:FieldName>Annual Cooling Efficiency Units Is Not Applicable</auc:FieldName>
@@ -1869,6 +1869,7 @@ This example is configured to import and export with BuildingSync version 2.2.0.
                 </auc:Timer>
               </auc:Control>
             </auc:Controls>
+            <auc:YearInstalled>2010</auc:YearInstalled>
             <auc:LinkedPremises>
               <auc:Building>
                 <auc:LinkedBuildingID IDref="BuildingType-69928596381380"/>
@@ -1966,6 +1967,7 @@ This example is configured to import and export with BuildingSync version 2.2.0.
                 </auc:Timer>
               </auc:Control>
             </auc:Controls>
+            <auc:YearInstalled>1990</auc:YearInstalled>
             <auc:LinkedPremises>
               <auc:Building>
                 <auc:LinkedBuildingID IDref="BuildingType-69928596381380"/>
@@ -2127,7 +2129,7 @@ This example is configured to import and export with BuildingSync version 2.2.0.
             </auc:DomesticHotWaterType>
             <auc:WaterHeaterEfficiencyType>Thermal Efficiency</auc:WaterHeaterEfficiencyType>
             <auc:WaterHeaterEfficiency>60.0</auc:WaterHeaterEfficiency>
-            <auc:YearInstalled>2010</auc:YearInstalled>
+            <auc:YearInstalled>2008</auc:YearInstalled>
             <auc:PrimaryFuel>Electricity</auc:PrimaryFuel>
             <auc:Location>Closet</auc:Location>
             <auc:LinkedPremises>

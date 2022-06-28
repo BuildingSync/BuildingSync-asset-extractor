@@ -54,6 +54,7 @@ There are 2 methods of initializing the Processor: with either a filename or dat
 ```bash
 bp = BSyncProcessor(filename=filename)
 ```
+or
 
 ```bash
 bp = BSyncProcessor(data=file_data)
@@ -82,7 +83,10 @@ There are currently 5 types of assets that can be extracted:
 
 1. custom: For asset that need particular handling, such as Heating Efficiency. The current assets that have custom methods are:
 	- Heating System Efficiency
-	-
+	- Cooling System Efficiency
+	- Lighting System Efficiency
+	- Water Heater Efficiency
+	- Heating Fuel Type
 
 The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
 
