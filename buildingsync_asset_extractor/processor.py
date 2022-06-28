@@ -690,7 +690,7 @@ class BSyncProcessor:
 
         values, capacities, cap_units, sqfts = self.remap_results(results)
 
-        if None not in capacities or len(set(cap_units) <= 1):
+        if None not in capacities and len(set(cap_units)) <= 1:
             # capacity method
             # add all capacities
             # pick largest one and make sure it's 80% of total

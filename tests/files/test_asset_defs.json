@@ -74,7 +74,7 @@
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
       "key": "WaterHeaterEfficiency",
       "name": "WaterHeaterEfficiency",
-      "export_name": "Water Heater Efficiency",
+      "export_name": "Hot Water System Efficiency",
       "type": "custom"
     },
     {
@@ -90,6 +90,13 @@
       "name": "DomesticHotWaterSystem",
       "export_name": "Hot Water System Average Age",
       "type": "age_average"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
+      "key": "PrimaryFuel",
+      "name": "PrimaryFuel",
+      "export_name": "Hot Water System Fuel Type",
+      "type": "custom"
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",

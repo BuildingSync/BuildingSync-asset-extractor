@@ -47,7 +47,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.out_file = 'testoutput.json'
         self.out_file_2 = 'testoutput_2.json'
         self.test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'
-        self.num_assets_to_extract = 17
+        self.num_assets_to_extract = 18
         self.num_sections_in_testfile = 3
 
         # create output dir
@@ -108,8 +108,11 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(CSE['value'], 3.0)
         self.assertEqual(CSE['units'], 'COP')
 
-        WHE = next((item for item in assets if item["name"] == "Water Heater Efficiency"), None)
+        WHE = next((item for item in assets if item["name"] == "Hot Water System Efficiency"), None)
         self.assertEqual(WHE['value'], 'mixed')
+
+        WHFT = next((item for item in assets if item["name"] == "Hot Water System Fuel Type"), None)
+        self.assertEqual(WHFT['value'], 'mixed')
 
         # count
         cnt = next((item for item in assets if item["name"] == "Number of Lighting Systems"), None)
