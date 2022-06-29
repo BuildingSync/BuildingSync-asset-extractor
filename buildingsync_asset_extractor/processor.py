@@ -408,9 +408,9 @@ class BSyncProcessor:
             logger.warn(f"Custom Processing for {asset['name']} has not been implemented. Asset will be ignored.")
 
         if asset['name'] in assets_80_percent:
-            self.format_80_percent_results(asset['export_name'], results)
+            self.format_80_percent_results(asset['export_name'], results, name_of_units_field[asset['name']])
         elif asset['name'] in assets_lighting:
-            self.format_lighting_results(asset['export_name'], results)
+            self.format_lighting_results(asset['export_name'], results, 'W/ft2')
         else:
             self.format_custom_avg_results(asset['export_name'], results)
 
@@ -418,18 +418,20 @@ class BSyncProcessor:
         # TODO: condenser plant?
         plant = None
         the_type = self.get_heat_cool_type(item.tag)
-        plantIDmatch = self.xp(item, './/' + 'Source' + the_type + 'PlantID')
-        if len(plantIDmatch) > 0:
-            # print(f"found a plant ID match: {plantIDmatch[0].attrib['IDref']}")
-            plants = self.xp(self.doc, "//" + the_type + "Plant[@ID = '" + plantIDmatch[0].attrib['IDref'] + "']")
-            # print(f"found {len(plants)} plant matches!")
-            if len(plants) > 0:
-                plant = plants[0]
+        if the_type is not None:
+            plantIDmatch = self.xp(item, './/' + 'Source' + the_type + 'PlantID')
+            if len(plantIDmatch) > 0:
+                # print(f"found a plant ID match: {plantIDmatch[0].attrib['IDref']}")
+                plants = self.xp(self.doc, "//" + the_type + "Plant[@ID = '" + plantIDmatch[0].attrib['IDref'] + "']")
+                # print(f"found {len(plants)} plant matches!")
+                if len(plants) > 0:
+                    plant = plants[0]
 
         return plant
 
     def get_heat_cool_type(self, asset):
         the_type = None
+        logger.debug(f"GETTING HEAT COOL TYPE FOR ASSET: {asset}")
         if 'Heating' in asset:
             the_type = 'Heating'
         if 'Cooling' in asset:
@@ -442,7 +444,7 @@ class BSyncProcessor:
             2. If not there, look for a plant ID and look in there
             Can be reused for several assets
         """
-        # method 1: find within HeatingAndCoolingSystems
+        # method 1: find within HeatingAndCoolingSystems or DomesticHotWaterSystems
         matches = self.xp(item, './/' + asset['key'])
         # expects 0 or 1 match
         # print(f"number of matches for {item}: {len(matches)}")
@@ -677,7 +679,7 @@ class BSyncProcessor:
 
         return values, capacities, cap_units, sqfts
 
-    def format_80_percent_results(self, name: str, results: list):
+    def format_80_percent_results(self, name: str, results: list, units: str):
         """ format 80% rule results
             the "primary" type returned must at least serve 80% of the area by
             1. Capacity
@@ -690,63 +692,69 @@ class BSyncProcessor:
 
         values, capacities, cap_units, sqfts = self.remap_results(results)
 
+        # if only 1 asset, we'll call it primary!
+        if len(values) == 1:
+            self.export_asset(name, values[0], units)
+            return
+
         if None not in capacities and len(set(cap_units)) <= 1:
             # capacity method
             # add all capacities
             # pick largest one and make sure it's 80% of total
             found = 0
             total = sum(capacities)
-            primaries = {}
-            for res in results:
-                if res['value'] not in primaries:
-                    primaries[res['value']] = 0
-                primaries[res['value']] += float(res['cap'])
+            if total > 0:
+                primaries = {}
+                for res in results:
+                    if res['value'] not in primaries:
+                        primaries[res['value']] = 0
+                    primaries[res['value']] += float(res['cap'])
 
-            for p in primaries:
-                if float(primaries[p])/total >= 0.8:
-                    # this fuel meets the 80% threshold by capacity
-                    found = 1
-                    self.export_asset(name, p, None)
-                    return
+                for p in primaries:
+                    if float(primaries[p])/total >= 0.8:
+                        # this fuel meets the 80% threshold by capacity
+                        found = 1
+                        self.export_asset(name, p, units)
+                        return
 
             if found == 0:
                 # nothing matched this criteria, return 'Mixed'
-                self.export_asset(name, 'mixed', None)
+                self.export_asset(name, 'mixed', units)
                 return
 
         if None not in sqfts:
             # sqft method
             total = sum(sqfts)
-            primaries = {}
             found = 0
-            for res in results:
-                if res['value'] not in primaries:
-                    primaries[res['value']] = 0
-                primaries[res['value']] += res['sqft']
+            if total > 0:
+                primaries = {}
+                for res in results:
+                    if res['value'] not in primaries:
+                        primaries[res['value']] = 0
+                    primaries[res['value']] += res['sqft']
 
-            for p in primaries:
-                if float(primaries[p])/total >= 0.8:
-                    # this fuel meets the 80% threshold by capacity
-                    found = 1
-                    self.export_asset(name, p, None)
-                    return
+                for p in primaries:
+                    if float(primaries[p])/total >= 0.8:
+                        # this fuel meets the 80% threshold by capacity
+                        found = 1
+                        self.export_asset(name, p, units)
+                        return
 
             if found == 0:
                 # nothing matched this criteria, return 'Mixed'
-                self.export_asset(name, 'mixed', None)
+                self.export_asset(name, 'mixed', units)
                 return
 
         # still here? return unknown
-        self.export_asset(name, 'unknown', None)
+        self.export_asset(name, 'unknown', units)
         return
 
-    def format_lighting_results(self, name: str, results: list):
+    def format_lighting_results(self, name: str, results: list, units: str):
         """ custom processing for lighting efficiency
             1. if 'lpd' is present, average the values
             2. else if percentpremisesserved
             3. otherwise regular sqft
         """
-        units = 'W/ft2'
         if len(results) == 0:
             # export None
             self.export_asset(name, None, None)
@@ -800,14 +808,16 @@ class BSyncProcessor:
             # sqft methods
             remapped_power = [sub['power'] for sub in results]
             remapped_sqft = [sub['sqft'] for sub in results]
-            value = sum(remapped_power) / sum(remapped_sqft)
-            self.export_asset(name, value, units)
-            return
+            top = sum(remapped_power)
+            bottom = sum(remapped_sqft)
+            if bottom > 0:
+                value = top / bottom
+                self.export_asset(name, value, units)
+                return
 
-        else:
-            # can't calculate
-            self.export_asset(name, 'unknown', units)
-            return
+        # can't calculate
+        self.export_asset(name, 'unknown', units)
+        return
 
     def format_custom_avg_results(self, name: str, results: list):
         """ format weighted average
