@@ -2,51 +2,101 @@
   "asset_definitions": [
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems/LightingSystem",
-      "key": "LampLabel",
-      "name": "Lamp",
-      "export_name": "Lamp",
-      "type": "sqft",
-      "units": null
+      "key": "LightingSystemEfficiency",
+      "name": "LightingSystemEfficiency",
+      "export_name": "Lighting System Efficiency",
+      "type": "custom"
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",
       "key": "LightingSystem",
-      "name": "LightingSystems",
-      "export_name": "Total Lighting Systems",
-      "type": "num",
-      "units": null
+      "name": "LightingSystem",
+      "export_name": "Lighting System Oldest",
+      "type": "age_oldest"
     },
     {
-      "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
-      "key": "UserDefinedField",
-      "name": "Principal HVAC System Type",
-      "export_name": "HVAC System",
-      "type": "sqft",
-      "units": null
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",
+      "key": "LightingSystem",
+      "name": "LightingSystem",
+      "export_name": "Lighting System Average Age",
+      "type": "age_average"
     },
     {
-      "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
-      "key": "ThermalZone/SetpointTemperatureHeating",
-      "name": "AverageHeatingSetpoint",
-      "export_name": "Average Heating Setpoint",
-      "type": "avg_sqft",
-      "units": "F"
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource",
+      "key": "AnnualHeatingEfficiencyValue",
+      "name": "AnnualHeatingEfficiency",
+      "export_name": "Heating System Efficiency",
+      "type": "custom"
     },
     {
-      "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
-      "key": "ThermalZone/SetpointTemperatureCooling",
-      "name": "AverageCoolingSetpoint",
-      "export_name": "Average Cooling Setpoint",
-      "type": "avg_sqft",
-      "units": "F"
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources",
+      "key": "HeatingSource",
+      "name": "HeatingSource",
+      "export_name": "Heating System Oldest",
+      "type": "age_oldest"
     },
     {
-      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/Plants/HeatingPlants/HeatingPlant",
-      "key": "Boiler",
-      "name": "Boiler",
-      "export_name": "Oldest Boiler",
-      "type": "age_oldest",
-      "units": null
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources",
+      "key": "HeatingSource",
+      "name": "HeatingSource",
+      "export_name": "Heating System Average Age",
+      "type": "age_average"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource",
+      "key": "PrimaryFuel",
+      "name": "PrimaryFuel",
+      "export_name": "Heating Fuel Type",
+      "type": "custom"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources/CoolingSource",
+      "key": "AnnualCoolingEfficiencyValue",
+      "name": "AnnualCoolingEfficiency",
+      "export_name": "Cooling System Efficiency",
+      "type": "custom"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources",
+      "key": "CoolingSource",
+      "name": "CoolingSource",
+      "export_name": "Cooling System Oldest",
+      "type": "age_oldest"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources",
+      "key": "CoolingSource",
+      "name": "CoolingSource",
+      "export_name": "Cooling System Average Age",
+      "type": "age_average"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
+      "key": "WaterHeaterEfficiency",
+      "name": "WaterHeaterEfficiency",
+      "export_name": "Hot Water System Efficiency",
+      "type": "custom"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems",
+      "key": "DomesticHotWaterSystem",
+      "name": "DomesticHotWaterSystem",
+      "export_name": "Hot Water System Oldest",
+      "type": "age_oldest"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems",
+      "key": "DomesticHotWaterSystem",
+      "name": "DomesticHotWaterSystem",
+      "export_name": "Hot Water System Average Age",
+      "type": "age_average"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
+      "key": "PrimaryFuel",
+      "name": "PrimaryFuel",
+      "export_name": "Hot Water System Fuel Type",
+      "type": "custom"
     }
   ]
 }

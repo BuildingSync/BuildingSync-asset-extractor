@@ -37,12 +37,18 @@ import os
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
-filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/testfile.xml')
+# import glob
+# from pathlib import Path
+
+
+# # 1: regular test
+filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/completetest.xml')
 out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output.json')
 out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output2.json')
 
 print("filename: {}".format(filename))
 
+# bp = BSyncProcessor(filename=filename, logger_level='DEBUG')
 bp = BSyncProcessor(filename=filename)
 bp.extract()
 bp.save(out_file)
@@ -54,3 +60,25 @@ with open(filename, mode='rb') as file:
 bp = BSyncProcessor(data=file_data)
 bp.extract()
 bp.save(out_file2)
+
+# 2: bigger test
+# bae_tester_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'Desktop/BAE-tester/20220519_AT_BSXML')
+# find_path = os.path.join(bae_tester_dir, '*', '*.xml')
+
+# for file in glob.glob(find_path):
+# 	print(file)
+# 	out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', Path(file).stem + '.json')
+# 	bp = BSyncProcessor(filename=file, logger_level='DEBUG')
+# 	bp.extract()
+# 	bp.save(out_file)
+
+# 3: schema examples test
+# bae_tester_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'bsync-schema', 'examples')
+# find_path = os.path.join(bae_tester_dir, '*.xml')
+
+# for file in glob.glob(find_path):
+# 	print(file)
+# 	out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', Path(file).stem + '.json')
+# 	bp = BSyncProcessor(filename=file, logger_level='DEBUG')
+# 	bp.extract()
+# 	bp.save(out_file)
