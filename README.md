@@ -101,8 +101,7 @@ This file lists the extracted assets information in name, value, units triples. 
 ### Pre-commit
 
 This project uses `pre-commit <https://pre-commit.com/>`_ to ensure code consistency.
-To enable pre-commit on every commit run the following from the command line from within the git checkout of the
-GMT:
+To enable pre-commit on every commit run the following from the command line from within the git checkout of the BuildingSync-asset-extractor
 
 ```bash
   pre-commit install
