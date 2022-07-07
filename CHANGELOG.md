@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.1.10
+
+Revise how asset units are handled
+
 ## Version 0.1.9
 
 Add new Heating, Cooling, WaterHeating, and LightingSystems assets
