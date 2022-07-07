@@ -40,9 +40,11 @@
           "enum": [
             "age_oldest",
             "age_newest",
+            "age_average",
             "avg_sqft",
             "num",
-            "sqft"
+            "sqft",
+            "custom"
           ]
         },
         "units": {

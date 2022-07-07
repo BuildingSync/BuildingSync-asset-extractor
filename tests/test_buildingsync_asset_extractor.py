@@ -47,7 +47,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.out_file = 'testoutput.json'
         self.out_file_2 = 'testoutput_2.json'
         self.test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'
-        self.num_assets_to_extract = 18
+        self.num_assets_to_extract = 23
         self.num_sections_in_testfile = 3
 
         # create output dir
@@ -67,7 +67,7 @@ class TestBSyncProcessor(unittest.TestCase):
     def test_return_asset_definitions(self):
         self.bp.set_asset_defs_file(self.test_assets_file)
         defs = self.bp.get_asset_defs()
-        self.assertEqual(len(defs), self.num_assets_to_extract - 1)
+        self.assertEqual(len(defs), self.num_assets_to_extract - 6)
 
     def test_extract(self):
         filename = self.output_dir / self.out_file_2
@@ -80,6 +80,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = self.bp.get_assets()
+        print("ASSETS: {}".format(assets))
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
         # test that assets of each type were calculated
@@ -87,13 +88,15 @@ class TestBSyncProcessor(unittest.TestCase):
         LSE = next((item for item in assets if item["name"] == "Lighting System Efficiency"), None)
         self.assertTrue(isinstance(LSE['value'], float))
         self.assertLessEqual(LSE['value'], 2)
-        self.assertEqual(LSE['units'], 'W/ft2')
+        LSEU = next((item for item in assets if item["name"] == "Lighting System Efficiency Units"), None)
+        self.assertEqual(LSEU['value'], 'W/ft2')
 
         HSE = next((item for item in assets if item["name"] == "Heating System Efficiency"), None)
         self.assertTrue(isinstance(HSE['value'], float))
         self.assertLess(HSE['value'], 70)
         self.assertGreater(HSE['value'], 69)
-        self.assertEqual(HSE['units'], 'Thermal Efficiency')
+        HSEU = next((item for item in assets if item["name"] == "Heating System Efficiency Units"), None)
+        self.assertEqual(HSEU['value'], 'Thermal Efficiency')
 
         HSAA = next((item for item in assets if item["name"] == "Heating System Average Age"), None)
         self.assertTrue(isinstance(HSAA['value'], str))
@@ -106,7 +109,8 @@ class TestBSyncProcessor(unittest.TestCase):
         CSE = next((item for item in assets if item["name"] == "Cooling System Efficiency"), None)
         self.assertTrue(isinstance(CSE['value'], float))
         self.assertEqual(CSE['value'], 3.0)
-        self.assertEqual(CSE['units'], 'COP')
+        CSEU = next((item for item in assets if item["name"] == "Cooling System Efficiency Units"), None)
+        self.assertEqual(CSEU['value'], 'COP')
 
         WHE = next((item for item in assets if item["name"] == "Hot Water System Efficiency"), None)
         self.assertEqual(WHE['value'], 'mixed')
