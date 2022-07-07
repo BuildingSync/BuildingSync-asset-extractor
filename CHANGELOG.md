@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 0.1.11
+
+- Better units handling (distinction between predefined units and calculated units)
+- added "export_units" key to asset definition schema to indicate fields that will get a generated associated units field
+
 ## Version 0.1.10
 
 Revise how asset units are handled

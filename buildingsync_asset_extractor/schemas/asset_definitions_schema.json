@@ -47,8 +47,12 @@
             "custom"
           ]
         },
+        "export_units": {
+          "definition": "Will units be exported for this asset? If true, a separate asset field will be generated to hold the units value.",
+          "type": "boolean"
+        },
         "units": {
-          "definition": "Units associated with the specified asset.",
+          "definition": "Units associated with the specified asset, if predefined",
           "type": "string"
         }
       }
