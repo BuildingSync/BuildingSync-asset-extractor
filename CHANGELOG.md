@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.1.12
+
+Updated lxml dependency to 4.9.1
+
 ## Version 0.1.11
 
 - Better units handling (distinction between predefined units and calculated units)
