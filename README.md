@@ -41,6 +41,8 @@ The pre-importer will identify assets defined in the `asset_definitions.json` fi
 
 1. `custom`. Use this method for particular asset that do not fit in the other categories; i.e. Heating Efficiency. Note that a dedicated method may need to be written to support this type of asset.
 
+When an asset has a unit associated with it, a separate asset will be generated to store the unit information. That asset will be named the same as the original asset, with ' Units' appended at the end.
+
 To test usage:
 
 ```bash
@@ -63,6 +65,7 @@ bp = BSyncProcessor(data=file_data)
 ## Assumptions
 1. Assuming 1 building per file
 1. Assuming sqft method uses "Conditioned" floor area for calculations. If not present, uses "Gross"
+1. Assuming averages that use served space area must be defined in Sections (LinkedSectionIDs). LinkedBuildingID is not used.
 
 ## TODO
 1. thermal zones: when spaces are listed within them with spaces (or multiple thermal zones), this would change the average setpoint calculations. Is this an exception or a normal case to handle?

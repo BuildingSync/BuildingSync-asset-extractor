@@ -28,10 +28,6 @@
             "number",
             "string"
           ]
-        },
-        "units": {
-          "definition": "Units associated with the specified asset.",
-          "type": "string"
         }
       }
     }
