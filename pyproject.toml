@@ -18,8 +18,8 @@ lxml = "4.9.1"
 importlib-resources = "^5.7.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "6.1.0"
-pytest-cov = "2.11.1"
+pytest = "7.1.2"
+pytest-cov = "3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
