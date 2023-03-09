@@ -500,91 +500,104 @@ class BSyncProcessor:
         very custom method. no units fields to process
         """
         results = []
-        matches = []
-        items = self.xp(self.doc, asset['parent_path'])
-
-        for item in items:
+        for item in self.xp(self.doc, asset['parent_path']):
             res = {}
+
+            installed_power_elements = self.xp(item, './/' + 'InstalledPower')
+            number_of_luminaires_elements = self.xp(item, './/' + 'NumberOfLuminaires')
+            number_of_lamps_per_luminaire_elements = self.xp(item, './/' + 'NumberOfLampsPerLuminaire')
+            lamp_power_elements = self.xp(item, './/' + 'LampPower')
+
             # method 1
-            matches = self.xp(item, './/' + 'InstalledPower')
-            if len(matches) > 0:
-                res['power'] = float(matches[0].text)
-                pmatches = self.xp(item, './/' + 'PercentPremisesServed')
-                if len(pmatches) > 0:
-                    res['sqft_percent'] = float(pmatches[0].text)
+            if len(installed_power_elements) > 0:
+                res['power'] = float(installed_power_elements[0].text)
 
-                # check sqft (LinkedPremises & LinkedSectionID)
-                res['sqft'] = self.get_linked_section_sqft(item)
+                percent_premises_served_elements = self.xp(item, './/' + 'PercentPremisesServed')
+                if len(percent_premises_served_elements) > 0:
+                    res['sqft_percent'] = float(percent_premises_served_elements[0].text)
 
-            if len(matches) == 0:
-                # method 2
-                matches = self.xp(item, './/' + 'LampPower')
-                lmatches = self.xp(item, './/' + 'NumberOfLampsPerLuminaire')
-                if len(matches) > 0 and len(lmatches) > 0:
-                    # get # luminaires & quantity
-                    nmatches = self.xp(item, './/' + 'NumberOfLuminaires')
-                    if len(nmatches) > 0:
-                        qmatches = self.xp(item, './/' + 'Quantity')
-                        res['power'] = float(matches[0].text) * float(lmatches[0].text) * float(nmatches[0].text)
-                        if len(qmatches) > 0:
-                            res['power'] = res['power'] * float(qmatches[0].text)
-                        res['sqft'] = self.get_linked_section_sqft(item)
-                    else:
-                        # try to get # luminaires a different way
-                        # UDF: '* Quantity Of Luminaires For *'
-                        # example: Common Areas Quantity Of Luminaires For Section-101919600
-                        match_str = 'Quantity Of Luminaires For'
+            # method 2a
+            elif (
+                len(lamp_power_elements) > 0 and
+                len(number_of_lamps_per_luminaire_elements) > 0 and
+                len(number_of_luminaires_elements)
+            ):
+                quantity_elements = self.xp(item, './/' + 'Quantity')
+                if len(quantity_elements) > 0:
+                    quantity = float(quantity_elements[0].text)
+                else:
+                    quantity = 1.0
 
-                        umatches = self.xp(item, './/' + 'UserDefinedField')
-                        qty_val = 0
-                        for match in umatches:
-                            keep = 0
-                            tmp_val = 0
-                            for child in list(match):
-                                if child.tag.endswith('FieldName') and match_str in child.text:
-                                    keep = 1
-                                if child.tag.endswith('FieldValue'):
-                                    try:
-                                        tmp_val = int(child.text)
-                                    except Exception:
-                                        pass
+                res['power'] = (
+                    float(lamp_power_elements[0].text) *
+                    float(number_of_lamps_per_luminaire_elements[0].text) *
+                    float(number_of_luminaires_elements[0].text) *
+                    quantity
+                )
 
-                            if keep == 1:
-                                qty_val += tmp_val
+            # method 2b
+            elif (
+                len(lamp_power_elements) > 0 and
+                len(number_of_lamps_per_luminaire_elements) > 0
+            ):
+                # try to get # luminaires a different way
+                # UDF: '* Quantity Of Luminaires For *'
+                # example: Common Areas Quantity Of Luminaires For Section-101919600
+                match_str = 'Quantity Of Luminaires For'
 
-                        if qty_val > 0:
-                            # logger.debug(f"QUANTITY OF LUMINAIRES: {qty_val}")
-                            res['power'] = res['power'] = float(matches[0].text) * float(lmatches[0].text) * qty_val
-                            res['sqft'] = self.get_linked_section_sqft(item)
+                umatches = self.xp(item, './/' + 'UserDefinedField')
+                qty_val = 0
+                for match in umatches:
+                    keep = 0
+                    tmp_val = 0
+                    for child in list(match):
+                        if child.tag.endswith('FieldName') and match_str in child.text:
+                            keep = 1
+                        if child.tag.endswith('FieldValue'):
+                            try:
+                                tmp_val = int(child.text)
+                            except Exception:
+                                pass
 
-                if len(res) == 0:
-                    # method 3: UDF for Lighting Power Density
-                    udf_match_str = 'Lighting Power Density For'
+                    if keep == 1:
+                        qty_val += tmp_val
 
-                    matches = self.xp(item, './/' + 'UserDefinedField')
-                    qty_val = 0
-                    for match in matches:
-                        keep = 0
-                        tmp_val = 0
-                        for child in list(match):
-                            if child.tag.endswith('FieldName') and udf_match_str in child.text:
-                                keep = 1
-                            if child.tag.endswith('FieldValue'):
-                                try:
-                                    tmp_val = float(child.text)
-                                except Exception:
-                                    pass
+                if qty_val > 0:
+                    # logger.debug(f"QUANTITY OF LUMINAIRES: {qty_val}")
+                    res['power'] = (
+                        float(lamp_power_elements[0].text) *
+                        float(number_of_lamps_per_luminaire_elements[0].text) *
+                        qty_val
+                    )
 
-                        if keep == 1:
-                            qty_val += tmp_val
+            # method 3: UDF for Lighting Power Density
+            if len(res) == 0:
+                udf_match_str = 'Lighting Power Density For'
 
-                    if qty_val > 0:
-                        # logger.debug(f"LPD: {qty_val}")
-                        res['lpd'] = qty_val
-                        res['sqft'] = self.get_linked_section_sqft(item)
+                matches = self.xp(item, './/' + 'UserDefinedField')
+                qty_val = 0
+                for match in matches:
+                    keep = 0
+                    tmp_val = 0
+                    for child in list(match):
+                        if child.tag.endswith('FieldName') and udf_match_str in child.text:
+                            keep = 1
+                        if child.tag.endswith('FieldValue'):
+                            try:
+                                tmp_val = float(child.text)
+                            except Exception:
+                                pass
 
-            # append if not empty
+                    if keep == 1:
+                        qty_val += tmp_val
+
+                if qty_val > 0:
+                    # logger.debug(f"LPD: {qty_val}")
+                    res['lpd'] = qty_val
+
+            # finally, if res was found, also get linked section sqft
             if res:
+                res['sqft'] = self.get_linked_section_sqft(item)
                 results.append(res)
 
         logger.debug(f"RESULTS for {asset['export_name']}: {results}")
