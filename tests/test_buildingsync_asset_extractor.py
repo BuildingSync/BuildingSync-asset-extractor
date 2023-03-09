@@ -36,7 +36,37 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import unittest
 from pathlib import Path
 
+from lxml import etree
+
 from buildingsync_asset_extractor.processor import BSyncProcessor
+
+linked_section_with_floor_area_percentage = etree.XML('''
+    <acc:LinkedSectionID
+        IDref="Section-69928578013460"
+        xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
+    >
+        <acc:FloorAreas>
+            <acc:FloorArea>
+                <acc:FloorAreaType>Common</acc:FloorAreaType>
+                <acc:FloorAreaPercentage>50.0</acc:FloorAreaPercentage>
+            </acc:FloorArea>
+        </acc:FloorAreas>
+    </acc:LinkedSectionID>
+''')
+
+linked_section_with_floor_area_value = etree.XML('''
+    <acc:LinkedSectionID
+        IDref="Section-69928578013460"
+        xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
+    >
+        <acc:FloorAreas>
+            <acc:FloorArea>
+                <acc:FloorAreaType>Common</acc:FloorAreaType>
+                <acc:FloorAreaValue>50.0</acc:FloorAreaValue>
+            </acc:FloorArea>
+        </acc:FloorAreas>
+    </acc:LinkedSectionID>
+''')
 
 
 class TestBSyncProcessor(unittest.TestCase):
@@ -189,3 +219,211 @@ class TestBSyncProcessor(unittest.TestCase):
             filename.unlink()
         self.bp.save(filename)
         self.assertTrue(filename.exists())
+
+    def test_process_lighting_method_1(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        # add method 1 lighting system
+        method_1_ls = etree.XML('''
+            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:InstalledPower> 1.0 </acc:InstalledPower>
+                <acc:InstalledPower> 2.0 </acc:InstalledPower>
+                <acc:PercentPremisesServed> 3.0 </acc:PercentPremisesServed>
+                <acc:PercentPremisesServed> 4.0 </acc:PercentPremisesServed>
+                <acc:LinkedPremises>
+                    <acc:Section></acc:Section>
+                </acc:LinkedPremises>
+            </acc:LightingSystem>
+        ''')
+        lighting_systems.append(method_1_ls)
+
+        # add sections to lighting system
+        section = self.bp.xp(method_1_ls, './/LinkedPremises/Section')[0]
+        section.append(linked_section_with_floor_area_percentage)
+        section.append(linked_section_with_floor_area_value)
+
+        # Action #
+        results = self.bp.process_lighting(asset={
+            "parent_path": lighting_systems_path + "/LightingSystem",
+            'export_name': 'Lighting System Efficiency',
+        })
+
+        # Assertion #
+        [method_1_results] = results
+        assert method_1_results == {
+            'power': 1.0,  # first InstalledPower
+            'sqft_percent': 3.0,  # first PercentPremisesServed
+            'sqft': 7550.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+        }
+
+    def test_process_lighting_method_2_a(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        # add method 2 lighting system
+        method_2_ls = etree.XML('''
+            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:LampPower> 2 </acc:LampPower>
+                <acc:NumberOfLampsPerLuminaire> 3 </acc:NumberOfLampsPerLuminaire>
+                <acc:NumberOfLuminaires> 4 </acc:NumberOfLuminaires>
+                <acc:LinkedPremises>
+                    <acc:Section></acc:Section>
+                </acc:LinkedPremises>
+            </acc:LightingSystem>
+        ''')
+        lighting_systems.append(method_2_ls)
+
+        # add sections to lighting system
+        section = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
+        section.append(linked_section_with_floor_area_percentage)
+        section.append(linked_section_with_floor_area_value)
+
+        # Action #
+        results = self.bp.process_lighting(asset={
+            "parent_path": lighting_systems_path + "/LightingSystem",
+            'export_name': 'Lighting System Efficiency',
+        })
+
+        # Assertion #
+        [method_2_ls] = results
+        assert method_2_ls == {
+            'power': 24,  # LampPower * NumberOfLampsPerLuminaire * NumberOfLuminaires
+            'sqft': 7550.0  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+        }
+
+    def test_process_lighting_method_2_b(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        # add method 2 lighting system
+        method_2_ls = etree.XML('''
+            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:LampPower> 2 </acc:LampPower>
+                <acc:NumberOfLampsPerLuminaire> 3 </acc:NumberOfLampsPerLuminaire>
+                <acc:LinkedPremises>
+                    <acc:Section></acc:Section>
+                </acc:LinkedPremises>
+            </acc:LightingSystem>
+        ''')
+        lighting_systems.append(method_2_ls)
+
+        # add user defined feilds to lighting system
+        good_field = etree.XML('''
+            <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:FieldName> Quantity Of Luminaires For </acc:FieldName>
+                <acc:FieldValue> 2 </acc:FieldValue>
+            </acc:UserDefinedField>
+        ''')
+        bad_name_feild = etree.XML('''
+            <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:FieldName> irrelevant </acc:FieldName>
+                <acc:FieldValue> 3 </acc:FieldValue>
+            </acc:UserDefinedField>
+        ''')
+        bad_value_field = etree.XML('''
+            <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:FieldName> Quantity Of Luminaires For </acc:FieldName>
+                <acc:FieldValue> bad value </acc:FieldValue>
+            </acc:UserDefinedField>
+        ''')
+        method_2_ls.append(good_field)
+        method_2_ls.append(bad_name_feild)
+        method_2_ls.append(bad_value_field)
+
+        # add sections to lighting system
+        section = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
+        section.append(linked_section_with_floor_area_percentage)
+        section.append(linked_section_with_floor_area_value)
+
+        # Action #
+        results = self.bp.process_lighting(asset={
+            "parent_path": lighting_systems_path + "/LightingSystem",
+            'export_name': 'Lighting System Efficiency',
+        })
+
+        # Assertion #
+        [method_2_ls] = results
+        assert method_2_ls == {
+            'power': 12,  # LampPower * NumberOfLampsPerLuminaire * sum of valid/relevant UserDefinedFields
+            'sqft': 7550.0  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+        }
+
+    def test_process_lighting_method_3(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        # add method 3 lighting system
+        method_3_ls = etree.XML('''
+            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:LinkedPremises>
+                    <acc:Section></acc:Section>
+                </acc:LinkedPremises>
+            </acc:LightingSystem>
+        ''')
+        lighting_systems.append(method_3_ls)
+
+        # add user defined feilds to lighting system
+        good_field = etree.XML('''
+            <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:FieldName> Lighting Power Density For </acc:FieldName>
+                <acc:FieldValue> 1 </acc:FieldValue>
+            </acc:UserDefinedField>
+        ''')
+        bad_name_feild = etree.XML('''
+            <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:FieldName> irrelevant </acc:FieldName>
+                <acc:FieldValue> 2 </acc:FieldValue>
+            </acc:UserDefinedField>
+        ''')
+        bad_value_field = etree.XML('''
+            <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:FieldName> Lighting Power Density For </acc:FieldName>
+                <acc:FieldValue> bad value </acc:FieldValue>
+            </acc:UserDefinedField>
+        ''')
+        method_3_ls.append(good_field)
+        method_3_ls.append(bad_name_feild)
+        method_3_ls.append(bad_value_field)
+
+        # add sections to lighting system
+        section = self.bp.xp(method_3_ls, './/LinkedPremises/Section')[0]
+        section.append(linked_section_with_floor_area_percentage)
+        section.append(linked_section_with_floor_area_value)
+
+        # Action #
+        results = self.bp.process_lighting(asset={
+            "parent_path": lighting_systems_path + "/LightingSystem",
+            'export_name': 'Lighting System Efficiency',
+        })
+
+        # Assertion #
+        [method_3_results] = results
+        assert method_3_results == {
+            'lpd': 1.0,  # sum of valid/relevant UserDefinedFields
+            'sqft': 7550.0  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+        }
