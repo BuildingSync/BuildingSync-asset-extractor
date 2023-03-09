@@ -491,10 +491,26 @@ class BSyncProcessor:
         else:
             self.format_custom_avg_results(asset['export_name'], results, units)
 
+    def _get_user_defined_feilds(self, element: etree.Element):
+        """Return (name, value) tuples of UserDefinedFields in element.
+        """
+        res = []
+        user_defined_feilds = self.xp(element, './/' + 'UserDefinedField')
+
+        for user_defined_feild in user_defined_feilds:
+            name = next(iter(self.xp(user_defined_feild, './/' + 'FieldName')), None)
+            value = next(iter(self.xp(user_defined_feild, './/' + 'FieldValue')), None)
+
+            if name.text and value.text:
+                res.append((name.text, value.text))
+
+        return res
+
     def process_lighting(self, asset: dict):
         """ Process Lighting Efficiency asset
         method 1: InstalledPower * PercentPremisesServed
-        method 2: Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
+        method 2a: Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
+        method 2b: Lamp Power * # Lamps per Luminaire * # Luminaire, where # Luminaire is user defined
         method 3: Look in UDF for "Lighting Power Density For ..."
         method 4: Lookup table based on LightingSystemType / BallastType (todo)
         very custom method. no units fields to process
@@ -520,7 +536,7 @@ class BSyncProcessor:
             elif (
                 len(lamp_power_elements) > 0 and
                 len(number_of_lamps_per_luminaire_elements) > 0 and
-                len(number_of_luminaires_elements)
+                len(number_of_luminaires_elements) > 0
             ):
                 quantity_elements = self.xp(item, './/' + 'Quantity')
                 if len(quantity_elements) > 0:
@@ -543,24 +559,14 @@ class BSyncProcessor:
                 # try to get # luminaires a different way
                 # UDF: '* Quantity Of Luminaires For *'
                 # example: Common Areas Quantity Of Luminaires For Section-101919600
-                match_str = 'Quantity Of Luminaires For'
-
-                umatches = self.xp(item, './/' + 'UserDefinedField')
-                qty_val = 0
-                for match in umatches:
-                    keep = 0
-                    tmp_val = 0
-                    for child in list(match):
-                        if child.tag.endswith('FieldName') and match_str in child.text:
-                            keep = 1
-                        if child.tag.endswith('FieldValue'):
-                            try:
-                                tmp_val = int(child.text)
-                            except Exception:
-                                pass
-
-                    if keep == 1:
-                        qty_val += tmp_val
+                user_defined_fields = self._get_user_defined_feilds(item)
+                user_defined_values = [
+                    int(value) for (name, value)
+                    in user_defined_fields
+                    if 'Quantity Of Luminaires For' in name
+                    and value.isnumeric()
+                ]
+                qty_val = sum(user_defined_values)
 
                 if qty_val > 0:
                     # logger.debug(f"QUANTITY OF LUMINAIRES: {qty_val}")
@@ -572,24 +578,14 @@ class BSyncProcessor:
 
             # method 3: UDF for Lighting Power Density
             if len(res) == 0:
-                udf_match_str = 'Lighting Power Density For'
-
-                matches = self.xp(item, './/' + 'UserDefinedField')
-                qty_val = 0
-                for match in matches:
-                    keep = 0
-                    tmp_val = 0
-                    for child in list(match):
-                        if child.tag.endswith('FieldName') and udf_match_str in child.text:
-                            keep = 1
-                        if child.tag.endswith('FieldValue'):
-                            try:
-                                tmp_val = float(child.text)
-                            except Exception:
-                                pass
-
-                    if keep == 1:
-                        qty_val += tmp_val
+                user_defined_fields = self._get_user_defined_feilds(item)
+                user_defined_values = [
+                    int(value) for (name, value)
+                    in user_defined_fields
+                    if 'Lighting Power Density For' in name
+                    and value.isnumeric()
+                ]
+                qty_val = sum(user_defined_values)
 
                 if qty_val > 0:
                     # logger.debug(f"LPD: {qty_val}")
