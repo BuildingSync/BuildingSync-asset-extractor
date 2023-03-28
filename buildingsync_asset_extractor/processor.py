@@ -37,10 +37,12 @@ import json
 import logging
 import re
 from io import BytesIO
-from typing import Optional
+from typing import Optional, Union
 
 from importlib_resources import files
 from lxml import etree
+
+from buildingsync_asset_extractor.errors import BSyncProcessorError
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -59,7 +61,7 @@ class BSyncProcessor:
 
     def __init__(self,
                  filename: Optional[str] = None,
-                 data: Optional[str] = None,
+                 data: Optional[bytes] = None,
                  asset_defs_filename: Optional[str] = None,
                  logger_level: Optional[str] = 'INFO'):
         """class instantiator
@@ -83,7 +85,7 @@ class BSyncProcessor:
             self.file_data = data
         else:
             # no data. handle
-            raise "You must provide either a filename or xml data"
+            raise BSyncProcessorError("You must provide either a filename or xml data")
         self.parse_xml()
 
         self.initialize_vars(asset_defs_filename)
@@ -148,7 +150,7 @@ class BSyncProcessor:
                 break
         logger.debug("Namespaces set to: {}".format(self.namespaces))
         if not namespaces:
-            raise Exception('No namespace was found in this file. Please modify your file and try again.')
+            raise BSyncProcessorError('No namespace was found in this file. Please modify your file and try again.')
 
     def get_namespaces(self):
         """ return namespaces """
@@ -364,7 +366,7 @@ class BSyncProcessor:
         logger.debug(f"RESULTS for {asset['export_name']}: {results}")
 
         # set units
-        units = "No units"
+        units: Optional[str] = "No units"
         if 'export_units' in asset and asset['export_units'] is True:
             units = None
             if 'units' in asset:
@@ -374,22 +376,18 @@ class BSyncProcessor:
 
     def process_count_asset(self, asset: dict):
         """ process count asset """
-
-        total = 0
-        found = None
+        # if there are keys, total is num of keys
+        # else total is None
         items = self.xp(self.doc, asset['parent_path'])
-        for item in items:
-            matches = self.xp(item, './/' + asset['key'])
-            if matches:
-                total += len(matches)
-                found = 1
-
-        # add null key if nothing found
-        if not found:
+        all_matches = [self.xp(item, './/' + asset['key']) for item in items]
+        all_matches = [matches for matches in all_matches if matches]
+        if all_matches == []:
             total = None
+        else:
+            total = sum([len(m) for m in all_matches])
 
         # set units
-        units = "No units"
+        units: Optional[str] = "No units"
         if 'export_units' in asset and asset['export_units'] is True:
             units = None
             if 'units' in asset:
@@ -430,7 +428,7 @@ class BSyncProcessor:
         logger.debug(f"RESULTS for {asset['export_name']}: {results}")
 
         # set units
-        units = "No units"
+        units: Optional[str] = "No units"
         if 'export_units' in asset and asset['export_units'] is True:
             units = None
             if 'units' in asset:
@@ -536,10 +534,10 @@ class BSyncProcessor:
                         match_str = 'Quantity Of Luminaires For'
 
                         umatches = self.xp(item, './/' + 'UserDefinedField')
-                        qty_val = 0
+                        qty_val = 0.0
                         for match in umatches:
                             keep = 0
-                            tmp_val = 0
+                            tmp_val = 0.0
                             for child in list(match):
                                 if child.tag.endswith('FieldName') and match_str in child.text:
                                     keep = 1
@@ -562,10 +560,10 @@ class BSyncProcessor:
                     udf_match_str = 'Lighting Power Density For'
 
                     matches = self.xp(item, './/' + 'UserDefinedField')
-                    qty_val = 0
+                    qty_val = 0.0
                     for match in matches:
                         keep = 0
-                        tmp_val = 0
+                        tmp_val = 0.0
                         for child in list(match):
                             if child.tag.endswith('FieldName') and udf_match_str in child.text:
                                 keep = 1
@@ -631,7 +629,7 @@ class BSyncProcessor:
         logger.debug(f"RESULTS for {asset['export_name']}: {results}")
         return results
 
-    def get_linked_section_sqft(self, item: dict):
+    def get_linked_section_sqft(self, item: etree):
         """ Find LinkedPremises at the right level (2 down from Systems)
             and calculate total sqft from the sections returned
         """
@@ -672,7 +670,7 @@ class BSyncProcessor:
 
         return sqft_total
 
-    def get_capacity(self, el: dict):
+    def get_capacity(self, el: etree):
         """ Capacity order:
         1) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/Capacity and CapacityUnits
         2) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/OutputCapacity (deprecation soon)
@@ -714,7 +712,7 @@ class BSyncProcessor:
 
         return values, capacities, cap_units, sqfts
 
-    def format_age_results(self, name: str, results: list, process_type, units: str):
+    def format_age_results(self, name: str, results: list, process_type, units: Optional[str]):
 
         # process results
         value = None
@@ -768,7 +766,7 @@ class BSyncProcessor:
                 primaries = {}
                 for res in results:
                     if res['value'] not in primaries:
-                        primaries[res['value']] = 0
+                        primaries[res['value']] = 0.0
                     primaries[res['value']] += float(res['cap'])
 
                 for p in primaries:
@@ -837,7 +835,7 @@ class BSyncProcessor:
 
         # for weighted average, re-find Watts from LPD and LinkedPremises and divide by total sqft
         if has_lpd:
-            value = 0
+            value = 0.0
             total_sqft = 0
             for r in results:
                 value += r['lpd'] * r['sqft']
@@ -890,7 +888,7 @@ class BSyncProcessor:
         self.export_asset_units(name, units)
         return
 
-    def format_custom_avg_results(self, name: str, results: list, units: str):
+    def format_custom_avg_results(self, name: str, results: list, units: Optional[str]):
         """ format weighted average
             1. Ensure all units are the same
             2. Attempt to calculate with installed power (NOT IMPLEMENTED)
@@ -921,12 +919,12 @@ class BSyncProcessor:
         # check that there are capacities for all and the units are all the same
         if None not in capacities and len(set(cap_units)) == 1:
             # capacity methods
-            cap_total = 0
-            eff_total = 0
+            cap_total = 0.0
+            eff_total = 0.0
             for res in results:
                 cap_total = cap_total + float(res['cap'])
                 eff_total = eff_total + (float(res['value']) * float(res['cap']))
-            total = eff_total / cap_total
+            total: Union[float, str] = eff_total / cap_total
 
             # special case for average age: take the floor since partial year doesn't make sense
             if name.lower().endswith('age'):
@@ -951,7 +949,7 @@ class BSyncProcessor:
             self.export_asset_units(name, units)
             return
 
-    def format_sqft_results(self, name: str, results: list, units: str):
+    def format_sqft_results(self, name: str, results: dict, units: Optional[str]):
         """ return primary and secondary for top 2 results by sqft """
         # NOTE: this is the only method that modifies the export name '
         # by appending 'primary' and 'secondary'
@@ -976,7 +974,7 @@ class BSyncProcessor:
         self.export_asset('Secondary ' + name, value2)
         self.export_asset_units('Secondary ' + name, units)
 
-    def format_avg_sqft_results(self, name: str, results: list, units: str):
+    def format_avg_sqft_results(self, name: str, results: dict, units: Optional[str]):
         """ weighted average of results """
 
         # in this case the result keys will convert to numbers
@@ -1026,7 +1024,7 @@ class BSyncProcessor:
         name = name.replace('HVAC', 'Hvac').replace(' ', '')
         return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
-    def xp(self, element: dict, path: str):
+    def xp(self, element: etree, path: str):
         """use xpath function and specify namespace
         Returns results of xpath operation
         """
@@ -1045,7 +1043,9 @@ class BSyncProcessor:
             elif 'Gross' in areas:
                 return areas['Gross']
 
-        raise Exception('Error retrieving section sqft...No Conditioned area or Gross area found for section {}'.format(section_id))
+        raise BSyncProcessorError(
+            'Error retrieving section sqft...No Conditioned area or Gross area found for section {}'.format(section_id)
+        )
 
     def compute_sqft(self, section: dict):
         """ compute square footage by either percentage or value method
@@ -1053,7 +1053,7 @@ class BSyncProcessor:
             the type of floor area to use in the calculation should be specified with "FloorAreaType" element.
         """
         sid = section.get('IDref')
-        sqft = 0
+        sqft = 0.0
         floor_areas = self.xp(section, './/FloorAreas/FloorArea')
         for f in floor_areas:
             # get types and percentages and add to running total
