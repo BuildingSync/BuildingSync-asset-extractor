@@ -30,3 +30,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 ignore_missing_imports = "True"
+disallow_untyped_defs = "True"

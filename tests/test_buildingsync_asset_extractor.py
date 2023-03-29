@@ -40,7 +40,7 @@ from buildingsync_asset_extractor.processor import BSyncProcessor
 
 
 class TestBSyncProcessor(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.testfile = Path(__file__).parent / 'files' / 'completetest.xml'
         self.no_ns_testfile = Path(__file__).parent / 'files' / 'testfile2.xml'
         self.output_dir = Path(__file__).parent / 'output'
@@ -56,7 +56,7 @@ class TestBSyncProcessor(unittest.TestCase):
         print("TESTFILE: {}".format(self.testfile))
         self.bp = BSyncProcessor(self.testfile)
 
-    def test_initialize_and_parse(self):
+    def test_initialize_and_parse(self) -> None:
         ns = self.bp.get_namespaces()
         print('namespaces: {}'.format(ns))
         self.assertIn('auc', ns)
@@ -64,12 +64,12 @@ class TestBSyncProcessor(unittest.TestCase):
         doc = self.bp.get_doc()
         self.assertIsNotNone(doc)
 
-    def test_return_asset_definitions(self):
+    def test_return_asset_definitions(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
         defs = self.bp.get_asset_defs()
         self.assertEqual(len(defs), self.num_assets_to_extract - 6)
 
-    def test_extract(self):
+    def test_extract(self) -> None:
         filename = self.output_dir / self.out_file_2
         if filename.exists():
             filename.unlink()
@@ -85,41 +85,41 @@ class TestBSyncProcessor(unittest.TestCase):
 
         # test that assets of each type were calculated
         # CUSTOM
-        LSE = next((item for item in assets if item["name"] == "Lighting System Efficiency"), None)
+        LSE: dict = next((item for item in assets if item["name"] == "Lighting System Efficiency"), {})
         self.assertTrue(isinstance(LSE['value'], float))
         self.assertLessEqual(LSE['value'], 2)
-        LSEU = next((item for item in assets if item["name"] == "Lighting System Efficiency Units"), None)
+        LSEU: dict = next((item for item in assets if item["name"] == "Lighting System Efficiency Units"), {})
         self.assertEqual(LSEU['value'], 'W/ft2')
 
-        HSE = next((item for item in assets if item["name"] == "Heating System Efficiency"), None)
+        HSE: dict = next((item for item in assets if item["name"] == "Heating System Efficiency"), {})
         self.assertTrue(isinstance(HSE['value'], float))
         self.assertLess(HSE['value'], 70)
         self.assertGreater(HSE['value'], 69)
-        HSEU = next((item for item in assets if item["name"] == "Heating System Efficiency Units"), None)
+        HSEU: dict = next((item for item in assets if item["name"] == "Heating System Efficiency Units"), {})
         self.assertEqual(HSEU['value'], 'Thermal Efficiency')
 
-        HSAA = next((item for item in assets if item["name"] == "Heating System Average Age"), None)
+        HSAA: dict = next((item for item in assets if item["name"] == "Heating System Average Age"), {})
         self.assertTrue(isinstance(HSAA['value'], str))
         self.assertEqual(HSAA['value'], '2010')
 
-        HFT = next((item for item in assets if item["name"] == "Heating Fuel Type"), None)
+        HFT: dict = next((item for item in assets if item["name"] == "Heating Fuel Type"), {})
         self.assertTrue(isinstance(HFT['value'], str))
         self.assertEqual(HFT['value'], 'Fuel oil no 1')
 
-        CSE = next((item for item in assets if item["name"] == "Cooling System Efficiency"), None)
+        CSE: dict = next((item for item in assets if item["name"] == "Cooling System Efficiency"), {})
         self.assertTrue(isinstance(CSE['value'], float))
         self.assertEqual(CSE['value'], 3.0)
-        CSEU = next((item for item in assets if item["name"] == "Cooling System Efficiency Units"), None)
+        CSEU: dict = next((item for item in assets if item["name"] == "Cooling System Efficiency Units"), {})
         self.assertEqual(CSEU['value'], 'COP')
 
-        WHE = next((item for item in assets if item["name"] == "Hot Water System Efficiency"), None)
+        WHE: dict = next((item for item in assets if item["name"] == "Hot Water System Efficiency"), {})
         self.assertEqual(WHE['value'], 'mixed')
 
-        WHFT = next((item for item in assets if item["name"] == "Hot Water System Fuel Type"), None)
+        WHFT: dict = next((item for item in assets if item["name"] == "Hot Water System Fuel Type"), {})
         self.assertEqual(WHFT['value'], 'mixed')
 
         # count
-        cnt = next((item for item in assets if item["name"] == "Number of Lighting Systems"), None)
+        cnt: dict = next((item for item in assets if item["name"] == "Number of Lighting Systems"), {})
         self.assertTrue(isinstance(cnt['value'], int))
         self.assertEqual(cnt['value'], 2)
         # avg_sqft
@@ -128,14 +128,14 @@ class TestBSyncProcessor(unittest.TestCase):
         # self.assertEqual(avgHeat['value'], 71.5)
 
         # age
-        age = next((item for item in assets if item["name"] == "Heating System Oldest"), None)
+        age: dict = next((item for item in assets if item["name"] == "Heating System Oldest"), {})
         self.assertTrue(isinstance(age['value'], str))
         self.assertEqual(age['value'], '2010')
 
         filename = self.output_dir / self.out_file_2
         self.bp.save(filename)
 
-    def test_extract_data(self):
+    def test_extract_data(self) -> None:
         self.testfile = Path(__file__).parent / 'files' / 'testfile.xml'
         with open(self.testfile, mode='rb') as file:
             file_data = file.read()
@@ -150,16 +150,16 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
         # test 1 asset
-        age = next((item for item in assets if item["name"] == "Heating System Oldest"), None)
+        age: dict = next((item for item in assets if item["name"] == "Heating System Oldest"), {})
         self.assertEqual(age['value'], '2010')
 
-    def test_set_asset_defs(self):
+    def test_set_asset_defs(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
         self.bp.extract()
         assets = self.bp.get_assets()
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
-    def test_extract_no_ns(self):
+    def test_extract_no_ns(self) -> None:
         # test that assets from files without a namespace prefix can be extracted
         self.bp2 = BSyncProcessor(self.no_ns_testfile)
         self.bp2.set_asset_defs_file(self.test_assets_file)
@@ -171,7 +171,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(assets), self.num_assets_to_extract)
         # test that assets of each type were calculated
         # num
-        cnt = next((item for item in assets if item["name"] == "Number of Lighting Systems"), None)
+        cnt: dict = next((item for item in assets if item["name"] == "Number of Lighting Systems"), {})
         self.assertTrue(isinstance(cnt['value'], int))
         self.assertEqual(cnt['value'], 2)
         # avg_sqft
@@ -180,10 +180,10 @@ class TestBSyncProcessor(unittest.TestCase):
         # self.assertEqual(avgHeat['value'], 71.5)
 
         # age
-        age = next((item for item in assets if item["name"] == "Heating System Oldest"), None)
+        age: dict = next((item for item in assets if item["name"] == "Heating System Oldest"), {})
         self.assertEqual(age['value'], '2010')
 
-    def test_save(self):
+    def test_save(self) -> None:
         filename = self.output_dir / self.out_file
         if filename.exists():
             filename.unlink()
