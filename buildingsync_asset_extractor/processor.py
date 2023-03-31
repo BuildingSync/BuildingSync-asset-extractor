@@ -33,18 +33,29 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+import dataclasses
 import json
 import logging
 import re
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Callable, Optional, Tuple, Union
 
 from importlib_resources import files
 from lxml import etree
 from lxml.etree import ElementTree
 
 from buildingsync_asset_extractor.errors import BSyncProcessorError
+from buildingsync_asset_extractor.types import (
+    Asset,
+    AssetData,
+    AssetDef,
+    LightingData,
+    LightingDataLPD,
+    LightingDataPower,
+    Section,
+    SystemData
+)
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -94,20 +105,27 @@ class BSyncProcessor:
 
     def initialize_vars(self, asset_defs_filename: Optional[str]) -> None:
         # use default asset definitions file unless otherwise specified
+        self.asset_defs: list[AssetDef]
         if asset_defs_filename:
             self.config_filename = asset_defs_filename
             # open abs path
             with open(self.config_filename, mode='rb') as f:
-                self.asset_defs = json.load(f)['asset_definitions']
+                self.asset_defs = [
+                    AssetDef(**asset_def)
+                    for asset_def in json.load(f)['asset_definitions']
+                ]
         else:
             self.config_filename = DEFAULT_ASSETS_DEF_FILE
             # open with importlib.resources
             file = files('buildingsync_asset_extractor.config').joinpath(self.config_filename).read_text()
-            self.asset_defs = json.loads(file)['asset_definitions']
+            self.asset_defs = [
+                AssetDef(**asset_def)
+                for asset_def in json.loads(file)['asset_definitions']
+            ]
 
         self.namespaces: dict[str, str] = {}
-        self.sections: dict = {}
-        self.asset_data: dict = {'assets': []}
+        self.sections: dict[Any, Section] = {}  # Section by ID
+        self.asset_data = AssetData(assets=[])
         # TODO: do we want to round answers?
         self.round_digits = 5
 
@@ -119,9 +137,12 @@ class BSyncProcessor:
         # set and parse
         self.config_filename = str(asset_defs_filename)
         with open(self.config_filename, mode='rb') as file:
-            self.asset_defs = json.load(file)['asset_definitions']
+            self.asset_defs = [
+                AssetDef(**asset_def)
+                for asset_def in json.load(file)['asset_definitions']
+            ]
 
-    def get_asset_defs(self) -> dict:
+    def get_asset_defs(self) -> list[AssetDef]:
         """ return asset definitions array """
         return self.asset_defs
 
@@ -154,7 +175,7 @@ class BSyncProcessor:
         if not namespaces:
             raise BSyncProcessorError('No namespace was found in this file. Please modify your file and try again.')
 
-    def get_namespaces(self) -> dict:
+    def get_namespaces(self) -> dict[str, str]:
         """ return namespaces """
         return self.namespaces
 
@@ -162,20 +183,20 @@ class BSyncProcessor:
         """ return parsed xml doc """
         return self.doc
 
-    def get_sections(self) -> dict:
+    def get_sections(self) -> dict[str, Section]:
         """ return sections """
         return self.sections
 
-    def get_assets(self) -> list[dict]:
+    def get_assets(self) -> list[Asset]:
         """ return asset data """
-        return self.asset_data['assets']
+        return self.asset_data.assets
 
     def save(self, filename: Union[Path, str]) -> None:
         """ save assets data to JSON file
             :param filename: str, filename to save
         """
         with open(filename, 'w') as outfile:
-            json.dump(self.asset_data, outfile, indent=4)
+            json.dump(dataclasses.asdict(self.asset_data), outfile, indent=4)
 
         logger.info('Assets saved to {}'.format(filename))
 
@@ -212,14 +233,14 @@ class BSyncProcessor:
                     'Buildings/Building/Sections/Section')
         for item in r:
             id = item.get('ID')
-            self.sections[id] = {}
+            self.sections[id] = Section(
+                type=None,
+                areas={},
+            )
 
-            self.sections[id]['type'] = None
             types = self.xp(item, './SectionType')
             if types:
-                self.sections[id]['type'] = types[0].text
-
-            self.sections[id]['areas'] = {}
+                self.sections[id].type = types[0].text
 
             fas = self.xp(item, './FloorAreas/FloorArea')
             for fa in fas:
@@ -232,7 +253,7 @@ class BSyncProcessor:
                     elif child.tag.endswith('FloorAreaValue'):
                         faval = float(child.text)
                 if fatype is not None:
-                    self.sections[id]['areas'][fatype] = faval
+                    self.sections[id].areas[fatype] = faval
 
         logger.debug("Sections set to: {}".format(self.sections))
 
@@ -244,14 +265,14 @@ class BSyncProcessor:
 
         # process json file
         for asset in self.asset_defs:
-            logger.debug("...processing {}".format(asset['name']))
-            if 'sqft' in asset['type']:
-                self.process_sqft_asset(asset, asset['type'])
-            elif asset['type'] == 'num':
+            logger.debug("...processing {}".format(asset.name))
+            if 'sqft' in asset.type:
+                self.process_sqft_asset(asset, asset.type)
+            elif asset.type == 'num':
                 self.process_count_asset(asset)
-            elif 'age' in asset['type']:
-                self.process_age_asset(asset, asset['type'])
-            elif 'custom' in asset['type']:
+            elif 'age' in asset.type:
+                self.process_age_asset(asset, asset.type)
+            elif 'custom' in asset.type:
                 self.process_custom_asset(asset)
 
         logger.debug('Assets: {}'.format(self.asset_data))
@@ -262,22 +283,22 @@ class BSyncProcessor:
         if isinstance(value, float):
             value = round(value, self.round_digits)
 
-        self.asset_data['assets'].append({'name': name, 'value': value})
+        self.asset_data.assets.append(Asset(name, value))
 
     def export_asset_units(self, name: str, value: Optional[str]) -> None:
         """ export an asset's units
             append "Units" to name and save units name """
         if value != "No units":
-            self.asset_data['assets'].append({'name': name + ' Units', 'value': value})
+            self.asset_data.assets.append(Asset(name=name + ' Units', value=value))
 
-    def get_units(self, results: list) -> Optional[str]:
+    def get_units(self, results: Union[list[SystemData], list[LightingData]]) -> Optional[str]:
         """ attempt to get units or return mixed if multiple units are listed """
         units = None
         if len(results) > 0:
-            if 'units' in results[0].keys():
-                units = results[0]['units']
+            if isinstance(results[0], SystemData) and results[0].units is not None:
+                units = results[0].units
             for res in results:
-                if 'units' in res.keys() and res['units'] != units:
+                if isinstance(res, SystemData) and res.units is not None and res.units != units:
                     # export "mixed" since we can't convert units, no units
                     units = 'mixed'
         return units
@@ -297,7 +318,7 @@ class BSyncProcessor:
 
         return plant
 
-    def get_heat_cool_type(self, asset: dict) -> Optional[str]:
+    def get_heat_cool_type(self, asset: str) -> Optional[str]:
         the_type = None
         logger.debug(f"GETTING HEAT COOL TYPE FOR ASSET: {asset}")
         if 'Heating' in asset:
@@ -306,14 +327,14 @@ class BSyncProcessor:
             the_type = 'Cooling'
         return the_type
 
-    def hvac_search(self, item: dict, asset: dict) -> list[ElementTree]:
+    def hvac_search(self, item: ElementTree, asset: AssetDef) -> list[ElementTree]:
         """ Perform a 2-level search
             1. First look in HeatingAndCoolingSystems/<type>Sources/<type>Source
             2. If not there, look for a plant ID and look in there
             Can be reused for several assets
         """
         # method 1: find within HeatingAndCoolingSystems or DomesticHotWaterSystems
-        matches = self.xp(item, './/' + asset['key'])
+        matches = self.xp(item, './/' + asset.key)
         # expects 0 or 1 match
         # logger.debug(f"number of matches for {item}: {len(matches)}")
         if len(matches) == 0:
@@ -321,22 +342,21 @@ class BSyncProcessor:
             plant = self.get_plant(item)
             if plant is not None:
                 # now get asset key within this element
-                matches = self.xp(plant, './/' + asset['key'])
+                matches = self.xp(plant, './/' + asset.key)
 
         return matches
 
-    def process_age_asset(self, asset: dict, process_type: str) -> None:
+    def process_age_asset(self, asset: AssetDef, process_type: str) -> None:
         """ retrieves, in order, either 'YearOfManufacture' or YearInstalled' element of an equipment type
             returns either the oldest or newest, as specified.
             for weighted average processing order: 1) installed power (not implemented), 2) capacity, 3) served space area
         """
-        results = []
-        items = self.xp(self.doc, asset['parent_path'])
+        results: list[SystemData] = []
+        items = self.xp(self.doc, asset.parent_path)
 
         for item in items:
-            matches = self.xp(item, './/' + asset['key'])
+            matches = self.xp(item, './/' + asset.key)
             for m in matches:
-                res = {}
                 # priority 1: YearOfManufacture
                 years = self.xp(m, './/YearOfManufacture')
                 if len(years) == 0:
@@ -352,12 +372,14 @@ class BSyncProcessor:
 
                 if years:
                     match = years[0]
-                    res['value'] = match.text
+                    res = SystemData(
+                        value=match.text,
+                    )
                     if process_type.endswith('average'):
                         # check for capacity
                         cap, cap_units = self.get_capacity(match)
-                        res['cap'] = cap
-                        res['cap_units'] = cap_units
+                        res.cap = cap
+                        res.cap_units = cap_units
                         # check for sqft
                         sqft_total = 0.0
                         # EEK this will vary wildly
@@ -365,26 +387,24 @@ class BSyncProcessor:
                         linked_sections = self.xp(hvac_system, './/' + 'LinkedSectionID')
                         for ls in linked_sections:
                             sqft_total += self.compute_sqft(ls)
-                        res['sqft'] = sqft_total
+                        res.sqft = sqft_total
 
                     results.append(res)
-        logger.debug(f"RESULTS for {asset['export_name']}: {results}")
+        logger.debug(f"RESULTS for {asset.export_name}: {results}")
 
         # set units
         units: Optional[str] = "No units"
-        if 'export_units' in asset and asset['export_units'] is True:
+        if asset.export_units:
             units = None
-            if 'units' in asset:
-                units = asset['units']
 
-        self.format_age_results(asset['export_name'], results, process_type, units)
+        self.format_age_results(asset.export_name, results, process_type, units)
 
-    def process_count_asset(self, asset: dict) -> None:
+    def process_count_asset(self, asset: AssetDef) -> None:
         """ process count asset """
         # if there are keys, total is num of keys
         # else total is None
-        items = self.xp(self.doc, asset['parent_path'])
-        all_matches = [self.xp(item, './/' + asset['key']) for item in items]
+        items = self.xp(self.doc, asset.parent_path)
+        all_matches = [self.xp(item, './/' + asset.key) for item in items]
         all_matches = [matches for matches in all_matches if matches]
         if all_matches == []:
             total = None
@@ -393,28 +413,28 @@ class BSyncProcessor:
 
         # set units
         units: Optional[str] = "No units"
-        if 'export_units' in asset and asset['export_units'] is True:
+        if asset.export_units is True:
             units = None
-            if 'units' in asset:
-                units = asset['units']
+            if asset.units is not None:
+                units = asset.units
 
-        self.export_asset(asset['export_name'], total)
-        self.export_asset_units(asset['export_name'], units)
+        self.export_asset(asset.export_name, total)
+        self.export_asset_units(asset.export_name, units)
 
-    def process_sqft_asset(self, asset: dict, process_type: str) -> None:
+    def process_sqft_asset(self, asset: AssetDef, process_type: str) -> None:
         """ process sqft asset
             either a ranking by total sqft or a weighted average
         """
-        results = {}
-        items = self.xp(self.doc, asset['parent_path'])
+        results: dict[str, float] = {}
+        items = self.xp(self.doc, asset.parent_path)
 
         for item in items:
             sqft_total = 0.0
-            matches = self.xp(item, './/' + asset['key'])
+            matches = self.xp(item, './/' + asset.key)
 
             # special processing for UDFs
-            if asset['key'].endswith('UserDefinedField'):
-                matches = self.find_udf_values(matches, asset['name'])
+            if asset.key.endswith('UserDefinedField'):
+                matches = self.find_udf_values(matches, asset.name)
 
             for match in matches:
                 # get asset label and initialize results array in not done already
@@ -430,21 +450,21 @@ class BSyncProcessor:
 
         # store results
         logger.debug("process type: {}".format(process_type))
-        logger.debug(f"RESULTS for {asset['export_name']}: {results}")
+        logger.debug(f"RESULTS for {asset.export_name}: {results}")
 
         # set units
         units: Optional[str] = "No units"
-        if 'export_units' in asset and asset['export_units'] is True:
+        if asset.export_units:
             units = None
-            if 'units' in asset:
-                units = asset['units']
+            if asset.units is not None:
+                units = asset.units
 
         if process_type == 'sqft':
-            self.format_sqft_results(asset['export_name'], results, units)
+            self.format_sqft_results(asset.export_name, results, units)
         elif process_type == 'avg_sqft':
-            self.format_avg_sqft_results(asset['export_name'], results, units)
+            self.format_avg_sqft_results(asset.export_name, results, units)
 
-    def process_custom_asset(self, asset: dict) -> None:
+    def process_custom_asset(self, asset: AssetDef) -> None:
         # use this to make a 'switch statement for all custom assets'
         # making this super explicit for now.
         # This function should contain all of the little variations
@@ -457,11 +477,11 @@ class BSyncProcessor:
 
         # get name of units field to calculate
         units_to_export = None
-        if asset['name'] in name_of_units_field:
+        if asset.name in name_of_units_field:
             # found the name holding the units field
-            units_to_export = name_of_units_field[asset['name']]
+            units_to_export = name_of_units_field[asset.name]
 
-        custom_assets = {
+        custom_assets: dict[str, Callable[[], Union[list[SystemData], list[LightingData]]]] = {
             'AnnualHeatingEfficiency': lambda: self.process_system(asset, units_to_export),
             'AnnualCoolingEfficiency': lambda: self.process_system(asset, units_to_export),
             'PrimaryFuel': lambda: self.process_system(asset, units_to_export),
@@ -473,30 +493,29 @@ class BSyncProcessor:
         assets_80_percent = ['PrimaryFuel']
         assets_lighting = ['LightingSystemEfficiency']
 
-        if asset['name'] in custom_assets:
-            results = custom_assets[asset['name']]()
+        results: Union[list[SystemData], list[LightingData]]
+        if asset.name in custom_assets:
+            results = custom_assets[asset.name]()
         else:
-            logger.warn(f"Custom Processing for {asset['name']} has not been implemented. Asset will be ignored.")
-            results = []
+            logger.warn(f"Custom Processing for {asset.name} has not been implemented. Asset will be ignored.")
+            results = []  # type: ignore
 
         # calculate actual units
         units: Optional[str] = "No units"
-        if 'export_units' in asset and asset['export_units'] is True:
-            if 'units' in asset:
-                # get predefined units from asset definition
-                units = asset['units']
+        if asset.export_units:
+            if asset.units is not None:
+                units = asset.units
             else:
-                # get calculated units from results
                 units = self.get_units(results)
 
-        if asset['name'] in assets_80_percent:
-            self.format_80_percent_results(asset['export_name'], results, units)
-        elif asset['name'] in assets_lighting:
-            self.format_lighting_results(asset['export_name'], results, units)
+        if asset.name in assets_80_percent:
+            self.format_80_percent_results(asset.export_name, results, units)  # type: ignore
+        elif asset.name in assets_lighting:
+            self.format_lighting_results(asset.export_name, results, units)  # type: ignore
         else:
-            self.format_custom_avg_results(asset['export_name'], results, units)
+            self.format_custom_avg_results(asset.export_name, results, units)  # type: ignore
 
-    def process_lighting(self, asset: dict) -> list[dict]:
+    def process_lighting(self, asset: AssetDef) -> list[LightingData]:
         """ Process Lighting Efficiency asset
         method 1: InstalledPower * PercentPremisesServed
         method 2: Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
@@ -504,22 +523,23 @@ class BSyncProcessor:
         method 4: Lookup table based on LightingSystemType / BallastType (todo)
         very custom method. no units fields to process
         """
-        results = []
+        results: list[LightingData] = []
         matches = []
-        items = self.xp(self.doc, asset['parent_path'])
+        items = self.xp(self.doc, asset.parent_path)
 
         for item in items:
-            res = {}
+            res: Optional[LightingData] = None
             # method 1
             matches = self.xp(item, './/' + 'InstalledPower')
             if len(matches) > 0:
-                res['power'] = float(matches[0].text)
+                res = LightingDataPower(
+                    power=float(matches[0].text),
+                    sqft=self.get_linked_section_sqft(item),
+                    sqft_percent=None,
+                )
                 pmatches = self.xp(item, './/' + 'PercentPremisesServed')
                 if len(pmatches) > 0:
-                    res['sqft_percent'] = float(pmatches[0].text)
-
-                # check sqft (LinkedPremises & LinkedSectionID)
-                res['sqft'] = self.get_linked_section_sqft(item)
+                    res.sqft_percent = float(pmatches[0].text)
 
             if len(matches) == 0:
                 # method 2
@@ -529,11 +549,14 @@ class BSyncProcessor:
                     # get # luminaires & quantity
                     nmatches = self.xp(item, './/' + 'NumberOfLuminaires')
                     if len(nmatches) > 0:
+                        res = LightingDataPower(
+                            power=float(matches[0].text) * float(lmatches[0].text) * float(nmatches[0].text),
+                            sqft=self.get_linked_section_sqft(item),
+                            sqft_percent=None,
+                        )
                         qmatches = self.xp(item, './/' + 'Quantity')
-                        res['power'] = float(matches[0].text) * float(lmatches[0].text) * float(nmatches[0].text)
                         if len(qmatches) > 0:
-                            res['power'] = res['power'] * float(qmatches[0].text)
-                        res['sqft'] = self.get_linked_section_sqft(item)
+                            res.power = res.power * float(qmatches[0].text)
                     else:
                         # try to get # luminaires a different way
                         # UDF: '* Quantity Of Luminaires For *'
@@ -559,10 +582,13 @@ class BSyncProcessor:
 
                         if qty_val > 0:
                             # logger.debug(f"QUANTITY OF LUMINAIRES: {qty_val}")
-                            res['power'] = res['power'] = float(matches[0].text) * float(lmatches[0].text) * qty_val
-                            res['sqft'] = self.get_linked_section_sqft(item)
+                            res = LightingDataPower(
+                                power=float(matches[0].text) * float(lmatches[0].text) * qty_val,
+                                sqft=self.get_linked_section_sqft(item),
+                                sqft_percent=None,
+                            )
 
-                if len(res) == 0:
+                if res is None:
                     # method 3: UDF for Lighting Power Density
                     udf_match_str = 'Lighting Power Density For'
 
@@ -585,31 +611,34 @@ class BSyncProcessor:
 
                     if qty_val > 0:
                         # logger.debug(f"LPD: {qty_val}")
-                        res['lpd'] = qty_val
-                        res['sqft'] = self.get_linked_section_sqft(item)
+                        res = LightingDataLPD(
+                            lpd=qty_val,
+                            sqft=self.get_linked_section_sqft(item),
+                            sqft_percent=None,
+                        )
 
             # append if not empty
             if res:
                 results.append(res)
 
-        logger.debug(f"RESULTS for {asset['export_name']}: {results}")
+        logger.debug(f"RESULTS for {asset.export_name}: {results}")
         return results
 
-    def process_system(self, asset: dict, units_keyname: Optional[str]) -> list[dict]:
+    def process_system(self, asset: AssetDef, units_keyname: Optional[str]) -> list[SystemData]:
         """ Process Heating/Cooling and DomesticHotWater System Assets
             order to check in:
             3) 1 SPECIAL CASE - Heating Efficiency: check under HeatingSource/HeatingSourceType/Furnace
             and use ThermalEfficiency with units of "Thermal Efficiency"
         """
-        results = []
+        results: list[SystemData] = []
         matches = []
-        items = self.xp(self.doc, asset['parent_path'])
+        items = self.xp(self.doc, asset.parent_path)
 
         for item in items:
 
             matches = self.hvac_search(item, asset)
             # special case for Efficiency (3rd priority)
-            if 'Efficiency' in asset['name'] and len(matches) == 0:
+            if 'Efficiency' in asset.name and len(matches) == 0:
                 # look for ThermalEfficiency under HeatingSourceType/<type>
                 matches = self.xp(item, './/' + 'ThermalEfficiency')
 
@@ -631,9 +660,17 @@ class BSyncProcessor:
                 # check sqft (LinkedPremises & LinkedSectionID
                 sqft_total = self.get_linked_section_sqft(item)
 
-                results.append({'value': match.text, 'units': units, 'cap': cap, 'cap_units': cap_units, 'sqft': sqft_total})
+                results.append(
+                    SystemData(
+                        value=match.text,
+                        units=units,
+                        cap=cap,
+                        cap_units=cap_units,
+                        sqft=sqft_total
+                    )
+                )
 
-        logger.debug(f"RESULTS for {asset['export_name']}: {results}")
+        logger.debug(f"RESULTS for {asset.export_name}: {results}")
         return results
 
     def get_linked_section_sqft(self, item: ElementTree) -> float:
@@ -709,25 +746,26 @@ class BSyncProcessor:
                     cap_units = 'Thermal Efficiency'
         return cap, cap_units
 
-    def remap_results(self, results: list) -> Tuple[list[Optional[float]], list[Optional[float]], list[Any], list[Optional[float]]]:
+    def remap_results(self, results: list[SystemData]) -> \
+            Tuple[list[Optional[float]], list[Optional[float]], list[Optional[str]], list[Optional[float]]]:
         """ Remap results from a list of dictionaries to 4 lists """
         try:
-            values = [sub['value'] if sub['value'] is None else float(sub['value']) for sub in results]
+            values = [sub.value if sub.value is None else float(sub.value) for sub in results]
         except ValueError:
-            values = [sub['value'] for sub in results]
+            values = [sub.value for sub in results]
 
-        capacities = [sub['cap'] if sub['cap'] is None else float(sub['cap']) for sub in results]
-        cap_units = [sub['cap_units'] for sub in results]
-        sqfts = [sub['sqft'] if sub['sqft'] is None else float(sub['sqft']) for sub in results]
+        capacities = [sub.cap if sub.cap is None else float(sub.cap) for sub in results]
+        cap_units = [sub.cap_units for sub in results]
+        sqfts = [sub.sqft if sub.sqft is None else float(sub.sqft) for sub in results]
 
         return values, capacities, cap_units, sqfts
 
-    def format_age_results(self, name: str, results: list, process_type: str, units: Optional[str]) -> None:
+    def format_age_results(self, name: str, results: list[SystemData], process_type: str, units: Optional[str]) -> None:
 
         # process results
         value = None
         if process_type.endswith('oldest'):
-            res_vals = [sub['value'] for sub in results if sub['value']]
+            res_vals = [sub.value for sub in results]
             s_res = sorted(res_vals)
             if s_res:
                 value = s_res[0]
@@ -736,7 +774,7 @@ class BSyncProcessor:
             self.export_asset_units(name, units)
 
         elif process_type.endswith('newest'):
-            res_vals = [sub['value'] for sub in results if sub['value']]
+            res_vals = [sub.value for sub in results]
             s_res = sorted(res_vals, reverse=True)
             if s_res:
                 value = s_res
@@ -746,7 +784,7 @@ class BSyncProcessor:
         elif process_type.endswith('average'):
             self.format_custom_avg_results(name, results, units)
 
-    def format_80_percent_results(self, name: str, results: list, units: Optional[str]) -> None:
+    def format_80_percent_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
         """ format 80% rule results
             the "primary" type returned must at least serve 80% of the area by
             1. Capacity
@@ -775,9 +813,9 @@ class BSyncProcessor:
             if total > 0:
                 primaries = {}
                 for res in results:
-                    if res['value'] not in primaries:
-                        primaries[res['value']] = 0.0
-                    primaries[res['value']] += float(res['cap'])
+                    if res.value not in primaries:
+                        primaries[res.value] = 0.0
+                    primaries[res.value] += float(res.cap)  # type: ignore
 
                 for p in primaries:
                     if float(primaries[p])/total >= 0.8:
@@ -800,9 +838,10 @@ class BSyncProcessor:
             if total > 0:
                 primaries = {}
                 for res in results:
-                    if res['value'] not in primaries:
-                        primaries[res['value']] = 0
-                    primaries[res['value']] += res['sqft']
+                    if res.value not in primaries:
+                        primaries[res.value] = 0
+                    if res.sqft is not None:
+                        primaries[res.value] += res.sqft
 
                 for p in primaries:
                     if float(primaries[p])/total >= 0.8:
@@ -823,7 +862,7 @@ class BSyncProcessor:
         self.export_asset_units(name, units)
         return
 
-    def format_lighting_results(self, name: str, results: list, units: Optional[str]) -> None:
+    def format_lighting_results(self, name: str, results: list[LightingData], units: Optional[str]) -> None:
         """ custom processing for lighting efficiency
             1. if 'lpd' is present, average the values
             2. else if percentpremisesserved
@@ -836,20 +875,15 @@ class BSyncProcessor:
             return
 
         # check method 1
-        has_lpd = 1
-        for r in results:
-            try:
-                r['lpd']
-            except Exception:
-                has_lpd = 0
+        has_lpd = all([isinstance(r, LightingDataLPD) for r in results])
 
         # for weighted average, re-find Watts from LPD and LinkedPremises and divide by total sqft
         if has_lpd:
             value = 0.0
-            total_sqft = 0
+            total_sqft = 0.0
             for r in results:
-                value += r['lpd'] * r['sqft']
-                total_sqft += r['sqft']
+                value += r.lpd * r.sqft  # type: ignore # TODO: remove.
+                total_sqft += r.sqft
             if value > 0:
                 value = value / total_sqft
 
@@ -860,19 +894,13 @@ class BSyncProcessor:
         # check method 2
         # need both PercentPremises AND LinkedPremises for this
         # running sum of all watts / running sum of all fractions of sqft
-        has_perc = 1
-        for r in results:
-            try:
-                r['sqft_percent']
-                r['sqft']
-            except Exception:
-                has_perc = 0
+        has_perc = all([r.sqft_percent is not None for r in results])
         if has_perc:
             power = 0
-            sqft_total = 0
+            sqft_total = 0.0
             for r in results:
                 power += power
-                sqft_total = r['sqft_percent'] / 100 * r['sqft']
+                sqft_total = r.sqft_percent / 100 * r.sqft  # type: ignore # TODO: remove.
             if power > 0:
                 value = power / sqft_total
             self.export_asset(name, value)
@@ -880,11 +908,14 @@ class BSyncProcessor:
             return
 
         # check method 3
-        sqfts = [sub['sqft'] if sub['sqft'] is None else float(sub['sqft']) for sub in results]
-        if None not in sqfts:
+        has_power = all([
+            isinstance(r, LightingDataPower)
+            for r in results
+        ])
+        if has_power:
             # sqft methods
-            remapped_power = [sub['power'] for sub in results]
-            remapped_sqft = [sub['sqft'] for sub in results]
+            remapped_power = [sub.power for sub in results]  # type: ignore # TODO: remove.
+            remapped_sqft = [sub.sqft for sub in results]
             top = sum(remapped_power)
             bottom = sum(remapped_sqft)
             if bottom > 0:
@@ -898,7 +929,7 @@ class BSyncProcessor:
         self.export_asset_units(name, units)
         return
 
-    def format_custom_avg_results(self, name: str, results: list, units: Optional[str]) -> None:
+    def format_custom_avg_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
         """ format weighted average
             1. Ensure all units are the same
             2. Attempt to calculate with installed power (NOT IMPLEMENTED)
@@ -932,8 +963,8 @@ class BSyncProcessor:
             cap_total = 0.0
             eff_total = 0.0
             for res in results:
-                cap_total = cap_total + float(res['cap'])
-                eff_total = eff_total + (float(res['value']) * float(res['cap']))
+                cap_total = cap_total + float(res.cap)  # type: ignore
+                eff_total = eff_total + (float(res.value) * float(res.cap))  # type: ignore
             total: Union[float, str] = eff_total / cap_total
 
             # special case for average age: take the floor since partial year doesn't make sense
@@ -946,8 +977,8 @@ class BSyncProcessor:
 
         elif None not in sqfts:
             # sqft methods
-            remapped_res = {sub['value']: sub['sqft'] for sub in results}
-            self.format_avg_sqft_results(name, remapped_res, units)
+            remapped_res = {sub.value: sub.sqft for sub in results}
+            self.format_avg_sqft_results(name, remapped_res, units)  # type: ignore
             return
         else:
             # just average
@@ -959,7 +990,7 @@ class BSyncProcessor:
             self.export_asset_units(name, units)
             return
 
-    def format_sqft_results(self, name: str, results: dict, units: Optional[str]) -> None:
+    def format_sqft_results(self, name: str, results: dict[str, float], units: Optional[str]) -> None:
         """ return primary and secondary for top 2 results by sqft """
         # NOTE: this is the only method that modifies the export name '
         # by appending 'primary' and 'secondary'
@@ -984,18 +1015,18 @@ class BSyncProcessor:
         self.export_asset('Secondary ' + name, value2)
         self.export_asset_units('Secondary ' + name, units)
 
-    def format_avg_sqft_results(self, name: str, results: dict, units: Optional[str]) -> None:
+    def format_avg_sqft_results(self, name: str, results: dict[Any, float], units: Optional[str]) -> None:
         """ weighted average of results """
 
         # in this case the result keys will convert to numbers
         # to calculate the weighted average
 
-        total = None
+        total: Union[str, float, None] = None
 
         if results:
             total_sqft = sum(results.values())
 
-            running_sum = 0
+            running_sum = 0.0
             for k, v in results.items():
                 running_sum += float(k) * v
             if running_sum > 0 and total_sqft > 0:
@@ -1009,7 +1040,7 @@ class BSyncProcessor:
         self.export_asset(name, total)
         self.export_asset_units(name, units)
 
-    def find_udf_values(self, matches: list, name: str) -> list[Optional[str]]:
+    def find_udf_values(self, matches: list[ElementTree], name: str) -> list[Optional[str]]:
         """ processes a list of UDF matches
             retrieves the FieldValue whose FieldName matches the name passed in
             returns an array of values
@@ -1034,7 +1065,7 @@ class BSyncProcessor:
         name = name.replace('HVAC', 'Hvac').replace(' ', '')
         return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
-    def xp(self, element: etree, path: str) -> ElementTree:
+    def xp(self, element: ElementTree, path: str) -> list[ElementTree]:
         """use xpath function and specify namespace
         Returns results of xpath operation
         """
@@ -1046,8 +1077,8 @@ class BSyncProcessor:
             assumes 'Conditioned' if it exists; otherwise uses the 'Gross' floor area
             returns square footage
         """
-        if section_id in self.sections and 'areas' in self.sections[section_id]:
-            areas = self.sections[section_id]['areas']
+        if section_id in self.sections:
+            areas = self.sections[section_id].areas
             if 'Conditioned' in areas:
                 return areas['Conditioned']
             elif 'Gross' in areas:
@@ -1057,7 +1088,7 @@ class BSyncProcessor:
             'Error retrieving section sqft...No Conditioned area or Gross area found for section {}'.format(section_id)
         )
 
-    def compute_sqft(self, section: dict) -> float:
+    def compute_sqft(self, section: ElementTree) -> float:
         """ compute square footage by either percentage or value method
             returns sum of squarefootages the asset is applied to in the LinkedSection
             the type of floor area to use in the calculation should be specified with "FloorAreaType" element.
@@ -1071,8 +1102,8 @@ class BSyncProcessor:
             # this could be percentage or value
             percent = self.xp(f, './/FloorAreaPercentage')
             if percent:
-                logger.debug('type: {}, section: {}, areas: {}'.format(the_type, sid, self.sections[sid]['areas']))
-                sqft += float(percent[0].text) * self.sections[sid]['areas'][the_type] / 100
+                logger.debug('type: {}, section: {}, areas: {}'.format(the_type, sid, self.sections[sid].areas))
+                sqft += float(percent[0].text) * self.sections[sid].areas[the_type] / 100
             else:
                 # get value instead
                 val = self.xp(f, './/FloorAreaValue')
@@ -1082,7 +1113,10 @@ class BSyncProcessor:
         return sqft
 
     @classmethod
-    def get_default_asset_defs(cls) -> dict:
+    def get_default_asset_defs(cls) -> list[AssetDef]:
         assets_defs_filename = DEFAULT_ASSETS_DEF_FILE
         file = files('buildingsync_asset_extractor.config').joinpath(assets_defs_filename).read_text()
-        return json.loads(file)['asset_definitions']
+        return [
+            AssetDef(**asset_def)
+            for asset_def in json.loads(file)['asset_definitions']
+        ]
