@@ -38,7 +38,14 @@ from pathlib import Path
 
 from lxml import etree
 
+from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
+    LightingDataLPD,
+    LightingDataPower,
+    process_buildings_lighting_systems
+)
 from buildingsync_asset_extractor.processor import BSyncProcessor
+
+SECTION_PATH = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section'
 
 linked_section_with_floor_area_percentage = etree.XML('''
     <acc:LinkedSectionID
@@ -56,7 +63,7 @@ linked_section_with_floor_area_percentage = etree.XML('''
 
 linked_section_with_floor_area_value = etree.XML('''
     <acc:LinkedSectionID
-        IDref="Section-69928578013460"
+        IDref="Section-101919600"
         xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
     >
         <acc:FloorAreas>
@@ -111,23 +118,26 @@ class TestBSyncProcessor(unittest.TestCase):
         lighting_systems.append(method_1_ls)
 
         # add sections to lighting system
-        section = self.bp.xp(method_1_ls, './/LinkedPremises/Section')[0]
-        section.append(linked_section_with_floor_area_percentage)
-        section.append(linked_section_with_floor_area_value)
+        linked_sections = self.bp.xp(method_1_ls, './/LinkedPremises/Section')[0]
+        linked_sections.append(linked_section_with_floor_area_percentage)
+        linked_sections.append(linked_section_with_floor_area_value)
 
         # Action #
-        results = self.bp.process_lighting(asset={
-            "parent_path": lighting_systems_path + "/LightingSystem",
-            'export_name': 'Lighting System Efficiency',
-        })
+        results = process_buildings_lighting_systems(self.bp)
 
         # Assertion #
-        [method_1_results] = results
-        assert method_1_results == {
-            'power': 1.0,  # first InstalledPower
-            'sqft_percent': 3.0,  # first PercentPremisesServed
-            'sqft': 7550.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
-        }
+        assert results == [
+            LightingDataPower(
+                power=1.0,  # first InstalledPower
+                sqft_percent=3.0,  # first PercentPremisesServed
+                sqft=7500.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+            ),
+            LightingDataPower(
+                power=1.0,  # first InstalledPower
+                sqft_percent=3.0,  # first PercentPremisesServed
+                sqft=50.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+            ),
+        ]
 
     def test_process_lighting_method_2_a(self):
         # Set Up #
@@ -141,10 +151,15 @@ class TestBSyncProcessor(unittest.TestCase):
 
         # add method 2 lighting system
         method_2_ls = etree.XML('''
-            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+            <acc:LightingSystem
+                xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
+                xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019"
+            >
                 <acc:LampPower> 2 </acc:LampPower>
                 <acc:NumberOfLampsPerLuminaire> 3 </acc:NumberOfLampsPerLuminaire>
                 <acc:NumberOfLuminaires> 4 </acc:NumberOfLuminaires>
+                <acc:PercentPremisesServed> 3.0 </acc:PercentPremisesServed>
+                <auc:Quantity> 4 </auc:Quantity>
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
@@ -153,22 +168,26 @@ class TestBSyncProcessor(unittest.TestCase):
         lighting_systems.append(method_2_ls)
 
         # add sections to lighting system
-        section = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
-        section.append(linked_section_with_floor_area_percentage)
-        section.append(linked_section_with_floor_area_value)
+        linked_sections = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
+        linked_sections.append(linked_section_with_floor_area_percentage)
+        linked_sections.append(linked_section_with_floor_area_value)
 
         # Action #
-        results = self.bp.process_lighting(asset={
-            "parent_path": lighting_systems_path + "/LightingSystem",
-            'export_name': 'Lighting System Efficiency',
-        })
+        results = process_buildings_lighting_systems(self.bp)
 
         # Assertion #
-        [method_2_ls] = results
-        assert method_2_ls == {
-            'power': 24,  # LampPower * NumberOfLampsPerLuminaire * NumberOfLuminaires
-            'sqft': 7550.0  # sum of get_linked_section_sqft(...) for each LinkedSectionID
-        }
+        assert results == [
+            LightingDataPower(
+                power=96,  # LampPower * NumberOfLampsPerLuminaire * NumberOfLuminaires
+                sqft=7500.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+                sqft_percent=3.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+            ),
+            LightingDataPower(
+                power=96,  # LampPower * NumberOfLampsPerLuminaire * NumberOfLuminaires
+                sqft=50.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+                sqft_percent=3.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+            ),
+        ]
 
     def test_process_lighting_method_2_b(self):
         # Set Up #
@@ -216,22 +235,26 @@ class TestBSyncProcessor(unittest.TestCase):
         method_2_ls.append(bad_value_field)
 
         # add sections to lighting system
-        section = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
-        section.append(linked_section_with_floor_area_percentage)
-        section.append(linked_section_with_floor_area_value)
+        linked_sections = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
+        linked_sections.append(linked_section_with_floor_area_percentage)
+        linked_sections.append(linked_section_with_floor_area_value)
 
         # Action #
-        results = self.bp.process_lighting(asset={
-            "parent_path": lighting_systems_path + "/LightingSystem",
-            'export_name': 'Lighting System Efficiency',
-        })
+        results = process_buildings_lighting_systems(self.bp)
 
         # Assertion #
-        [method_2_ls] = results
-        assert method_2_ls == {
-            'power': 12,  # LampPower * NumberOfLampsPerLuminaire * sum of valid/relevant UserDefinedFields
-            'sqft': 7550.0  # sum of get_linked_section_sqft(...) for each LinkedSectionID
-        }
+        assert results == [
+            LightingDataPower(
+                power=12,  # LampPower * NumberOfLampsPerLuminaire * sum of valid/relevant UserDefinedFields
+                sqft=7500.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+                sqft_percent=None,
+            ),
+            LightingDataPower(
+                power=12,  # LampPower * NumberOfLampsPerLuminaire * sum of valid/relevant UserDefinedFields
+                sqft=50.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+                sqft_percent=None,
+            ),
+        ]
 
     def test_process_lighting_method_3(self):
         # Set Up #
@@ -277,19 +300,146 @@ class TestBSyncProcessor(unittest.TestCase):
         method_3_ls.append(bad_value_field)
 
         # add sections to lighting system
-        section = self.bp.xp(method_3_ls, './/LinkedPremises/Section')[0]
-        section.append(linked_section_with_floor_area_percentage)
-        section.append(linked_section_with_floor_area_value)
+        linked_sections = self.bp.xp(method_3_ls, './/LinkedPremises/Section')[0]
+        linked_sections.append(linked_section_with_floor_area_percentage)
+        linked_sections.append(linked_section_with_floor_area_value)
 
         # Action #
-        results = self.bp.process_lighting(asset={
-            "parent_path": lighting_systems_path + "/LightingSystem",
-            'export_name': 'Lighting System Efficiency',
-        })
+        results = process_buildings_lighting_systems(self.bp)
 
         # Assertion #
-        [method_3_results] = results
-        assert method_3_results == {
-            'lpd': 1.0,  # sum of valid/relevant UserDefinedFields
-            'sqft': 7550.0  # sum of get_linked_section_sqft(...) for each LinkedSectionID
-        }
+        assert results == [
+            LightingDataLPD(
+                lpd=1.0,  # sum of valid/relevant UserDefinedFields
+                sqft=7500.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+                sqft_percent=None,
+            ),
+            LightingDataLPD(
+                lpd=1.0,  # sum of valid/relevant UserDefinedFields
+                sqft=50.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+                sqft_percent=None,
+            ),
+        ]
+
+    def test_process_lighting_method_4_on_section(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get sections and clear it
+        section_path = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections'
+        sections = self.bp.xp(self.bp.doc, section_path)[0]
+        for s in sections:
+            sections.remove(s)
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        building_path = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building'
+        building = self.bp.xp(self.bp.doc, building_path)[0]
+        building.append(etree.XML('''
+            <auc:OccupancyClassification xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019"
+            >Assembly-Convention center</auc:OccupancyClassification>
+        '''))
+
+        # add section
+        section = etree.XML('''
+            <auc:Section ID="Section-101919600" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <auc:OccupancyClassification>Auditorium</auc:OccupancyClassification>
+            </auc:Section>
+        ''')
+        sections.append(section)
+
+        # Action #
+        results = process_buildings_lighting_systems(self.bp)
+
+        # Assertion #
+        assert results == [LightingDataLPD(sqft=50000.0, sqft_percent=100, lpd=0.82)]
+
+    def test_process_lighting_no_method_works(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get sections and clear it
+        section_path = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections'
+        sections = self.bp.xp(self.bp.doc, section_path)[0]
+        for s in sections:
+            sections.remove(s)
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        # add section
+        section = etree.XML('''
+            <auc:Section ID="Section-101919600" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <auc:OccupancyClassification>Auditorium</auc:OccupancyClassification>
+            </auc:Section>
+        ''')
+        sections.append(section)
+
+        # empty lighting systems
+        lighting_system = etree.XML('''
+            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:LinkedPremises>
+                    <acc:Section></acc:Section>
+                </acc:LinkedPremises>
+            </acc:LightingSystem>
+        ''')
+        lighting_systems.append(lighting_system)
+
+        # add sections to lighting system
+        linked_sections = self.bp.xp(lighting_system, './/LinkedPremises/Section')[0]
+        linked_sections.append(etree.XML('''
+            <acc:LinkedSectionID
+                IDref="Section-101919600"
+                xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
+            >
+            </acc:LinkedSectionID>
+        '''))
+
+        # Action #
+        results = process_buildings_lighting_systems(self.bp)
+
+        # Assertion #
+        assert results == []
+
+    def test_process_lighting_method_4_on_lightin_section(self):
+        # Set Up #
+        self.bp.process_sections()
+
+        # get lighting_systems and clear it
+        lighting_systems_path = "/BuildingSync/Facilities/Facility/Systems/LightingSystems"
+        lighting_systems = self.bp.xp(self.bp.doc, lighting_systems_path)[0]
+        for e in lighting_systems:
+            lighting_systems.remove(e)
+
+        # add method 1 lighting system
+        method_1_ls = etree.XML('''
+            <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <acc:LinkedPremises>
+                    <acc:Section></acc:Section>
+                </acc:LinkedPremises>
+            </acc:LightingSystem>
+        ''')
+        lighting_systems.append(method_1_ls)
+
+        # add sections to lighting system
+        linked_sections = self.bp.xp(method_1_ls, './/LinkedPremises/Section')[0]
+        linked_sections.append(linked_section_with_floor_area_percentage)
+
+        # Action #
+        results = process_buildings_lighting_systems(self.bp)
+
+        # Assertion #
+        assert results == [
+            LightingDataLPD(
+                lpd=1.11,  # first InstalledPower
+                sqft_percent=None,  # first PercentPremisesServed
+                sqft=7500.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
+            ),
+        ]

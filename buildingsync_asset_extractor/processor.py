@@ -42,6 +42,11 @@ from typing import Optional
 from importlib_resources import files
 from lxml import etree
 
+from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
+    LightingDataLPD,
+    process_buildings_lighting_systems
+)
+
 # Gets or creates a logger
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -463,7 +468,7 @@ class BSyncProcessor:
             'AnnualCoolingEfficiency': lambda: self.process_system(asset, units_to_export),
             'PrimaryFuel': lambda: self.process_system(asset, units_to_export),
             'WaterHeaterEfficiency': lambda: self.process_system(asset, units_to_export),
-            'LightingSystemEfficiency': lambda: self.process_lighting(asset)
+            'LightingSystemEfficiency': lambda: process_buildings_lighting_systems(self)
         }
 
         # these will get formated with the 80% function and lighting respectively (rest will use custom avg)
@@ -490,105 +495,6 @@ class BSyncProcessor:
             self.format_lighting_results(asset['export_name'], results, units)
         else:
             self.format_custom_avg_results(asset['export_name'], results, units)
-
-    def process_lighting(self, asset: dict):
-        """ Process Lighting Efficiency asset
-        method 1: InstalledPower * PercentPremisesServed
-        method 2: Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
-        method 3: Look in UDF for "Lighting Power Density For ..."
-        method 4: Lookup table based on LightingSystemType / BallastType (todo)
-        very custom method. no units fields to process
-        """
-        results = []
-        matches = []
-        items = self.xp(self.doc, asset['parent_path'])
-
-        for item in items:
-            res = {}
-            # method 1
-            matches = self.xp(item, './/' + 'InstalledPower')
-            if len(matches) > 0:
-                res['power'] = float(matches[0].text)
-                pmatches = self.xp(item, './/' + 'PercentPremisesServed')
-                if len(pmatches) > 0:
-                    res['sqft_percent'] = float(pmatches[0].text)
-
-                # check sqft (LinkedPremises & LinkedSectionID)
-                res['sqft'] = self.get_linked_section_sqft(item)
-
-            if len(matches) == 0:
-                # method 2
-                matches = self.xp(item, './/' + 'LampPower')
-                lmatches = self.xp(item, './/' + 'NumberOfLampsPerLuminaire')
-                if len(matches) > 0 and len(lmatches) > 0:
-                    # get # luminaires & quantity
-                    nmatches = self.xp(item, './/' + 'NumberOfLuminaires')
-                    if len(nmatches) > 0:
-                        qmatches = self.xp(item, './/' + 'Quantity')
-                        res['power'] = float(matches[0].text) * float(lmatches[0].text) * float(nmatches[0].text)
-                        if len(qmatches) > 0:
-                            res['power'] = res['power'] * float(qmatches[0].text)
-                        res['sqft'] = self.get_linked_section_sqft(item)
-                    else:
-                        # try to get # luminaires a different way
-                        # UDF: '* Quantity Of Luminaires For *'
-                        # example: Common Areas Quantity Of Luminaires For Section-101919600
-                        match_str = 'Quantity Of Luminaires For'
-
-                        umatches = self.xp(item, './/' + 'UserDefinedField')
-                        qty_val = 0
-                        for match in umatches:
-                            keep = 0
-                            tmp_val = 0
-                            for child in list(match):
-                                if child.tag.endswith('FieldName') and match_str in child.text:
-                                    keep = 1
-                                if child.tag.endswith('FieldValue'):
-                                    try:
-                                        tmp_val = int(child.text)
-                                    except Exception:
-                                        pass
-
-                            if keep == 1:
-                                qty_val += tmp_val
-
-                        if qty_val > 0:
-                            # logger.debug(f"QUANTITY OF LUMINAIRES: {qty_val}")
-                            res['power'] = res['power'] = float(matches[0].text) * float(lmatches[0].text) * qty_val
-                            res['sqft'] = self.get_linked_section_sqft(item)
-
-                if len(res) == 0:
-                    # method 3: UDF for Lighting Power Density
-                    udf_match_str = 'Lighting Power Density For'
-
-                    matches = self.xp(item, './/' + 'UserDefinedField')
-                    qty_val = 0
-                    for match in matches:
-                        keep = 0
-                        tmp_val = 0
-                        for child in list(match):
-                            if child.tag.endswith('FieldName') and udf_match_str in child.text:
-                                keep = 1
-                            if child.tag.endswith('FieldValue'):
-                                try:
-                                    tmp_val = float(child.text)
-                                except Exception:
-                                    pass
-
-                        if keep == 1:
-                            qty_val += tmp_val
-
-                    if qty_val > 0:
-                        # logger.debug(f"LPD: {qty_val}")
-                        res['lpd'] = qty_val
-                        res['sqft'] = self.get_linked_section_sqft(item)
-
-            # append if not empty
-            if res:
-                results.append(res)
-
-        logger.debug(f"RESULTS for {asset['export_name']}: {results}")
-        return results
 
     def process_system(self, asset: dict, units_keyname):
         """ Process Heating/Cooling and DomesticHotWater System Assets
@@ -828,20 +734,14 @@ class BSyncProcessor:
             return
 
         # check method 1
-        has_lpd = 1
-        for r in results:
-            try:
-                r['lpd']
-            except Exception:
-                has_lpd = 0
-
+        has_lpd = all([isinstance(r, LightingDataLPD) for r in results])
         # for weighted average, re-find Watts from LPD and LinkedPremises and divide by total sqft
         if has_lpd:
             value = 0
             total_sqft = 0
             for r in results:
-                value += r['lpd'] * r['sqft']
-                total_sqft += r['sqft']
+                value += r.lpd * r.sqft
+                total_sqft += r.sqft
             if value > 0:
                 value = value / total_sqft
 
@@ -852,19 +752,13 @@ class BSyncProcessor:
         # check method 2
         # need both PercentPremises AND LinkedPremises for this
         # running sum of all watts / running sum of all fractions of sqft
-        has_perc = 1
-        for r in results:
-            try:
-                r['sqft_percent']
-                r['sqft']
-            except Exception:
-                has_perc = 0
+        has_perc = all(r.sqft_percent is not None for r in results)
         if has_perc:
             power = 0
             sqft_total = 0
             for r in results:
                 power += power
-                sqft_total = r['sqft_percent'] / 100 * r['sqft']
+                sqft_total = r.sqft_percent / 100 * r.sqft
             if power > 0:
                 value = power / sqft_total
             self.export_asset(name, value)
@@ -872,11 +766,11 @@ class BSyncProcessor:
             return
 
         # check method 3
-        sqfts = [sub['sqft'] if sub['sqft'] is None else float(sub['sqft']) for sub in results]
+        sqfts = [sub.sqft if sub.sqft is None else float(sub.sqft) for sub in results]
         if None not in sqfts:
             # sqft methods
-            remapped_power = [sub['power'] for sub in results]
-            remapped_sqft = [sub['sqft'] for sub in results]
+            remapped_power = [sub.power for sub in results]
+            remapped_sqft = [sub.sqft for sub in results]
             top = sum(remapped_power)
             bottom = sum(remapped_sqft)
             if bottom > 0:
@@ -1076,3 +970,18 @@ class BSyncProcessor:
         assets_defs_filename = DEFAULT_ASSETS_DEF_FILE
         file = files('buildingsync_asset_extractor.config').joinpath(assets_defs_filename).read_text()
         return json.loads(file)['asset_definitions']
+
+    def _get_user_defined_feilds(self, element: etree.Element):
+        """Return (name, value) tuples of UserDefinedFields in element.
+        """
+        res = []
+        user_defined_feilds = self.xp(element, './/' + 'UserDefinedField')
+
+        for user_defined_feild in user_defined_feilds:
+            name = next(iter(self.xp(user_defined_feild, './/' + 'FieldName')), None)
+            value = next(iter(self.xp(user_defined_feild, './/' + 'FieldValue')), None)
+
+            if name.text and value.text:
+                res.append((name.text, value.text))
+
+        return res
