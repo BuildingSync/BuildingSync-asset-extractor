@@ -77,7 +77,7 @@ linked_section_with_floor_area_value = etree.XML('''
 
 
 class TestBSyncProcessor(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.testfile = Path(__file__).parents[1] / 'files' / 'completetest.xml'
         self.no_ns_testfile = Path(__file__).parents[1] / 'files' / 'testfile2.xml'
         self.output_dir = Path(__file__).parents[1] / 'output'
@@ -93,7 +93,7 @@ class TestBSyncProcessor(unittest.TestCase):
         print("TESTFILE: {}".format(self.testfile))
         self.bp = BSyncProcessor(self.testfile)
 
-    def test_process_lighting_method_1(self):
+    def test_process_lighting_method_1(self) -> None:
         # Set Up #
         self.bp.process_sections()
 
@@ -139,7 +139,7 @@ class TestBSyncProcessor(unittest.TestCase):
             ),
         ]
 
-    def test_process_lighting_method_2_a(self):
+    def test_process_lighting_method_2_a(self) -> None:
         # Set Up #
         self.bp.process_sections()
 
@@ -189,7 +189,7 @@ class TestBSyncProcessor(unittest.TestCase):
             ),
         ]
 
-    def test_process_lighting_method_2_b(self):
+    def test_process_lighting_method_2_b(self) -> None:
         # Set Up #
         self.bp.process_sections()
 
@@ -256,7 +256,7 @@ class TestBSyncProcessor(unittest.TestCase):
             ),
         ]
 
-    def test_process_lighting_method_3(self):
+    def test_process_lighting_method_3(self) -> None:
         # Set Up #
         self.bp.process_sections()
 
@@ -321,7 +321,7 @@ class TestBSyncProcessor(unittest.TestCase):
             ),
         ]
 
-    def test_process_lighting_method_4_on_section(self):
+    def test_process_lighting_method_4_on_section(self) -> None:
         # Set Up #
         self.bp.process_sections()
 
@@ -358,7 +358,7 @@ class TestBSyncProcessor(unittest.TestCase):
         # Assertion #
         assert results == [LightingDataLPD(sqft=50000.0, sqft_percent=100, lpd=0.82)]
 
-    def test_process_lighting_no_method_works(self):
+    def test_process_lighting_no_method_works(self) -> None:
         # Set Up #
         self.bp.process_sections()
 
@@ -408,7 +408,7 @@ class TestBSyncProcessor(unittest.TestCase):
         # Assertion #
         assert results == []
 
-    def test_process_lighting_method_4_on_lightin_section(self):
+    def test_process_lighting_method_4_on_lightin_section(self) -> None:
         # Set Up #
         self.bp.process_sections()
 

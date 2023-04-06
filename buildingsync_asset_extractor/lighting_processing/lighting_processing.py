@@ -1,6 +1,6 @@
 import abc
 from dataclasses import dataclass
-from typing import Optional
+from typing import TYPE_CHECKING, Optional, Union
 
 from lxml.etree import ElementTree
 
@@ -8,14 +8,20 @@ from buildingsync_asset_extractor.lighting_processing.building_occ_class_to_buil
     building_occ_class_to_building_type
 )
 from buildingsync_asset_extractor.lighting_processing.building_space_type_to_lpd import (
+    BuildingSpaceTypeLPD,
     building_space_type_to_lpd
 )
 from buildingsync_asset_extractor.lighting_processing.building_type_to_lpd import (
+    BuildingTypeLPD,
     building_type_to_lpd
 )
 from buildingsync_asset_extractor.lighting_processing.section_occ_class_to_section_type import (
     section_occ_class_to_section_type
 )
+
+if TYPE_CHECKING:
+    from buildingsync_asset_extractor.processor import BSyncProcessor
+
 
 BUILDING_PATH = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building'
 LIGHTING_SYSTEM_PATH = "/BuildingSync/Facilities/Facility/Systems/LightingSystems/LightingSystem"
@@ -37,7 +43,7 @@ class LightingDataPower(LightingData):
     power: float
 
 
-def process_buildings_lighting_systems(bsync_processor) -> list[LightingData]:
+def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> list[LightingData]:
     """Given a bsync_processor with a single building, get the all it's lightingData.
 
     This function is HUGE, and thus broken down into a series of more digestable fucntions, starting
@@ -159,7 +165,7 @@ def process_buildings_lighting_systems(bsync_processor) -> list[LightingData]:
         else:
             return None
 
-    def method_2(lighting_system: ElementTree) -> Optional[int]:
+    def method_2(lighting_system: ElementTree) -> Optional[float]:
         """Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
 
         number_of_luminaireses may be taken from user defined fields.
@@ -211,7 +217,9 @@ def process_buildings_lighting_systems(bsync_processor) -> list[LightingData]:
     def method_3(lighting_system: ElementTree) -> Optional[float]:
         """Look in UDF for "Lighting Power Density For ..."
         """
+        print("here!")
         user_defined_fields = bsync_processor._get_user_defined_feilds(lighting_system)
+        print(user_defined_fields)
         user_defined_values = [
             int(value) for (name, value)
             in user_defined_fields
@@ -249,6 +257,7 @@ def process_buildings_lighting_systems(bsync_processor) -> list[LightingData]:
             return None
 
         # if we have section type, filter building_space_type_to_lpd by section type.
+        possible_lpds: Union[list[BuildingSpaceTypeLPD], list[BuildingTypeLPD]]
         if section_type:
             possible_lpds = building_space_type_to_lpd
             possible_lpds = [x for x in possible_lpds if x.section_type == section_type]
@@ -283,7 +292,7 @@ def process_buildings_lighting_systems(bsync_processor) -> list[LightingData]:
 
         return lpds[best_year]
 
-    def get_occupancy_classification(element: ElementTree) -> Optional[float]:
+    def get_occupancy_classification(element: ElementTree) -> Optional[str]:
         """Get a building or sections OccupancyClassification"""
         occupancy_classification = bsync_processor.xp(element, './' + 'OccupancyClassification')
 
