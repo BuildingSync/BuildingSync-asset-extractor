@@ -44,9 +44,9 @@ class LightingDataPower(LightingData):
 
 
 def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> list[LightingData]:
-    """Given a bsync_processor with a single building, get the all it's lightingData.
+    """Given a bsync_processor with a single building, get all of its lightingData.
 
-    This function is HUGE, and thus broken down into a series of more digestable fucntions, starting
+    This function is HUGE, and thus broken down into a series of more digestable functions, starting
     with _process_buildings_lighting_systems.
     """
     def _process_buildings_lighting_systems() -> list[LightingData]:
@@ -58,7 +58,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
             building = buildings[0]
         else:
             raise ValueError(
-                f"process_lighting requires a document with a singluar building. The given document has {len(buildings)} buildings"
+                f"process_lighting requires a document with a singular building. The given document has {len(buildings)} buildings"
             )
 
         # get the lighting datas for each section

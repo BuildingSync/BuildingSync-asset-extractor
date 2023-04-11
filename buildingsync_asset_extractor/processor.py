@@ -749,7 +749,7 @@ class BSyncProcessor:
             for r in results:
                 value += r.lpd * r.sqft
                 total_sqft += r.sqft
-            if value > 0:
+            if value > 0 and total_sqft != 0:
                 value = value / total_sqft
 
             self.export_asset(name, value)

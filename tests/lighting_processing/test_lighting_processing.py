@@ -1,6 +1,6 @@
 """
 *********************************************************************************************************
-:copyright (c) BuildingSync®, Copyright (c) 2015-2022, Alliance for Sustainable Energy, LLC,
+:copyright (c) BuildingSync®, Copyright (c) 2015-2023, Alliance for Sustainable Energy, LLC,
 and other contributors.
 
 All rights reserved.
@@ -106,10 +106,10 @@ class TestBSyncProcessor(unittest.TestCase):
         # add method 1 lighting system
         method_1_ls = etree.XML('''
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <acc:InstalledPower> 1.0 </acc:InstalledPower>
-                <acc:InstalledPower> 2.0 </acc:InstalledPower>
-                <acc:PercentPremisesServed> 3.0 </acc:PercentPremisesServed>
-                <acc:PercentPremisesServed> 4.0 </acc:PercentPremisesServed>
+                <acc:InstalledPower>1.0</acc:InstalledPower>
+                <acc:InstalledPower>2.0</acc:InstalledPower>
+                <acc:PercentPremisesServed>3.0</acc:PercentPremisesServed>
+                <acc:PercentPremisesServed>4.0</acc:PercentPremisesServed>
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
@@ -155,11 +155,11 @@ class TestBSyncProcessor(unittest.TestCase):
                 xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
                 xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019"
             >
-                <acc:LampPower> 2 </acc:LampPower>
-                <acc:NumberOfLampsPerLuminaire> 3 </acc:NumberOfLampsPerLuminaire>
-                <acc:NumberOfLuminaires> 4 </acc:NumberOfLuminaires>
-                <acc:PercentPremisesServed> 3.0 </acc:PercentPremisesServed>
-                <auc:Quantity> 4 </auc:Quantity>
+                <acc:LampPower>2</acc:LampPower>
+                <acc:NumberOfLampsPerLuminaire>3</acc:NumberOfLampsPerLuminaire>
+                <acc:NumberOfLuminaires>4</acc:NumberOfLuminaires>
+                <acc:PercentPremisesServed>3.0</acc:PercentPremisesServed>
+                <auc:Quantity>4</auc:Quantity>
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
@@ -202,8 +202,8 @@ class TestBSyncProcessor(unittest.TestCase):
         # add method 2 lighting system
         method_2_ls = etree.XML('''
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <acc:LampPower> 2 </acc:LampPower>
-                <acc:NumberOfLampsPerLuminaire> 3 </acc:NumberOfLampsPerLuminaire>
+                <acc:LampPower>2</acc:LampPower>
+                <acc:NumberOfLampsPerLuminaire>3</acc:NumberOfLampsPerLuminaire>
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
@@ -214,20 +214,20 @@ class TestBSyncProcessor(unittest.TestCase):
         # add user defined feilds to lighting system
         good_field = etree.XML('''
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <acc:FieldName> Quantity Of Luminaires For </acc:FieldName>
-                <acc:FieldValue> 2 </acc:FieldValue>
+                <acc:FieldName>Quantity Of Luminaires For</acc:FieldName>
+                <acc:FieldValue>2</acc:FieldValue>
             </acc:UserDefinedField>
         ''')
         bad_name_feild = etree.XML('''
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <acc:FieldName> irrelevant </acc:FieldName>
-                <acc:FieldValue> 3 </acc:FieldValue>
+                <acc:FieldName>irrelevant</acc:FieldName>
+                <acc:FieldValue>3</acc:FieldValue>
             </acc:UserDefinedField>
         ''')
         bad_value_field = etree.XML('''
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <acc:FieldName> Quantity Of Luminaires For </acc:FieldName>
-                <acc:FieldValue> bad value </acc:FieldValue>
+                <acc:FieldName>Quantity Of Luminaires For</acc:FieldName>
+                <acc:FieldValue>bad value</acc:FieldValue>
             </acc:UserDefinedField>
         ''')
         method_2_ls.append(good_field)
@@ -280,19 +280,19 @@ class TestBSyncProcessor(unittest.TestCase):
         good_field = etree.XML('''
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName> Lighting Power Density For </acc:FieldName>
-                <acc:FieldValue> 1 </acc:FieldValue>
+                <acc:FieldValue>1</acc:FieldValue>
             </acc:UserDefinedField>
         ''')
         bad_name_feild = etree.XML('''
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName> irrelevant </acc:FieldName>
-                <acc:FieldValue> 2 </acc:FieldValue>
+                <acc:FieldValue>2</acc:FieldValue>
             </acc:UserDefinedField>
         ''')
         bad_value_field = etree.XML('''
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <acc:FieldName> Lighting Power Density For </acc:FieldName>
-                <acc:FieldValue> bad value </acc:FieldValue>
+                <acc:FieldName>Lighting Power Density For</acc:FieldName>
+                <acc:FieldValue>bad value</acc:FieldValue>
             </acc:UserDefinedField>
         ''')
         method_3_ls.append(good_field)
