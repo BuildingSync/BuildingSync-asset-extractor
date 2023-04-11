@@ -37,6 +37,9 @@ import unittest
 from pathlib import Path
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
+from buildingsync_asset_extractor.types import Asset
+
+EMPTY_ASSET: Asset = Asset(name="", value=None)
 
 
 class TestBSyncProcessor(unittest.TestCase):
@@ -76,7 +79,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp.set_asset_defs_file(self.test_assets_file)
         self.bp.extract()
         sections = self.bp.get_sections()
-        # print("SECTIONS: {}".format(sections))
+        # print("SECTIONS: EMPTY_ASSET".format(sections))
         self.assertEqual(len(sections), self.num_sections_in_testfile)
 
         assets = self.bp.get_assets()
@@ -85,52 +88,52 @@ class TestBSyncProcessor(unittest.TestCase):
 
         # test that assets of each type were calculated
         # CUSTOM
-        LSE: dict = next((item for item in assets if item["name"] == "Lighting System Efficiency"), {})
-        self.assertTrue(isinstance(LSE['value'], float))
-        self.assertLessEqual(LSE['value'], 2)
-        LSEU: dict = next((item for item in assets if item["name"] == "Lighting System Efficiency Units"), {})
-        self.assertEqual(LSEU['value'], 'W/ft2')
+        LSE: Asset = next((item for item in assets if item.name == "Lighting System Efficiency"), EMPTY_ASSET)
+        self.assertTrue(isinstance(LSE.value, float))
+        self.assertLessEqual(LSE.value, 2)
+        LSEU: Asset = next((item for item in assets if item.name == "Lighting System Efficiency Units"), EMPTY_ASSET)
+        self.assertEqual(LSEU.value, 'W/ft2')
 
-        HSE: dict = next((item for item in assets if item["name"] == "Heating System Efficiency"), {})
-        self.assertTrue(isinstance(HSE['value'], float))
-        self.assertLess(HSE['value'], 70)
-        self.assertGreater(HSE['value'], 69)
-        HSEU: dict = next((item for item in assets if item["name"] == "Heating System Efficiency Units"), {})
-        self.assertEqual(HSEU['value'], 'Thermal Efficiency')
+        HSE: Asset = next((item for item in assets if item.name == "Heating System Efficiency"), EMPTY_ASSET)
+        self.assertTrue(isinstance(HSE.value, float))
+        self.assertLess(HSE.value, 70)
+        self.assertGreater(HSE.value, 69)
+        HSEU: Asset = next((item for item in assets if item.name == "Heating System Efficiency Units"), EMPTY_ASSET)
+        self.assertEqual(HSEU.value, 'Thermal Efficiency')
 
-        HSAA: dict = next((item for item in assets if item["name"] == "Heating System Average Age"), {})
-        self.assertTrue(isinstance(HSAA['value'], str))
-        self.assertEqual(HSAA['value'], '2010')
+        HSAA: Asset = next((item for item in assets if item.name == "Heating System Average Age"), EMPTY_ASSET)
+        self.assertTrue(isinstance(HSAA.value, str))
+        self.assertEqual(HSAA.value, '2010')
 
-        HFT: dict = next((item for item in assets if item["name"] == "Heating Fuel Type"), {})
-        self.assertTrue(isinstance(HFT['value'], str))
-        self.assertEqual(HFT['value'], 'Fuel oil no 1')
+        HFT: Asset = next((item for item in assets if item.name == "Heating Fuel Type"), EMPTY_ASSET)
+        self.assertTrue(isinstance(HFT.value, str))
+        self.assertEqual(HFT.value, 'Fuel oil no 1')
 
-        CSE: dict = next((item for item in assets if item["name"] == "Cooling System Efficiency"), {})
-        self.assertTrue(isinstance(CSE['value'], float))
-        self.assertEqual(CSE['value'], 3.0)
-        CSEU: dict = next((item for item in assets if item["name"] == "Cooling System Efficiency Units"), {})
-        self.assertEqual(CSEU['value'], 'COP')
+        CSE: Asset = next((item for item in assets if item.name == "Cooling System Efficiency"), EMPTY_ASSET)
+        self.assertTrue(isinstance(CSE.value, float))
+        self.assertEqual(CSE.value, 3.0)
+        CSEU: Asset = next((item for item in assets if item.name == "Cooling System Efficiency Units"), EMPTY_ASSET)
+        self.assertEqual(CSEU.value, 'COP')
 
-        WHE: dict = next((item for item in assets if item["name"] == "Hot Water System Efficiency"), {})
-        self.assertEqual(WHE['value'], 'mixed')
+        WHE: Asset = next((item for item in assets if item.name == "Hot Water System Efficiency"), EMPTY_ASSET)
+        self.assertEqual(WHE.value, 'mixed')
 
-        WHFT: dict = next((item for item in assets if item["name"] == "Hot Water System Fuel Type"), {})
-        self.assertEqual(WHFT['value'], 'mixed')
+        WHFT: Asset = next((item for item in assets if item.name == "Hot Water System Fuel Type"), EMPTY_ASSET)
+        self.assertEqual(WHFT.value, 'mixed')
 
         # count
-        cnt: dict = next((item for item in assets if item["name"] == "Number of Lighting Systems"), {})
-        self.assertTrue(isinstance(cnt['value'], int))
-        self.assertEqual(cnt['value'], 2)
+        cnt: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
+        self.assertTrue(isinstance(cnt.value, int))
+        self.assertEqual(cnt.value, 2)
         # avg_sqft
         # TODO: need to get better testfile with this information in it
-        # avgHeat = next((item for item in assets if item["name"] == "Average Heating Setpoint"), None)
-        # self.assertEqual(avgHeat['value'], 71.5)
+        # avgHeat = next((item for item in assets if item.name == "Average Heating Setpoint"), None)
+        # self.assertEqual(avgHeat.value, 71.5)
 
         # age
-        age: dict = next((item for item in assets if item["name"] == "Heating System Oldest"), {})
-        self.assertTrue(isinstance(age['value'], str))
-        self.assertEqual(age['value'], '2010')
+        age: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
+        self.assertTrue(isinstance(age.value, str))
+        self.assertEqual(age.value, '2010')
 
         filename = self.output_dir / self.out_file_2
         self.bp.save(filename)
@@ -150,8 +153,8 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(assets), self.num_assets_to_extract)
 
         # test 1 asset
-        age: dict = next((item for item in assets if item["name"] == "Heating System Oldest"), {})
-        self.assertEqual(age['value'], '2010')
+        age: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
+        self.assertEqual(age.value, '2010')
 
     def test_set_asset_defs(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
@@ -171,17 +174,17 @@ class TestBSyncProcessor(unittest.TestCase):
         self.assertEqual(len(assets), self.num_assets_to_extract)
         # test that assets of each type were calculated
         # num
-        cnt: dict = next((item for item in assets if item["name"] == "Number of Lighting Systems"), {})
-        self.assertTrue(isinstance(cnt['value'], int))
-        self.assertEqual(cnt['value'], 2)
+        cnt: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
+        self.assertTrue(isinstance(cnt.value, int))
+        self.assertEqual(cnt.value, 2)
         # avg_sqft
         # TODO: need to get better testfile with this information in it
-        # avgHeat = next((item for item in assets if item["name"] == "Average Heating Setpoint"), None)
-        # self.assertEqual(avgHeat['value'], 71.5)
+        # avgHeat = next((item for item in assets if item.name == "Average Heating Setpoint"), None)
+        # self.assertEqual(avgHeat.value, 71.5)
 
         # age
-        age: dict = next((item for item in assets if item["name"] == "Heating System Oldest"), {})
-        self.assertEqual(age['value'], '2010')
+        age: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
+        self.assertEqual(age.value, '2010')
 
     def test_save(self) -> None:
         filename = self.output_dir / self.out_file

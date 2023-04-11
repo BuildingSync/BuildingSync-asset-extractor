@@ -143,8 +143,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
         """
         section_ID = section.get("ID")
 
-        print(bsync_processor.sections[section_ID])
-        return bsync_processor.sections[section_ID]['areas'].get("Gross")
+        return bsync_processor.sections[section_ID].areas.get("Gross")  # type: ignore
 
     def get_lighting_system_sqft(section: ElementTree, lighting_system: ElementTree) -> float:
         """Give a section and lighting system, get the sqft the lighting system covers within that section.
