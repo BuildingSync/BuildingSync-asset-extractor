@@ -216,9 +216,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
     def method_3(lighting_system: ElementTree) -> Optional[float]:
         """Look in UDF for "Lighting Power Density For ..."
         """
-        print("here!")
         user_defined_fields = bsync_processor._get_user_defined_feilds(lighting_system)
-        print(user_defined_fields)
         user_defined_values = [
             int(value) for (name, value)
             in user_defined_fields
@@ -239,10 +237,6 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
         section_occ_class = get_occupancy_classification(section)
         building_occ_class = get_occupancy_classification(building)
         year = get_year(building)
-
-        print(section_occ_class)
-        print(building_occ_class)
-        print(year)
 
         if year is None:
             return None
@@ -282,6 +276,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
             raise Exception  # we should not have gotten here.
 
         # get the closest year
+        lpds = {year: lpd for (year, lpd) in lpds.items() if lpd is not None}
         lpd_years = sorted(lpds.keys())
         if lpd_years[0] > year:
             best_year = lpd_years[0]

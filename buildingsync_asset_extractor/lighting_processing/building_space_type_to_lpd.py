@@ -10,7 +10,7 @@ class BuildingSpaceTypeLPD:
 
 
 building_space_type_to_lpd = [
-    BuildingSpaceTypeLPD(building_type="Other", section_type="Atrium", lpd_by_year={1999: 1.3, 2001: 0.6, 2004: 0.6, 2007: 0.6, 2010: None, 2013: None, 2019: 0.39}),
+    BuildingSpaceTypeLPD(building_type="Other", section_type="Atrium", lpd_by_year={1999: 1.3, 2001: 0.6, 2004: 0.6, 2007: 0.6, 2010: None, 2013: None, 2019: 0.49}),
     BuildingSpaceTypeLPD(building_type="Auditorium", section_type="Audience Seating Area", lpd_by_year={1999: None, 2001: None, 2004: None, 2007: None, 2010: 0.79, 2013: 0.63, 2019: 0.61}),
     BuildingSpaceTypeLPD(building_type="Convention center", section_type="Audience Seating Area", lpd_by_year={1999: 0.5, 2001: 0.7, 2004: 0.7, 2007: 0.7, 2010: 0.82, 2013: 0.82, 2019: None}),
     BuildingSpaceTypeLPD(building_type="Exercise Center", section_type="Audience Seating Area", lpd_by_year={1999: 0.5, 2001: 0.3, 2004: 0.3, 2007: 0.3, 2010: None, 2013: None, 2019: None}),
@@ -61,7 +61,7 @@ building_space_type_to_lpd = [
     BuildingSpaceTypeLPD(building_type="Other", section_type="Locker Room", lpd_by_year={1999: None, 2001: 0.6, 2004: 0.6, 2007: 0.6, 2010: 0.75, 2013: 0.75, 2019: 0.52}),
     BuildingSpaceTypeLPD(building_type="Hospital / Healthcare facility", section_type="Lounge / Breakroom", lpd_by_year={1999: 1.4, 2001: 0.8, 2004: 0.8, 2007: 0.8, 2010: 1.07, 2013: 0.92, 2019: 0.42}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Lounge / Breakroom", lpd_by_year={1999: 1.4, 2001: 1.2, 2004: 1.2, 2007: 1.2, 2010: 0.73, 2013: 0.73, 2019: 0.59}),
-    BuildingSpaceTypeLPD(building_type="Other", section_type="Office", lpd_by_year={1999: 1.5, 2001: 1.1, 2004: 1.1, 2007: 1.1, 2010: 1.11, 2013: 1.11, 2019: 0.74}),
+    BuildingSpaceTypeLPD(building_type="Other", section_type="Office", lpd_by_year={1999: 1.43, 2001: 1.1, 2004: 1.1, 2007: 1.1, 2010: 1.07, 2013: 1.07, 2019: 0.67}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Parking Area", lpd_by_year={1999: 0.2, 2001: 0.2, 2004: 0.2, 2007: 0.2, 2010: 0.19, 2013: 0.19, 2019: 0.15}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Pharmacy Area", lpd_by_year={1999: None, 2001: None, 2004: None, 2007: None, 2010: None, 2013: 1.68, 2019: 1.66}),
     BuildingSpaceTypeLPD(building_type="Facility for the visually impaired", section_type="Restroom", lpd_by_year={1999: None, 2001: None, 2004: None, 2007: None, 2010: None, 2013: 1.21, 2019: 1.26}),
@@ -70,7 +70,7 @@ building_space_type_to_lpd = [
     BuildingSpaceTypeLPD(building_type="Other", section_type="Seating Area, General", lpd_by_year={1999: None, 2001: None, 2004: None, 2007: None, 2010: None, 2013: 0.54, 2019: 0.23}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Stairway", lpd_by_year={1999: 0.9, 2001: 0.6, 2004: 0.6, 2007: 0.6, 2010: 0.69, 2013: None, 2019: None}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Stairwell", lpd_by_year={1999: 0.9, 2001: 0.6, 2004: 0.6, 2007: 0.6, 2010: None, 2013: 0.69, 2019: 0.49}),
-    BuildingSpaceTypeLPD(building_type="Other", section_type="Storage Room", lpd_by_year={1999: None, 2001: None, 2004: None, 2007: None, 2010: 0.63, 2013: 1.24, 2019: 0.51}),
+    BuildingSpaceTypeLPD(building_type="Other", section_type="Storage Room", lpd_by_year={1999: 0.7, 2001: 0.55, 2004: 0.55, 2007: 0.55, 2010: 0.63, 2013: 0.83, 2019: 0.42}),
     BuildingSpaceTypeLPD(building_type="Hospital", section_type="Storage Room", lpd_by_year={1999: 2.9, 2001: 0.9, 2004: 0.9, 2007: 0.9, 2010: None, 2013: None, 2019: None}),
     BuildingSpaceTypeLPD(building_type="Museum", section_type="Storage Room", lpd_by_year={1999: 1.4, 2001: 0.8, 2004: 0.8, 2007: 0.8, 2010: None, 2013: None, 2019: None}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Vehicular Maintenance Area / Automotive", lpd_by_year={1999: 1.4, 2001: 0.7, 2004: 0.7, 2007: 0.7, 2010: 0.67, 2013: 0.67, 2019: 0.6}),
@@ -120,5 +120,5 @@ building_space_type_to_lpd = [
     BuildingSpaceTypeLPD(building_type="Transportation Facility", section_type="Baggage / carousel area", lpd_by_year={1999: 1.3, 2001: 1.0, 2004: 1.0, 2007: 1.0, 2010: 0.76, 2013: 0.53, 2019: 0.39}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Airport concourse", lpd_by_year={1999: 0.7, 2001: 0.6, 2004: 0.6, 2007: 0.6, 2010: 0.36, 2013: 0.36, 2019: 0.25}),
     BuildingSpaceTypeLPD(building_type="Other", section_type="Ticket counter", lpd_by_year={1999: 1.8, 2001: 1.5, 2004: 1.5, 2007: 1.5, 2010: 1.08, 2013: 0.8, 2019: 0.51}),
-    BuildingSpaceTypeLPD(building_type="Warehouse", section_type="Storage Area", lpd_by_year={1999: 1.1, 2001: 0.9, 2004: 0.9, 2007: 0.9, 2010: 0.58, 2013: 0.58, 2019: 0.33}),
+    BuildingSpaceTypeLPD(building_type="Warehouse", section_type="Storage Area", lpd_by_year={1999: 1.35, 2001: 1.15, 2004: 1.15, 2007: 1.15, 2010: 0.76, 2013: 0.76, 2019: 0.51}),
 ]

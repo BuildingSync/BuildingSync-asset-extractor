@@ -377,7 +377,7 @@ class TestBSyncProcessor(unittest.TestCase):
         # add section
         section = etree.XML('''
             <auc:Section ID="Section-101919600" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
-                <auc:OccupancyClassification>Auditorium</auc:OccupancyClassification>
+                <auc:OccupancyClassification>Bad Classification</auc:OccupancyClassification>
             </auc:Section>
         ''')
         sections.append(section)
@@ -438,7 +438,7 @@ class TestBSyncProcessor(unittest.TestCase):
         # Assertion #
         assert results == [
             LightingDataLPD(
-                lpd=1.11,  # first InstalledPower
+                lpd=1.07,  # first InstalledPower
                 sqft_percent=None,  # first PercentPremisesServed
                 sqft=7500.0,  # sum of get_linked_section_sqft(...) for each LinkedSectionID
             ),
