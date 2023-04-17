@@ -1,4 +1,3 @@
-import abc
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -38,19 +37,3 @@ class SystemData:
     cap: Optional[str] = None
     cap_units: Optional[str] = None
     units: Optional[str] = None
-
-
-@dataclass
-class LightingData(abc.ABC):
-    sqft: float
-    sqft_percent: Optional[float]
-
-
-@dataclass
-class LightingDataLPD(LightingData):
-    lpd: float
-
-
-@dataclass
-class LightingDataPower(LightingData):
-    power: float
