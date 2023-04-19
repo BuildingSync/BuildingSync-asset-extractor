@@ -45,6 +45,7 @@ from importlib_resources import files
 from lxml import etree
 from lxml.etree import ElementTree
 
+from buildingsync_asset_extractor.eletric_fuel_types import electric_fuel_types
 from buildingsync_asset_extractor.errors import BSyncProcessorError
 from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
     LightingData,
@@ -488,6 +489,7 @@ class BSyncProcessor:
             'AnnualHeatingEfficiency': lambda: self.process_system(asset, units_to_export),
             'AnnualCoolingEfficiency': lambda: self.process_system(asset, units_to_export),
             'PrimaryFuel': lambda: self.process_system(asset, units_to_export),
+            'ElectrificationPotential': lambda: self.process_system(asset, units_to_export),
             'WaterHeaterEfficiency': lambda: self.process_system(asset, units_to_export),
             'LightingSystemEfficiency': lambda: process_buildings_lighting_systems(self)
         }
@@ -515,6 +517,8 @@ class BSyncProcessor:
             self.format_80_percent_results(asset.export_name, results, units)  # type: ignore
         elif asset.name in assets_lighting:
             self.format_lighting_results(asset.export_name, results, units)  # type: ignore
+        elif asset.name == "ElectrificationPotential":
+            self.format_electrification_pontential(asset.export_name, results, units)  # type: ignore
         else:
             self.format_custom_avg_results(asset.export_name, results, units)  # type: ignore
 
@@ -677,6 +681,40 @@ class BSyncProcessor:
 
         elif process_type.endswith('average'):
             self.format_custom_avg_results(name, results, units)
+
+    def format_electrification_pontential(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
+        """Sum non electric capacites"""
+        if len(results) == 0:
+            self.export_asset(name, None)
+            self.export_asset_units(name, units)
+            return
+
+        non_electric = [sd for sd in results if sd.value not in electric_fuel_types]
+
+        if len(non_electric) == 0:
+            self.export_asset(name, 0)
+            self.export_asset_units(name, units)
+            return
+
+        # TODO: convert units
+
+        # sum non electric capacities
+        _, capacities, cap_units, _ = self.remap_results(non_electric)
+        if len(set(cap_units)) <= 1:
+            cap_unit = cap_units[0]
+            if units is not None and cap_unit != units:
+                raise BSyncProcessorError(
+                    "units specified in asset defintion, "
+                    f"`{units}` is not the units in the buildingsyncfile, `{cap_unit}`.")
+
+            self.export_asset(name, sum([c for c in capacities if c is not None]))
+            self.export_asset_units(name, cap_units[0])
+            return
+
+        # still here? return unknown
+        self.export_asset(name, 'unknown')
+        self.export_asset_units(name, None)
+        return
 
     def format_80_percent_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
         """ format 80% rule results

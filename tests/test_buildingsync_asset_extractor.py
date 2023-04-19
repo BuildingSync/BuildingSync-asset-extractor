@@ -36,10 +36,52 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import unittest
 from pathlib import Path
 
+import pytest
+from lxml import etree
+
+from buildingsync_asset_extractor.errors import BSyncProcessorError
 from buildingsync_asset_extractor.processor import BSyncProcessor
-from buildingsync_asset_extractor.types import Asset
+from buildingsync_asset_extractor.types import Asset, AssetDef
 
 EMPTY_ASSET: Asset = Asset(name="", value=None)
+
+hvac_system_1 = etree.XML('''
+    <auc:HVACSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
+        <auc:HeatingAndCoolingSystems>
+        <auc:HeatingSources>
+            <auc:HeatingSource>
+                <auc:OutputCapacity>1.0</auc:OutputCapacity>
+                <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
+            </auc:HeatingSource>
+            <auc:HeatingSource>
+                <auc:OutputCapacity>2.0</auc:OutputCapacity>
+                <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
+            </auc:HeatingSource>
+        </auc:HeatingSources>
+        </auc:HeatingAndCoolingSystems>
+    </auc:HVACSystem>
+''')
+
+hvac_system_2 = etree.XML('''
+    <auc:HVACSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
+        <auc:HeatingAndCoolingSystems>
+        <auc:HeatingSources>
+            <auc:HeatingSource>
+                <auc:OutputCapacity>3.0</auc:OutputCapacity>
+                <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
+            </auc:HeatingSource>
+            <auc:HeatingSource>
+                <auc:OutputCapacity>4.0</auc:OutputCapacity>
+                <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                <auc:PrimaryFuel>Electricity</auc:PrimaryFuel>
+            </auc:HeatingSource>
+        </auc:HeatingSources>
+        </auc:HeatingAndCoolingSystems>
+    </auc:HVACSystem>
+''')
 
 
 class TestBSyncProcessor(unittest.TestCase):
@@ -50,7 +92,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.out_file = 'testoutput.json'
         self.out_file_2 = 'testoutput_2.json'
         self.test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'
-        self.num_assets_to_extract = 23
+        self.num_assets_to_extract = 29
         self.num_sections_in_testfile = 3
 
         # create output dir
@@ -70,7 +112,7 @@ class TestBSyncProcessor(unittest.TestCase):
     def test_return_asset_definitions(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
         defs = self.bp.get_asset_defs()
-        self.assertEqual(len(defs), self.num_assets_to_extract - 6)
+        self.assertEqual(len(defs), self.num_assets_to_extract - 9)
 
     def test_extract(self) -> None:
         filename = self.output_dir / self.out_file_2
@@ -120,6 +162,27 @@ class TestBSyncProcessor(unittest.TestCase):
 
         WHFT: Asset = next((item for item in assets if item.name == "Hot Water System Fuel Type"), EMPTY_ASSET)
         self.assertEqual(WHFT.value, 'mixed')
+
+        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(HEP.value, 202200.0)
+
+        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(HEPU.value, "kBtu/hr")
+
+        DHW: Asset = next((item for item in assets if item.name == "Domestic HotWater System Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(DHW.value, 0)
+
+        DHWU: Asset = next((
+            item for item in assets if item.name == "Domestic HotWater System Electrification Potential Units"),
+            EMPTY_ASSET
+        )
+        self.assertEqual(DHWU.value, None)
+
+        CEP: Asset = next((item for item in assets if item.name == "Cooling Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(CEP.value, 1000.0)
+
+        CEPU: Asset = next((item for item in assets if item.name == "Cooling Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(CEPU.value, "kBtu/hr")
 
         # count
         cnt: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
@@ -192,3 +255,139 @@ class TestBSyncProcessor(unittest.TestCase):
             filename.unlink()
         self.bp.save(filename)
         self.assertTrue(filename.exists())
+
+
+class TestElectrificationPotential(unittest.TestCase):
+    def setUp(self) -> None:
+        self.testfile = Path(__file__).parent / 'files' / 'completetest.xml'
+        print("TESTFILE: {}".format(self.testfile))
+        self.bp = BSyncProcessor(self.testfile)
+
+        # only try and get heating EP
+        self.heating_source_path = "/BuildingSync/Facilities/Facility/Systems/" \
+            "HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource"
+        self.bp.asset_defs = [AssetDef(
+            parent_path=self.heating_source_path,
+            key="PrimaryFuel",
+            name="ElectrificationPotential",
+            export_name="Heating Electrification Potential",
+            type="custom",
+            export_units=True,
+        )]
+
+        # get hvac_systems and clear it
+        hvac_systems_path = "/BuildingSync/Facilities/Facility/Systems/HVACSystems"
+        self.hvac_systems = self.bp.xp(self.bp.doc, hvac_systems_path)[0]
+        for hvac_system in self.hvac_systems:
+            self.hvac_systems.remove(hvac_system)
+
+    def test_extract_heating_source_electrification_potential(self) -> None:
+        # add in new ones with multipule heating sources.
+        self.hvac_systems.append(hvac_system_1)
+        self.hvac_systems.append(hvac_system_2)
+
+        # ACTION
+        self.bp.extract()
+        assets = self.bp.get_assets()
+
+        # ASSERT
+        assert len(assets) == 2
+        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(HEP.value, 6.0)
+        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(HEPU.value, "kBtu/hr")
+
+    def test_extract_heating_source_electrification_potential_different_export_unit(self) -> None:
+        # SET UP
+        self.bp.asset_defs[0].units = "kBtu/min"
+
+        # add in new ones with multipule heating sources.
+        self.hvac_systems.append(hvac_system_1)
+        self.hvac_systems.append(hvac_system_2)
+
+        # ACTION
+        with pytest.raises(BSyncProcessorError):
+            self.bp.extract()
+
+    def test_extract_heating_source_electrification_potential_different_units(self) -> None:
+        # add in new ones with multipule heating sources.
+        hvac_system_1 = etree.XML('''
+            <auc:HVACSystem
+                xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
+                xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <auc:HeatingAndCoolingSystems>
+                <auc:HeatingSources>
+                    <auc:HeatingSource>
+                        <auc:OutputCapacity>1.0</auc:OutputCapacity>
+                        <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                        <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
+                    </auc:HeatingSource>
+                    <auc:HeatingSource>
+                        <auc:OutputCapacity>2.0</auc:OutputCapacity>
+                        <auc:CapacityUnits>kBtu/min</auc:CapacityUnits>
+                        <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
+                    </auc:HeatingSource>
+                </auc:HeatingSources>
+                </auc:HeatingAndCoolingSystems>
+            </auc:HVACSystem>
+        ''')
+        self.hvac_systems.append(hvac_system_1)
+
+        # ACTION
+        self.bp.extract()
+        assets = self.bp.get_assets()
+
+        # ASSERT
+        assert len(assets) == 2
+        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(HEP.value, "unknown")
+        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(HEPU.value, None)
+
+    def test_extract_heating_source_electrification_no_heating_sources(self) -> None:
+        # ACTION
+        self.bp.extract()
+        assets = self.bp.get_assets()
+
+        # ASSERT
+        assert len(assets) == 2
+        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(HEP.value, None)
+        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(HEPU.value, None)
+
+    def test_extract_heating_source_electrification_all_electric_heating_sources(self) -> None:
+        self.bp.asset_defs[0].units = "kBtu/hr"
+
+        hvac_system_1 = etree.XML('''
+            <auc:HVACSystem
+                xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
+                xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
+                <auc:HeatingAndCoolingSystems>
+                <auc:HeatingSources>
+                    <auc:HeatingSource>
+                        <auc:OutputCapacity>1.0</auc:OutputCapacity>
+                        <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                        <auc:PrimaryFuel>Hydrothermal</auc:PrimaryFuel>
+                    </auc:HeatingSource>
+                    <auc:HeatingSource>
+                        <auc:OutputCapacity>2.0</auc:OutputCapacity>
+                        <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+                        <auc:PrimaryFuel>Solar</auc:PrimaryFuel>
+                    </auc:HeatingSource>
+                </auc:HeatingSources>
+                </auc:HeatingAndCoolingSystems>
+            </auc:HVACSystem>
+        ''')
+        self.hvac_systems.append(hvac_system_1)
+
+        # ACTION
+        self.bp.extract()
+        assets = self.bp.get_assets()
+
+        # ASSERT
+        assert len(assets) == 2
+        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(HEP.value, 0)
+        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(HEPU.value, "kBtu/hr")

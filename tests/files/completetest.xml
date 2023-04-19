@@ -1287,7 +1287,7 @@ This example is configured to import and export with BuildingSync version 2.2.0.
                   <auc:AnnualCoolingEfficiencyUnits>COP</auc:AnnualCoolingEfficiencyUnits>
                   <auc:Capacity>1000.0</auc:Capacity>
                   <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
-                  <auc:PrimaryFuel>Electricity</auc:PrimaryFuel>
+                  <auc:PrimaryFuel>Coal</auc:PrimaryFuel>
                   <auc:CoolingSourceCondition>Good</auc:CoolingSourceCondition>
                   <auc:Controls>
                     <auc:Control>
