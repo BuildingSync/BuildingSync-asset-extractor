@@ -45,9 +45,10 @@ from importlib_resources import files
 from lxml import etree
 from lxml.etree import ElementTree
 
-from buildingsync_asset_extractor.converter import convert
-from buildingsync_asset_extractor.eletric_fuel_types import electric_fuel_types
 from buildingsync_asset_extractor.errors import BSyncProcessorError
+from buildingsync_asset_extractor.formatters import (
+    format_electrification_pontential
+)
 from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
     LightingData,
     LightingDataLPD,
@@ -519,7 +520,9 @@ class BSyncProcessor:
         elif asset.name in assets_lighting:
             self.format_lighting_results(asset.export_name, results, units)  # type: ignore
         elif asset.name == "ElectrificationPotential":
-            self.format_electrification_pontential(asset.export_name, results, units)  # type: ignore
+            ep = format_electrification_pontential(results, asset.units)  # type: ignore
+            self.export_asset(asset.export_name, ep.value)
+            self.export_asset_units(asset.export_name, ep.units)
         else:
             self.format_custom_avg_results(asset.export_name, results, units)  # type: ignore
 
@@ -682,49 +685,6 @@ class BSyncProcessor:
 
         elif process_type.endswith('average'):
             self.format_custom_avg_results(name, results, units)
-
-    def format_electrification_pontential(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
-        """Sum non electric capacites"""
-        # If no SystemDatas, then None
-        if len(results) == 0:
-            self.export_asset(name, None)
-            self.export_asset_units(name, units)
-            return
-
-        non_electric = [
-            sd for sd in results
-            if sd.value not in electric_fuel_types
-            and sd.cap is not None
-        ]
-
-        # if no non electric SystemDatas, then 0
-        if len(non_electric) == 0:
-            self.export_asset(name, 0)
-            self.export_asset_units(name, units)
-            return
-
-        # try to convert cap to same power unit
-        if not units:
-            units = non_electric[0].cap_units
-        for sd in non_electric:
-            if sd.cap is not None:
-                try:
-                    sd.cap = convert(float(sd.cap), sd.cap_units, units)  # type: ignore
-                    sd.cap_units = units
-                except BSyncProcessorError:
-                    pass
-
-        # if all non electric SystemData have same cap unit, sum
-        _, capacities, cap_units, _ = self.remap_results(non_electric)
-        if len(set(cap_units)) <= 1:
-            self.export_asset(name, sum([c for c in capacities if c is not None]))
-            self.export_asset_units(name, cap_units[0])
-            return
-
-        # else unknown
-        self.export_asset(name, 'unknown')
-        self.export_asset_units(name, None)
-        return
 
     def format_80_percent_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
         """ format 80% rule results
