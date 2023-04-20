@@ -122,7 +122,7 @@
       "export_units": true
     },
     {
-      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/",
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
       "key": "PrimaryFuel",
       "name": "ElectrificationPotential",
       "export_name": "Domestic HotWater System Electrification Potential",

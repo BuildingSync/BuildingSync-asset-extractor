@@ -92,7 +92,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.out_file = 'testoutput.json'
         self.out_file_2 = 'testoutput_2.json'
         self.test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'
-        self.num_assets_to_extract = 29
+        self.num_assets_to_extract = 31
         self.num_sections_in_testfile = 3
 
         # create output dir
@@ -112,7 +112,7 @@ class TestBSyncProcessor(unittest.TestCase):
     def test_return_asset_definitions(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
         defs = self.bp.get_asset_defs()
-        self.assertEqual(len(defs), self.num_assets_to_extract - 9)
+        self.assertEqual(len(defs), self.num_assets_to_extract - 10)
 
     def test_extract(self) -> None:
         filename = self.output_dir / self.out_file_2
@@ -183,6 +183,12 @@ class TestBSyncProcessor(unittest.TestCase):
 
         CEPU: Asset = next((item for item in assets if item.name == "Cooling Electrification Potential Units"), EMPTY_ASSET)
         self.assertEqual(CEPU.value, "kBtu/hr")
+
+        CSEP: Asset = next((item for item in assets if item.name == "Cooking System Electrification Potential"), EMPTY_ASSET)
+        self.assertEqual(CSEP.value, 2400.0)
+
+        CSEPU: Asset = next((item for item in assets if item.name == "Cooking System Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(CSEPU.value, "kBtu/hr")
 
         # count
         cnt: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
