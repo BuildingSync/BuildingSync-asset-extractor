@@ -136,6 +136,14 @@
       "export_name": "Cooling Electrification Potential",
       "type": "custom",
       "export_units": true
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/CookingSystems/CookingSystem",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Cooking System Electrification Potential",
+      "type": "custom",
+      "export_units": true
     }
   ]
 }
