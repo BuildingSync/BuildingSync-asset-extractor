@@ -1,9 +1,8 @@
 import logging
 from typing import Any, Callable, Optional, Tuple, Union
 
-from buildingsync_asset_extractor.converter import convert
+from buildingsync_asset_extractor.converter import unify_units
 from buildingsync_asset_extractor.eletric_fuel_types import electric_fuel_types
-from buildingsync_asset_extractor.errors import BSyncProcessorError
 from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
     LightingData,
     LightingDataLPD,
@@ -61,14 +60,15 @@ class Formatter():
             self.export_asset_units(name, units)
             return
 
-        values, capacities, cap_units, sqfts = self.remap_results(results)
-
         # if only 1 asset, we'll call it primary!
-        if len(values) == 1:
-            self.export_asset(name, values[0])
+        if len(results) == 1:
+            self.export_asset(name, results[0].value)
             self.export_asset_units(name, units)
             return
 
+        results = unify_units(results)
+
+        values, capacities, cap_units, sqfts = self.remap_results(results)
         if None not in capacities and len(set(cap_units)) <= 1:
             # capacity method
             # add all capacities
@@ -213,6 +213,8 @@ class Formatter():
             self.export_asset_units(name, units)
             return
 
+        results = unify_units(results)
+
         values, capacities, cap_units, sqfts = self.remap_results(results)
 
         # logger.debug(f"values: {values}")
@@ -326,13 +328,7 @@ class Formatter():
         # try to convert cap to same power unit
         if not units:
             units = non_electric[0].cap_units
-        for sd in non_electric:
-            if sd.cap is not None:
-                try:
-                    sd.cap = convert(float(sd.cap), sd.cap_units, units)  # type: ignore
-                    sd.cap_units = units
-                except BSyncProcessorError:
-                    pass
+        non_electric = unify_units(non_electric, to_units=units)
 
         # if all non electric SystemData have same cap unit, sum
         _, capacities, cap_units, _ = self.remap_results(non_electric)
