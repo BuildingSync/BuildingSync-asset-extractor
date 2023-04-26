@@ -39,7 +39,6 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
-from buildingsync_asset_extractor.errors import BSyncProcessorError
 from buildingsync_asset_extractor.processor import BSyncProcessor
 from buildingsync_asset_extractor.types import Asset, AssetDef
 
@@ -305,15 +304,22 @@ class TestElectrificationPotential(unittest.TestCase):
 
     def test_extract_heating_source_electrification_potential_different_export_unit(self) -> None:
         # SET UP
-        self.bp.asset_defs[0].units = "kBtu/min"
+        self.bp.asset_defs[0].units = "W"
 
         # add in new ones with multipule heating sources.
         self.hvac_systems.append(hvac_system_1)
         self.hvac_systems.append(hvac_system_2)
 
         # ACTION
-        with pytest.raises(BSyncProcessorError):
-            self.bp.extract()
+        self.bp.extract()
+        assets = self.bp.get_assets()
+
+        # ASSERT
+        assert len(assets) == 2
+        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
+        assert HEP.value == pytest.approx(1.75843)
+        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
+        self.assertEqual(HEPU.value, "W")
 
     def test_extract_heating_source_electrification_potential_different_units(self) -> None:
         # add in new ones with multipule heating sources.
@@ -330,7 +336,7 @@ class TestElectrificationPotential(unittest.TestCase):
                     </auc:HeatingSource>
                     <auc:HeatingSource>
                         <auc:OutputCapacity>2.0</auc:OutputCapacity>
-                        <auc:CapacityUnits>kBtu/min</auc:CapacityUnits>
+                        <auc:CapacityUnits>W</auc:CapacityUnits>
                         <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
                     </auc:HeatingSource>
                 </auc:HeatingSources>
@@ -346,9 +352,9 @@ class TestElectrificationPotential(unittest.TestCase):
         # ASSERT
         assert len(assets) == 2
         HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(HEP.value, "unknown")
+        assert HEP.value == pytest.approx(7.8242832663)
         HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, None)
+        self.assertEqual(HEPU.value, "kBtu/hr")
 
     def test_extract_heating_source_electrification_no_heating_sources(self) -> None:
         # ACTION
