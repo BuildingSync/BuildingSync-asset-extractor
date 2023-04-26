@@ -112,6 +112,38 @@
       "export_name": "Hot Water System Fuel Type",
       "type": "custom",
       "export_units": false
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Heating Electrification Potential",
+      "type": "custom",
+      "export_units": true
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Domestic HotWater System Electrification Potential",
+      "type": "custom",
+      "export_units": true
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources/CoolingSource",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Cooling Electrification Potential",
+      "type": "custom",
+      "export_units": true
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/CookingSystems/CookingSystem",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Cooking System Electrification Potential",
+      "type": "custom",
+      "export_units": true
     }
   ]
 }
