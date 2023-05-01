@@ -45,13 +45,10 @@ from importlib_resources import files
 from lxml import etree
 from lxml.etree import ElementTree
 
-from buildingsync_asset_extractor.converter import convert
-from buildingsync_asset_extractor.eletric_fuel_types import electric_fuel_types
 from buildingsync_asset_extractor.errors import BSyncProcessorError
+from buildingsync_asset_extractor.formatters import Formatter
 from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
     LightingData,
-    LightingDataLPD,
-    LightingDataPower,
     process_buildings_lighting_systems
 )
 from buildingsync_asset_extractor.types import (
@@ -107,6 +104,8 @@ class BSyncProcessor:
         self.parse_xml()
 
         self.initialize_vars(asset_defs_filename)
+
+        self.formatter = Formatter(self.export_asset, self.export_asset_units)
 
     def initialize_vars(self, asset_defs_filename: Optional[str]) -> None:
         # use default asset definitions file unless otherwise specified
@@ -402,7 +401,7 @@ class BSyncProcessor:
         if asset.export_units:
             units = None
 
-        self.format_age_results(asset.export_name, results, process_type, units)
+        self.formatter.format_age_results(asset.export_name, results, process_type, units)
 
     def process_count_asset(self, asset: AssetDef) -> None:
         """ process count asset """
@@ -465,9 +464,9 @@ class BSyncProcessor:
                 units = asset.units
 
         if process_type == 'sqft':
-            self.format_sqft_results(asset.export_name, results, units)
+            self.formatter.format_sqft_results(asset.export_name, results, units)
         elif process_type == 'avg_sqft':
-            self.format_avg_sqft_results(asset.export_name, results, units)
+            self.formatter.format_avg_sqft_results(asset.export_name, results, units)
 
     def process_custom_asset(self, asset: AssetDef) -> None:
         # use this to make a 'switch statement for all custom assets'
@@ -515,13 +514,13 @@ class BSyncProcessor:
                 units = self.get_units(results)
 
         if asset.name in assets_80_percent:
-            self.format_80_percent_results(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_80_percent_results(asset.export_name, results, units)  # type: ignore
         elif asset.name in assets_lighting:
-            self.format_lighting_results(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_lighting_results(asset.export_name, results, units)  # type: ignore
         elif asset.name == "ElectrificationPotential":
-            self.format_electrification_pontential(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_electrification_pontential(asset.export_name, results, units)  # type: ignore
         else:
-            self.format_custom_avg_results(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_custom_avg_results(asset.export_name, results, units)  # type: ignore
 
     def process_system(self, asset: AssetDef, units_keyname: Optional[str]) -> list[SystemData]:
         """ Process Heating/Cooling and DomesticHotWater System Assets
@@ -644,341 +643,6 @@ class BSyncProcessor:
                 elif 'ThermalEfficiency' in el.tag:
                     cap_units = 'Thermal Efficiency'
         return cap, cap_units
-
-    def remap_results(self, results: list[SystemData]) -> \
-            Tuple[list[Optional[float]], list[Optional[float]], list[Optional[str]], list[Optional[float]]]:
-        """ Remap results from a list of dictionaries to 4 lists """
-        try:
-            values = [sub.value if sub.value is None else float(sub.value) for sub in results]
-        except ValueError:
-            values = [sub.value for sub in results]
-
-        capacities = [sub.cap if sub.cap is None else float(sub.cap) for sub in results]
-        cap_units = [sub.cap_units for sub in results]
-        sqfts = [sub.sqft if sub.sqft is None else float(sub.sqft) for sub in results]
-
-        return values, capacities, cap_units, sqfts
-
-    def format_age_results(self, name: str, results: list[SystemData], process_type: str, units: Optional[str]) -> None:
-
-        # process results
-        value = None
-        if process_type.endswith('oldest'):
-            res_vals = [sub.value for sub in results]
-            s_res = sorted(res_vals)
-            if s_res:
-                value = s_res[0]
-
-            self.export_asset(name, str(value))
-            self.export_asset_units(name, units)
-
-        elif process_type.endswith('newest'):
-            res_vals = [sub.value for sub in results]
-            s_res = sorted(res_vals, reverse=True)
-            if s_res:
-                value = s_res
-            self.export_asset(name, str(value))
-            self.export_asset_units(name, units)
-
-        elif process_type.endswith('average'):
-            self.format_custom_avg_results(name, results, units)
-
-    def format_electrification_pontential(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
-        """Sum non electric capacites"""
-        # If no SystemDatas, then None
-        if len(results) == 0:
-            self.export_asset(name, None)
-            self.export_asset_units(name, units)
-            return
-
-        non_electric = [
-            sd for sd in results
-            if sd.value not in electric_fuel_types
-            and sd.cap is not None
-        ]
-
-        # if no non electric SystemDatas, then 0
-        if len(non_electric) == 0:
-            self.export_asset(name, 0)
-            self.export_asset_units(name, units)
-            return
-
-        # try to convert cap to same power unit
-        if not units:
-            units = non_electric[0].cap_units
-        for sd in non_electric:
-            if sd.cap is not None:
-                try:
-                    sd.cap = convert(float(sd.cap), sd.cap_units, units)  # type: ignore
-                    sd.cap_units = units
-                except BSyncProcessorError:
-                    pass
-
-        # if all non electric SystemData have same cap unit, sum
-        _, capacities, cap_units, _ = self.remap_results(non_electric)
-        if len(set(cap_units)) <= 1:
-            self.export_asset(name, sum([c for c in capacities if c is not None]))
-            self.export_asset_units(name, cap_units[0])
-            return
-
-        # else unknown
-        self.export_asset(name, 'unknown')
-        self.export_asset_units(name, None)
-        return
-
-    def format_80_percent_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
-        """ format 80% rule results
-            the "primary" type returned must at least serve 80% of the area by
-            1. Capacity
-            2. Served space area
-        """
-        if len(results) == 0:
-            # export None
-            self.export_asset(name, None)
-            self.export_asset_units(name, units)
-            return
-
-        values, capacities, cap_units, sqfts = self.remap_results(results)
-
-        # if only 1 asset, we'll call it primary!
-        if len(values) == 1:
-            self.export_asset(name, values[0])
-            self.export_asset_units(name, units)
-            return
-
-        if None not in capacities and len(set(cap_units)) <= 1:
-            # capacity method
-            # add all capacities
-            # pick largest one and make sure it's 80% of total
-            found = 0
-            total = sum(capacities)  # type: ignore
-            if total > 0:
-                primaries = {}
-                for res in results:
-                    if res.value not in primaries:
-                        primaries[res.value] = 0.0
-                    primaries[res.value] += float(res.cap)  # type: ignore
-
-                for p in primaries:
-                    if float(primaries[p])/total >= 0.8:
-                        # this fuel meets the 80% threshold by capacity
-                        found = 1
-                        self.export_asset(name, p)
-                        self.export_asset_units(name, units)
-                        return
-
-            if found == 0:
-                # nothing matched this criteria, return 'Mixed'
-                self.export_asset(name, 'mixed')
-                self.export_asset_units(name, units)
-                return
-
-        if None not in sqfts:
-            # sqft method
-            total = sum(sqfts)  # type: ignore
-            found = 0
-            if total > 0:
-                primaries = {}
-                for res in results:
-                    if res.value not in primaries:
-                        primaries[res.value] = 0
-                    if res.sqft is not None:
-                        primaries[res.value] += res.sqft
-
-                for p in primaries:
-                    if float(primaries[p])/total >= 0.8:
-                        # this fuel meets the 80% threshold by capacity
-                        found = 1
-                        self.export_asset(name, p)
-                        self.export_asset_units(name, units)
-                        return
-
-            if found == 0:
-                # nothing matched this criteria, return 'Mixed'
-                self.export_asset(name, 'mixed')
-                self.export_asset_units(name, units)
-                return
-
-        # still here? return unknown
-        self.export_asset(name, 'unknown')
-        self.export_asset_units(name, units)
-        return
-
-    def format_lighting_results(self, name: str, results: list[LightingData], units: Optional[str]) -> None:
-        """ custom processing for lighting efficiency
-            1. if 'lpd' is present, average the values
-            2. else if percentpremisesserved
-            3. otherwise regular sqft
-        """
-        if len(results) == 0:
-            # export None, no units
-            self.export_asset(name, None)
-            self.export_asset_units(name, units)
-            return
-
-        # check method 1
-        has_lpd = all([isinstance(r, LightingDataLPD) for r in results])
-
-        # for weighted average, re-find Watts from LPD and LinkedPremises and divide by total sqft
-        if has_lpd:
-            value = 0.0
-            total_sqft = 0.0
-            for r in results:
-                value += r.lpd * r.sqft  # type: ignore # TODO: remove.
-                total_sqft += r.sqft
-            if value > 0:
-                value = value / total_sqft
-
-            self.export_asset(name, value)
-            self.export_asset_units(name, units)
-            return
-
-        # check method 2
-        # need both PercentPremises AND LinkedPremises for this
-        # running sum of all watts / running sum of all fractions of sqft
-        has_perc = all([r.sqft_percent is not None for r in results])
-        has_power = all([isinstance(r, LightingDataPower) for r in results])
-        if has_perc and has_power:
-            power = 0
-            sqft_total = 0.0
-            for r in results:
-                power += r.power  # type: ignore
-                sqft_total = r.sqft_percent / 100 * r.sqft  # type: ignore
-            if power > 0:
-                value = power / sqft_total
-            self.export_asset(name, value)
-            self.export_asset_units(name, units)
-            return
-
-        # check method 3
-        sqfts = [sub.sqft if sub.sqft is None else float(sub.sqft) for sub in results]
-        if None not in sqfts and has_power:
-            # sqft methods
-            remapped_power = [sub.power for sub in results]  # type: ignore
-            remapped_sqft = [sub.sqft for sub in results]
-            top = sum(remapped_power)
-            bottom = sum(remapped_sqft)
-            if bottom > 0:
-                value = top / bottom
-                self.export_asset(name, value)
-                self.export_asset_units(name, units)
-                return
-
-        # can't calculate
-        self.export_asset(name, 'unknown')
-        self.export_asset_units(name, units)
-        return
-
-    def format_custom_avg_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
-        """ format weighted average
-            1. Ensure all units are the same
-            2. Attempt to calculate with installed power (NOT IMPLEMENTED)
-            3. Attempt to calculate with capacity (cap)
-            4. Attempt to calculate with served space area (sqrt)
-            Don't export units for 'average age' (review this in the future)
-        """
-
-        if len(results) == 0:
-            # export None, no units
-            self.export_asset(name, None)
-            self.export_asset_units(name, units)
-            return
-
-        # 1. units
-        if units == 'mixed':
-            self.export_asset(name, 'mixed')
-            self.export_asset_units(name, units)
-            return
-
-        values, capacities, cap_units, sqfts = self.remap_results(results)
-
-        # logger.debug(f"values: {values}")
-        # logger.debug(f"capacities: {capacities}")
-        # logger.debug(f"length: {len(set(cap_units)) <= 1}")
-
-        # 2 - capacity
-        # check that there are capacities for all and the units are all the same
-        if None not in capacities and len(set(cap_units)) == 1:
-            # capacity methods
-            cap_total = 0.0
-            eff_total = 0.0
-            for res in results:
-                cap_total = cap_total + float(res.cap)  # type: ignore
-                eff_total = eff_total + (float(res.value) * float(res.cap))  # type: ignore
-            total: Union[float, str] = eff_total / cap_total
-
-            # special case for average age: take the floor since partial year doesn't make sense
-            if name.lower().endswith('age'):
-                total = str(int(total))
-
-            self.export_asset(name, total)
-            self.export_asset_units(name, units)
-            return
-
-        elif None not in sqfts:
-            # sqft methods
-            remapped_res = {sub.value: sub.sqft for sub in results}
-            self.format_avg_sqft_results(name, remapped_res, units)  # type: ignore
-            return
-        else:
-            # just average
-            total = sum(values)/len(values)  # type: ignore
-            # special case for average age: take the floor since partial year doesn't make sense
-            if name.lower().endswith('age'):
-                total = int(total)
-            self.export_asset(name, total)
-            self.export_asset_units(name, units)
-            return
-
-    def format_sqft_results(self, name: str, results: dict[str, float], units: Optional[str]) -> None:
-        """ return primary and secondary for top 2 results by sqft """
-        # NOTE: this is the only method that modifies the export name '
-        # by appending 'primary' and 'secondary'
-        # no units associated with this now
-
-        # filter and sort results
-        filtered_res = {k: v for k, v in results.items() if v != 0}
-        s_res = dict(sorted(filtered_res.items(), key=lambda kv: kv[1], reverse=True))
-        logger.debug('sorted results with zeros removed: {}'.format(s_res))
-
-        value = None
-        value2 = None
-
-        s_keys = list(s_res.keys())
-        if s_keys:
-            value = s_keys[0]
-        self.export_asset('Primary ' + name, value)
-        self.export_asset_units('Primary ' + name, units)
-
-        if (len(s_keys) > 1):
-            value2 = s_keys[1]
-        self.export_asset('Secondary ' + name, value2)
-        self.export_asset_units('Secondary ' + name, units)
-
-    def format_avg_sqft_results(self, name: str, results: dict[Any, float], units: Optional[str]) -> None:
-        """ weighted average of results """
-
-        # in this case the result keys will convert to numbers
-        # to calculate the weighted average
-
-        total: Union[str, float, None] = None
-
-        if results:
-            total_sqft = sum(results.values())
-
-            running_sum = 0.0
-            for k, v in results.items():
-                running_sum += float(k) * v
-            if running_sum > 0 and total_sqft > 0:
-                total = running_sum / total_sqft
-
-        # special case for average age: take the floor since partial year doesn't make sense
-        if name.lower().endswith('age') and total is not None:
-            total = str(int(total))
-
-        # add to assets
-        self.export_asset(name, total)
-        self.export_asset_units(name, units)
 
     def find_udf_values(self, matches: list[ElementTree], name: str) -> list[Optional[str]]:
         """ processes a list of UDF matches
