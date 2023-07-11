@@ -705,7 +705,7 @@ class BSyncProcessor:
             the_type = self.xp(f, './/FloorAreaType')[0].text
             # this could be percentage or value
             percent = self.xp(f, './/FloorAreaPercentage')
-            if percent:
+            if percent and the_type in self.sections[sid].areas:
                 logger.debug('type: {}, section: {}, areas: {}'.format(the_type, sid, self.sections[sid].areas))
                 sqft += float(percent[0].text) * self.sections[sid].areas[the_type] / 100
             else:
