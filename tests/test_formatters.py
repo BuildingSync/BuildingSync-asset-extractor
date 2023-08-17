@@ -29,8 +29,8 @@ class TestFormatters(unittest.TestCase):
     def test_format_80_percent_results_different_units(self) -> None:
         # SET UP
         system_datas = \
-            [SystemData(value='Fuel oil no 1', cap='100.0', cap_units='kBtu/hr')] + \
-            [SystemData(value='Natural gas', cap='1', cap_units='kW')]
+            [SystemData(value='Fuel oil no 1', cap='1', cap_units='Btu/hr')] + \
+            [SystemData(value='Natural gas', cap='1', cap_units='kBtu/hr')]
 
         # ACTION
         self.formatter.format_80_percent_results("Heating Fuel Type", system_datas, None)
@@ -81,5 +81,5 @@ class TestFormatters(unittest.TestCase):
         # ASSERT
         (name, value) = self.export_asset.call_args.args
         assert name == "Heating System Efficiency"
-        assert value == pytest.approx(2.9941557)
+        assert value == pytest.approx(1.0068010770219646)
         self.export_asset_units.assert_called_with("Heating System Efficiency", "Thermal Efficiency")
