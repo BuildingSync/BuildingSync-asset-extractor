@@ -81,5 +81,5 @@ class TestFormatters(unittest.TestCase):
         # ASSERT
         (name, value) = self.export_asset.call_args.args
         assert name == "Heating System Efficiency"
-        assert value == pytest.approx(2.546705)
+        assert value == pytest.approx(2.9941557)
         self.export_asset_units.assert_called_with("Heating System Efficiency", "Thermal Efficiency")

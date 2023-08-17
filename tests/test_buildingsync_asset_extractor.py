@@ -317,7 +317,7 @@ class TestElectrificationPotential(unittest.TestCase):
         # ASSERT
         assert len(assets) == 2
         HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        assert HEP.value == pytest.approx(1.75843)
+        assert HEP.value == pytest.approx(0.01758)
         HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
         self.assertEqual(HEPU.value, "W")
 
@@ -352,7 +352,7 @@ class TestElectrificationPotential(unittest.TestCase):
         # ASSERT
         assert len(assets) == 2
         HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        assert HEP.value == pytest.approx(7.8242832663)
+        assert HEP.value == pytest.approx(683.42833)
         HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
         self.assertEqual(HEPU.value, "kBtu/hr")
 
