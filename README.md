@@ -113,7 +113,27 @@ To test usage:
 
 This will process the 2 primary schools XML files (that will be aggregated into 1 facility) and the office XML file (which will be another facility) found in `tests/files/` and generate a XLSX containing 2 facilities. The resulting file will be saved to `tests\output\cts_output.xlsx`.
 
+###
+- BuildingSync files are aggregated by facility based on the Facility ID in the file. This ID can be found in the `<Facility>` section, within the `<UserDefinedFields>` subsection:
 
+	```
+	<UserDefinedFields>
+        <UserDefinedField>
+          <FieldName>Agency Designated Covered Facility ID</FieldName>
+          <FieldValue>ABC 123</FieldValue>
+        </UserDefinedField>
+        <UserDefinedField>
+          <FieldName>Sub-agency Acronym</FieldName>
+          <FieldValue>ABC</FieldValue>
+        </UserDefinedField>
+        <UserDefinedField>
+          <FieldName>Facility Name</FieldName>
+          <FieldValue>Test Facility</FieldValue>
+        </UserDefinedField>
+      </UserDefinedFields>
+  ```
+- The process will extract the measures that are part of the `cheapest` scenario within each file. The measures will be aggregated at the Facility level and the number of measures in each category will be added to the spreadsheet. If there is no cost, no measures will be counted.
+- More information about the BuildingSync to CTS mappings can be found in the [cts_map page](buildingsync_asset_extractor/cts/cts_map.md).
 
 ## Developing
 
