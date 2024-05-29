@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.formatters import Formatter
-from buildingsync_asset_extractor.types import SystemData
 
 
 class TestFormatters(unittest.TestCase):

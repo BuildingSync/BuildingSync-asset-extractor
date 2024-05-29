@@ -48,7 +48,7 @@ class FacilityAppearance:
         for scenario_etree in self.etree.findall("./Reports/Report/Scenarios/Scenario", self.etree.nsmap):
             # only use the package of measures scenarios
             package_of_measures = scenario_etree.find("./ScenarioType/PackageOfMeasures", self.etree.nsmap)
-            if not package_of_measures:
+            if package_of_measures is None:
                 continue
 
             # if its the cheapest, use it

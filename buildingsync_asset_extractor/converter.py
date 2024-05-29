@@ -1,7 +1,7 @@
 from typing import Literal, Optional, get_args
 
+from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.errors import BSyncProcessorError
-from buildingsync_asset_extractor.types import SystemData
 
 PowerUnits = Literal[
     "W",

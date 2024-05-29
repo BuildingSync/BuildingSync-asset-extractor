@@ -45,18 +45,18 @@ from importlib_resources import files
 from lxml import etree
 from lxml.etree import ElementTree
 
-from buildingsync_asset_extractor.errors import BSyncProcessorError
-from buildingsync_asset_extractor.formatters import Formatter
-from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
-    LightingData,
-    process_buildings_lighting_systems
-)
-from buildingsync_asset_extractor.types import (
+from buildingsync_asset_extractor.bae_types import (
     Asset,
     AssetData,
     AssetDef,
     Section,
     SystemData
+)
+from buildingsync_asset_extractor.errors import BSyncProcessorError
+from buildingsync_asset_extractor.formatters import Formatter
+from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
+    LightingData,
+    process_buildings_lighting_systems
 )
 
 # Gets or creates a logger

@@ -39,8 +39,8 @@ from pathlib import Path
 import pytest
 from lxml import etree
 
+from buildingsync_asset_extractor.bae_types import Asset, AssetDef
 from buildingsync_asset_extractor.processor import BSyncProcessor
-from buildingsync_asset_extractor.types import Asset, AssetDef
 
 EMPTY_ASSET: Asset = Asset(name="", value=None)
 
