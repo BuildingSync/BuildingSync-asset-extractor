@@ -1,7 +1,8 @@
+import functools
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Optional
 
 from lxml import etree as ETree
 
@@ -25,24 +26,24 @@ class Measure:
 
 
 @dataclass
-class Scenario:
+class PackageOfMeasuresScenario:
     id: str
     etree: ETree
     measures_by_id: dict[str, Measure]
 
 
 class FacilityAppearance:
-    scenarios: list[Scenario]
     path: Path
 
-    def set_cheapest_scenario(self) -> None:
+    @functools.cached_property
+    def cheapest_package_of_measures_scenario(self) -> Optional[PackageOfMeasuresScenario]:
         # get the measures for reference
         measures_by_id = {
             m.get("ID"): Measure(m)
             for m in self.etree.findall("./Measures/Measure", self.etree.nsmap)
         }
 
-        cheapest_scenario = None
+        cheapest_package_of_measures_scenario = None
         cheapest_cost = None
         # for each scenario
         for scenario_etree in self.etree.findall("./Reports/Report/Scenarios/Scenario", self.etree.nsmap):
@@ -53,20 +54,19 @@ class FacilityAppearance:
 
             # if its the cheapest, use it
             cost = package_of_measures.find("./PackageFirstCost", self.etree.nsmap)
-            if cheapest_scenario is None or (cost is not None and cost < cheapest_cost):
+            if cheapest_package_of_measures_scenario is None or (cost is not None and cost < cheapest_cost):
                 measure_ids = [m.get("IDref") for m in package_of_measures.findall("./MeasureIDs/MeasureID", self.etree.nsmap)]
-                cheapest_scenario = Scenario(
+                cheapest_package_of_measures_scenario = PackageOfMeasuresScenario(
                     id=scenario_etree.get("ID"),
                     etree=scenario_etree,
                     measures_by_id={k: m for k, m in measures_by_id.items() if k in measure_ids},
                 )
 
-        self.scenarios = [cheapest_scenario] if cheapest_scenario is not None else []
+        return cheapest_package_of_measures_scenario
 
     def __init__(self, etree: ETree, path: Path) -> None:
         self.etree = etree
         self.path = path
-        self.set_cheapest_scenario()
 
 
 @dataclass

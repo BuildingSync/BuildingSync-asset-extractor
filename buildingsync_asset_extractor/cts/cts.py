@@ -28,6 +28,17 @@ logger.setLevel(logging.INFO)
 BLANK_CTS_FILE_PATH = Path(__file__).parent / "CTS Comprehensive Evaluation Upload Template_20240312_021125.xlsx"
 
 
+def log_facilities(facility_by_id: dict[str, Facility]) -> None:
+    for facility_name, facility in facility_by_id.items():
+        logger.info(f"{facility_name}:")
+        logger.info("\tfound in:")
+        for appearance in facility.appearances:
+            logger.info(f"\t\t-{appearance.path}")
+            cpoms = appearance.cheapest_package_of_measures_scenario
+            if cpoms:
+                logger.info(f"\t\t\tusing cheapest package of measures: {cpoms.id} (measures: {list(cpoms.measures_by_id.keys())})")
+
+
 def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
     facility_by_id: dict[str, Facility] = {}
 
@@ -45,15 +56,7 @@ def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
             facility.appearances.append(FacilityAppearance(facility_etree, f))
             facility_by_id[facility_id] = facility
 
-    # logging
-    for facility_name, facility in facility_by_id.items():
-        logger.info(f"{facility_name}:")
-        logger.info("\tfound in:")
-        for appearance in facility.appearances:
-            logger.info(f"\t\t-{appearance.path}")
-            logger.info("\t\t\tusing Scenarios:")
-            for scenario in appearance.scenarios:
-                logger.info(f"\t\t\t\t-{scenario.id} (measures: {list(scenario.measures_by_id.keys())})")
+    log_facilities(facility_by_id)
 
     return facility_by_id
 

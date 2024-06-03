@@ -65,31 +65,31 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     data["Gross Evaluated Square Footage"] = sum(gross_floor_area)
 
     # just sums of scenarios
-    scenario_etrees = [
-        scenario.etree
+    package_of_measures_scenario_etrees = [
+        facility_appearance.cheapest_package_of_measures_scenario.etree
         for facility_appearance in facility.appearances
-        for scenario in facility_appearance.scenarios
+        if facility_appearance.cheapest_package_of_measures_scenario
     ]
 
-    def sum_from_scenarios(xpath: str) -> float:
+    def sum_from_package_of_measures_scenarios(xpath: str) -> float:
         trees = [
             s.find("./ScenarioType/PackageOfMeasures/" + xpath, s.nsmap)
-            for s in scenario_etrees
+            for s in package_of_measures_scenario_etrees
         ]
 
         return sum([float(t.text)for t in trees if t is not None])
 
-    data["Estimated Implementation Cost of Measure(s)"] = sum_from_scenarios("PackageFirstCost")
-    data["Estimated Annual Energy Savings"] = sum_from_scenarios("AnnualSavingsSiteEnergy")
-    data["Estimated Annual Energy Cost Savings"] = sum_from_scenarios("AnnualSavingsCost")
-    data["Estimated Annual Water Savings"] = sum_from_scenarios("AnnualWaterSavings")
-    data["Estimated Annual Water Cost Savings"] = sum_from_scenarios("AnnualWaterCostSavings")
+    data["Estimated Implementation Cost of Measure(s)"] = sum_from_package_of_measures_scenarios("PackageFirstCost")
+    data["Estimated Annual Energy Savings"] = sum_from_package_of_measures_scenarios("AnnualSavingsSiteEnergy")
+    data["Estimated Annual Energy Cost Savings"] = sum_from_package_of_measures_scenarios("AnnualSavingsCost")
+    data["Estimated Annual Water Savings"] = sum_from_package_of_measures_scenarios("AnnualWaterSavings")
+    data["Estimated Annual Water Cost Savings"] = sum_from_package_of_measures_scenarios("AnnualWaterCostSavings")
 
     # data["Estimated Annual Renewable Electricity Output"] =
     # data["Estimated Annual Renewable Thermal Output"] =
 
     # just sums of scenarios
-    data["Estimated Other Annual Ancillary Cost Savings"] = sum_from_scenarios("OMCostAnnualSavings")
+    data["Estimated Other Annual Ancillary Cost Savings"] = sum_from_package_of_measures_scenarios("OMCostAnnualSavings")
 
     return data
 
@@ -110,8 +110,8 @@ def get_potential_conservation_measures_per_technology_category(facility: Facili
     measures = [
         measure
         for facility_appearance in facility.appearances
-        for scenario in facility_appearance.scenarios
-        for measure in scenario.measures_by_id.values()
+        if facility_appearance.cheapest_package_of_measures_scenario
+        for measure in facility_appearance.cheapest_package_of_measures_scenario.measures_by_id.values()
     ]
     for m in measures:
         # get measure type
