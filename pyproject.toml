@@ -16,6 +16,8 @@ keywords = ["BuildingSync", "Building Data Exchange"]
 python = "^3.9"
 lxml = "4.9.1"
 importlib-resources = "^5.7.0"
+styleframe = "^4.2"
+pandas = "^2.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "7.1.2"

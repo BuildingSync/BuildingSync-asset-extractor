@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Callable, Optional, Tuple, Union
 
+from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.converter import unify_units
 from buildingsync_asset_extractor.eletric_fuel_types import electric_fuel_types
 from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
@@ -8,7 +9,6 @@ from buildingsync_asset_extractor.lighting_processing.lighting_processing import
     LightingDataLPD,
     LightingDataPower
 )
-from buildingsync_asset_extractor.types import SystemData
 
 # Gets or creates a logger
 logging.basicConfig()

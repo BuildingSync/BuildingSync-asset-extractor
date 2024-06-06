@@ -25,6 +25,8 @@ poetry run buildingsync_asset_extractor
 
 ## Usage
 
+### BUILDINGSYNC ASSET EXTRACTOR
+
 BuildingSync version 2.4.0.
 
 The pre-importer will identify assets defined in the `asset_definitions.json` file stored in the `config` directory.  There are various methods of calculating assets:
@@ -62,15 +64,15 @@ or
 bp = BSyncProcessor(data=file_data)
 ```
 
-## Assumptions
+#### Assumptions
 1. Assuming 1 building per file
 1. Assuming sqft method uses "Conditioned" floor area for calculations. If not present, uses "Gross"
 1. Assuming averages that use served space area must be defined in Sections (LinkedSectionIDs). LinkedBuildingID is not used.
 
-## TODO
+#### TODO
 1. thermal zones: when spaces are listed within them with spaces (or multiple thermal zones), this would change the average setpoint calculations. Is this an exception or a normal case to handle?
 
-## Assets Definitions File
+#### Assets Definitions File
 
 This file is used to specify what assets to extract from a BuildingSync XML file. By default, the file found in `config/asset_definitions.json` is used, but a custom file can be specified with the `set_asset_defs_file` method in the `BSyncProcessor` class.
 
@@ -93,11 +95,45 @@ There are currently 5 types of assets that can be extracted:
 
 The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
 
-## Extracted Assets File
+#### Extracted Assets File
 
 The schema for the extracted assets JSON file is in `schemas/extracted_assets_schema.json`.
 
 This file lists the extracted assets information in name, value, units triples.  Names will match the `export_name` listed in the asset_definitions JSON file, except for assets of type 'sqft', which will be prepended by 'Primary' and 'Secondary'.
+
+### BUILDINGSYNC to CTS Spreadsheet Processor
+
+This functionality takes in a list of buildingsync filepaths, runs the process to extract relevant information, aggregate at the Facility level, and generate an XLSX file in the expected CTS format.  This is the `CTS Comprehensive Evaluation Upload Template`.
+
+To test usage:
+
+```bash
+	python buildingsync_asset_extractor/cts_main.py
+```
+
+This will process the 2 primary schools XML files (that will be aggregated into 1 facility) and the office XML file (which will be another facility) found in `tests/files/` and generate a XLSX containing 2 facilities. The resulting file will be saved to `tests\output\cts_output.xlsx`.
+
+###
+- BuildingSync files are aggregated by facility based on the Facility ID in the file. This ID can be found in the `<Facility>` section, within the `<UserDefinedFields>` subsection:
+
+	```
+	<UserDefinedFields>
+        <UserDefinedField>
+          <FieldName>Agency Designated Covered Facility ID</FieldName>
+          <FieldValue>ABC 123</FieldValue>
+        </UserDefinedField>
+        <UserDefinedField>
+          <FieldName>Sub-agency Acronym</FieldName>
+          <FieldValue>ABC</FieldValue>
+        </UserDefinedField>
+        <UserDefinedField>
+          <FieldName>Facility Name</FieldName>
+          <FieldValue>Test Facility</FieldValue>
+        </UserDefinedField>
+      </UserDefinedFields>
+  ```
+- The process will extract the measures that are part of the `cheapest` scenario within each file. The measures will be aggregated at the Facility level and the number of measures in each category will be added to the spreadsheet. If there is no cost, no measures will be counted.
+- More information about the BuildingSync to CTS mappings can be found in the [cts_map page](buildingsync_asset_extractor/cts/cts_map.md).
 
 ## Developing
 
