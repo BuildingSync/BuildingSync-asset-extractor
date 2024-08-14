@@ -3,8 +3,8 @@ name = "buildingsync-asset-extractor"
 version = "0.2.0"
 description = "BuildingSync Asset Extractor (BAE)"
 authors = [
-	{name = "Katherine Fleming", email = "katherine.fleming@nrel.gov"},
-	{name = "Hannah Eslinger", email = "hannah.eslinger@nrel.gov"}
+	"Katherine Fleming <katherine.fleming@nrel.gov>",
+	"Hannah Eslinger <hannah.eslinger@nrel.gov>"
 ]
 license = "BSD4"
 
