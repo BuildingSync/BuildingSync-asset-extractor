@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## Version 0.2.0
+
+- Added Export to CTS format functionality
+- Unit conversion updates
+- Lock pandas version to be compatible with SEED
+- Compatible with BuildingSync version 2.4.0
+
+## Version 0.1.14
+
+- Updated error handling
+
+## Version 0.1.13
+
+- Add Electrification Potential Asset
+- Update Process Lighting
+- Major code cleanup/refactoring
+
 ## Version 0.1.12
 
 Updated lxml dependency to 4.9.1
