@@ -1,0 +1,2 @@
+class BSyncProcessorError(Exception):
+    pass

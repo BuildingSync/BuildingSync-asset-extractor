@@ -33,53 +33,19 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
-import os
+from pathlib import Path
 
-from buildingsync_asset_extractor.processor import BSyncProcessor
+from buildingsync_asset_extractor.cts.cts import building_sync_to_cts
 
-# 1: regular test
-filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/completetest.xml')
-out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output.json')
-out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output2.json')
+# test input files
+PRIMARYSCHOOL_1_FILE_PATH = Path(__file__).parents[1] / 'tests/files/PrimarySchool-1.xml'
+PRIMARYSCHOOL_2_FILE_PATH = Path(__file__).parents[1] / 'tests/files/PrimarySchool-2.xml'
+OFFICE_3_FILE_PATH = Path(__file__).parents[1] / 'tests/files/Office-3.xml'
 
-print("filename: {}".format(filename))
+input_paths_list = [PRIMARYSCHOOL_1_FILE_PATH, PRIMARYSCHOOL_2_FILE_PATH, OFFICE_3_FILE_PATH]
 
-# bp = BSyncProcessor(filename=filename, logger_level='DEBUG')
-bp = BSyncProcessor(filename=filename)
-bp.extract()
-bp.save(out_file)
+# test output file location
+output_path = Path(__file__).parents[1] / 'tests/output/cts_output.xlsx'
 
-# # does it work when already loaded?
-# with open(filename, mode='rb') as file:
-#     file_data = file.read()
-
-# bp = BSyncProcessor(data=file_data)
-# bp.extract()
-# bp.save(out_file2)
-
-# 2: bigger test
-# import glob
-# from pathlib import Path
-# bae_tester_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'Desktop/BAE-tester/20220519_AT_BSXML')
-# find_path = os.path.join(bae_tester_dir, '*', '*.xml')
-
-# for file in glob.glob(find_path):
-# 	print(file)
-# 	out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', Path(file).stem + '.json')
-# 	bp = BSyncProcessor(filename=file, logger_level='DEBUG')
-# 	bp.extract()
-# 	bp.save(out_file)
-
-
-# 3: schema examples test
-# import glob
-# from pathlib import Path
-# bae_tester_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'bsync-schema', 'examples')
-# find_path = os.path.join(bae_tester_dir, '*.xml')
-
-# for file in glob.glob(find_path):
-# 	print(file)
-# 	out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', Path(file).stem + '.json')
-# 	bp = BSyncProcessor(filename=file, logger_level='DEBUG')
-# 	bp.extract()
-# 	bp.save(out_file)
+# run the CTS spreadsheet maker
+building_sync_to_cts(input_paths_list, output_path)

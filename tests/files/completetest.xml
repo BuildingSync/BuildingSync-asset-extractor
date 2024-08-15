@@ -637,6 +637,13 @@ This example is configured to import and export with BuildingSync version 2.2.0.
         </auc:Site>
       </auc:Sites>
       <auc:Systems>
+        <auc:CookingSystems>
+          <auc:CookingSystem ID="CookingSystemType-69928414315060">
+              <auc:OutputCapacity>2400.0</auc:OutputCapacity>
+              <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
+              <auc:PrimaryFuel>Natural gas</auc:PrimaryFuel>
+          </auc:CookingSystem>
+        </auc:CookingSystems>
         <auc:HVACSystems>
           <auc:HVACSystem ID="HVACSystemType-69928414315060">
             <auc:Plants>
@@ -1287,7 +1294,7 @@ This example is configured to import and export with BuildingSync version 2.2.0.
                   <auc:AnnualCoolingEfficiencyUnits>COP</auc:AnnualCoolingEfficiencyUnits>
                   <auc:Capacity>1000.0</auc:Capacity>
                   <auc:CapacityUnits>kBtu/hr</auc:CapacityUnits>
-                  <auc:PrimaryFuel>Electricity</auc:PrimaryFuel>
+                  <auc:PrimaryFuel>Coal</auc:PrimaryFuel>
                   <auc:CoolingSourceCondition>Good</auc:CoolingSourceCondition>
                   <auc:Controls>
                     <auc:Control>

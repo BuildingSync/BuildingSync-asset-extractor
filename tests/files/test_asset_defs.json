@@ -5,97 +5,112 @@
       "key": "LightingSystemEfficiency",
       "name": "LightingSystemEfficiency",
       "export_name": "Lighting System Efficiency",
-      "type": "custom"
+      "type": "custom",
+      "export_units": true,
+      "units": "W/ft2"
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",
       "key": "LightingSystem",
       "name": "LightingSystem",
       "export_name": "Lighting System Oldest",
-      "type": "age_oldest"
+      "type": "age_oldest",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/LightingSystems",
       "key": "LightingSystem",
       "name": "LightingSystem",
       "export_name": "Lighting System Average Age",
-      "type": "age_average"
+      "type": "age_average",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource",
       "key": "AnnualHeatingEfficiencyValue",
       "name": "AnnualHeatingEfficiency",
       "export_name": "Heating System Efficiency",
-      "type": "custom"
+      "type": "custom",
+      "export_units": true
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources",
       "key": "HeatingSource",
       "name": "HeatingSource",
       "export_name": "Heating System Oldest",
-      "type": "age_oldest"
+      "type": "age_oldest",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources",
       "key": "HeatingSource",
       "name": "HeatingSource",
       "export_name": "Heating System Average Age",
-      "type": "age_average"
+      "type": "age_average",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource",
       "key": "PrimaryFuel",
       "name": "PrimaryFuel",
       "export_name": "Heating Fuel Type",
-      "type": "custom"
+      "type": "custom",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources/CoolingSource",
       "key": "AnnualCoolingEfficiencyValue",
       "name": "AnnualCoolingEfficiency",
       "export_name": "Cooling System Efficiency",
-      "type": "custom"
+      "type": "custom",
+      "export_units": true
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources",
       "key": "CoolingSource",
       "name": "CoolingSource",
       "export_name": "Cooling System Oldest",
-      "type": "age_oldest"
+      "type": "age_oldest",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources",
       "key": "CoolingSource",
       "name": "CoolingSource",
       "export_name": "Cooling System Average Age",
-      "type": "age_average"
+      "type": "age_average",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
       "key": "WaterHeaterEfficiency",
       "name": "WaterHeaterEfficiency",
       "export_name": "Hot Water System Efficiency",
-      "type": "custom"
+      "type": "custom",
+      "export_units": true
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems",
       "key": "DomesticHotWaterSystem",
       "name": "DomesticHotWaterSystem",
       "export_name": "Hot Water System Oldest",
-      "type": "age_oldest"
+      "type": "age_oldest",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems",
       "key": "DomesticHotWaterSystem",
       "name": "DomesticHotWaterSystem",
       "export_name": "Hot Water System Average Age",
-      "type": "age_average"
+      "type": "age_average",
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
       "key": "PrimaryFuel",
       "name": "PrimaryFuel",
       "export_name": "Hot Water System Fuel Type",
+      "export_units": false,
       "type": "custom"
     },
     {
@@ -104,7 +119,7 @@
       "name": "LightingSystems",
       "export_name": "Number of Lighting Systems",
       "type": "num",
-      "units": null
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
@@ -112,7 +127,7 @@
       "name": "Principal HVAC System Type",
       "export_name": "HVAC System",
       "type": "sqft",
-      "units": null
+      "export_units": false
     },
     {
       "parent_path": "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section",
@@ -120,7 +135,41 @@
       "name": "AverageHeatingSetpoint",
       "export_name": "Average Heating Setpoint",
       "type": "avg_sqft",
+      "export_units": true,
       "units": "F"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Heating Electrification Potential",
+      "type": "custom",
+      "export_units": true,
+      "units": "kBtu/hr"
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/DomesticHotWaterSystems/DomesticHotWaterSystem",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Domestic HotWater System Electrification Potential",
+      "type": "custom",
+      "export_units": true
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/CoolingSources/CoolingSource",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Cooling Electrification Potential",
+      "type": "custom",
+      "export_units": true
+    },
+    {
+      "parent_path": "/BuildingSync/Facilities/Facility/Systems/CookingSystems/CookingSystem",
+      "key": "PrimaryFuel",
+      "name": "ElectrificationPotential",
+      "export_name": "Cooking System Electrification Potential",
+      "type": "custom",
+      "export_units": true
     }
   ]
 }

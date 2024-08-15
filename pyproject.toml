@@ -1,8 +1,11 @@
 [tool.poetry]
 name = "buildingsync-asset-extractor"
-version = "0.1.9"
+version = "0.2.0"
 description = "BuildingSync Asset Extractor (BAE)"
-authors = ["Katherine Fleming <katherine.fleming@nrel.gov>"]
+authors = [
+	"Katherine Fleming <katherine.fleming@nrel.gov>",
+	"Hannah Eslinger <hannah.eslinger@nrel.gov>"
+]
 license = "BSD4"
 
 readme = "README.md"
@@ -14,13 +17,22 @@ keywords = ["BuildingSync", "Building Data Exchange"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-lxml = "4.7.1"
+lxml = "4.9.1"
 importlib-resources = "^5.7.0"
+styleframe = "^4.2"
+pandas = "^2.2.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "6.1.0"
-pytest-cov = "2.11.1"
+pytest = "7.1.2"
+pytest-cov = "3.0.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = "True"
+disallow_untyped_defs = "True"
