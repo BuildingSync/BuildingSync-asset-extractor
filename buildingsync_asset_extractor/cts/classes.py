@@ -38,10 +38,7 @@ class FacilityAppearance:
     @functools.cached_property
     def cheapest_package_of_measures_scenario(self) -> Optional[PackageOfMeasuresScenario]:
         # get the measures for reference
-        measures_by_id = {
-            m.get("ID"): Measure(m)
-            for m in self.etree.findall("./Measures/Measure", self.etree.nsmap)
-        }
+        measures_by_id = {m.get("ID"): Measure(m) for m in self.etree.findall("./Measures/Measure", self.etree.nsmap)}
 
         cheapest_package_of_measures_scenario = None
         cheapest_cost = None
@@ -72,6 +69,7 @@ class FacilityAppearance:
 @dataclass
 class Facility:
     """Name of the facility and it's appearances in each file"""
+
     name: str
     appearances: list[FacilityAppearance] = field(default_factory=list)
 

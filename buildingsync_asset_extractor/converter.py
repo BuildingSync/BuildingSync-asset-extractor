@@ -21,7 +21,8 @@ POWERUNITSLIST: list[PowerUnits] = list(get_args(PowerUnits))
 
 
 def unify_units(
-    system_datas: list[SystemData], to_units: Optional[str] = None
+    system_datas: list[SystemData],
+    to_units: Optional[str] = None,
 ) -> list[SystemData]:
     if to_units is None:
         to_units = system_datas[0].cap_units

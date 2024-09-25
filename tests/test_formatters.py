@@ -15,9 +15,9 @@ class TestFormatters(unittest.TestCase):
 
     def test_format_80_percent_results(self) -> None:
         # SET UP
-        system_datas = \
-            [SystemData(value='Fuel oil no 1', cap='20.0', cap_units='kBtu/hr')] + \
-            [SystemData(value='Natural gas', cap='10.0', cap_units='kBtu/hr')] * 8
+        system_datas = [SystemData(value="Fuel oil no 1", cap="20.0", cap_units="kBtu/hr")] + [
+            SystemData(value="Natural gas", cap="10.0", cap_units="kBtu/hr"),
+        ] * 8
 
         # ACTION
         self.formatter.format_80_percent_results("Heating Fuel Type", system_datas, None)
@@ -28,9 +28,10 @@ class TestFormatters(unittest.TestCase):
 
     def test_format_80_percent_results_different_units(self) -> None:
         # SET UP
-        system_datas = \
-            [SystemData(value='Fuel oil no 1', cap='1', cap_units='Btu/hr')] + \
-            [SystemData(value='Natural gas', cap='1', cap_units='kBtu/hr')]
+        system_datas = [
+            SystemData(value="Fuel oil no 1", cap="1", cap_units="Btu/hr"),
+            SystemData(value="Natural gas", cap="1", cap_units="kBtu/hr"),
+        ]
 
         # ACTION
         self.formatter.format_80_percent_results("Heating Fuel Type", system_datas, None)
@@ -41,9 +42,7 @@ class TestFormatters(unittest.TestCase):
 
     def test_format_80_percent_results_use_sqft(self) -> None:
         # SET UP
-        system_datas = \
-            [SystemData(value='Fuel oil no 1', sqft=20)] + \
-            [SystemData(value='Natural gas', sqft=80)]
+        system_datas = [SystemData(value="Fuel oil no 1", sqft=20), SystemData(value="Natural gas", sqft=80)]
 
         # ACTION
         self.formatter.format_80_percent_results("Heating Fuel Type", system_datas, None)
@@ -55,9 +54,9 @@ class TestFormatters(unittest.TestCase):
     def test_format_custom_avg_results(self) -> None:
         # SET UP
         system_datas = [
-            SystemData(value='1.0', cap='3.0', cap_units='kBtu/hr'),
-            SystemData(value='1.0', cap='2.0', cap_units='kBtu/hr'),
-            SystemData(value='3.0', cap='5.0', cap_units='kBtu/hr')
+            SystemData(value="1.0", cap="3.0", cap_units="kBtu/hr"),
+            SystemData(value="1.0", cap="2.0", cap_units="kBtu/hr"),
+            SystemData(value="3.0", cap="5.0", cap_units="kBtu/hr"),
         ]
 
         # ACTION
@@ -70,9 +69,9 @@ class TestFormatters(unittest.TestCase):
     def test_format_custom_avg_different_units(self) -> None:
         # SET UP
         system_datas = [
-            SystemData(value='1.0', cap='3.0', cap_units='kBtu/hr'),
-            SystemData(value='1.0', cap='2.0', cap_units='kBtu/hr'),
-            SystemData(value='3.0', cap='5.0', cap_units='W')
+            SystemData(value="1.0", cap="3.0", cap_units="kBtu/hr"),
+            SystemData(value="1.0", cap="2.0", cap_units="kBtu/hr"),
+            SystemData(value="3.0", cap="5.0", cap_units="W"),
         ]
 
         # ACTION

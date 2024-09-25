@@ -1,4 +1,3 @@
-
 import logging
 from pathlib import Path
 
@@ -6,16 +5,13 @@ import pandas as pd
 from lxml import etree
 from styleframe import StyleFrame
 
-from buildingsync_asset_extractor.cts.classes import (
-    Facility,
-    FacilityAppearance
-)
+from buildingsync_asset_extractor.cts.classes import Facility, FacilityAppearance
 from buildingsync_asset_extractor.cts.parsers import (
     get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data,
     get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data,
     get_covered_facility_identification_information,
     get_potential_conservation_measures_per_technology_category,
-    parse_user_defined_fields
+    parse_user_defined_fields,
 )
 
 # Gets or creates a logger
@@ -36,7 +32,9 @@ def log_facilities(facility_by_id: dict[str, Facility]) -> None:
             logger.info(f"\t\t-{appearance.path}")
             cpoms = appearance.cheapest_package_of_measures_scenario
             if cpoms:
-                logger.info(f"\t\t\tusing cheapest package of measures: {cpoms.id} (measures: {list(cpoms.measures_by_id.keys())})")
+                logger.info(
+                    f"\t\t\tusing cheapest package of measures: {cpoms.id} (measures: {list(cpoms.measures_by_id.keys())})",
+                )
 
 
 def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
@@ -77,9 +75,11 @@ def building_sync_to_cts(files: list[Path], out_file: Path) -> None:
 
 
 def to_cts_row(facility: Facility) -> pd.Series:
-    return pd.concat([
-        get_covered_facility_identification_information(facility),
-        get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(facility),
-        get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data(facility),
-        get_potential_conservation_measures_per_technology_category(facility),
-    ])
+    return pd.concat(
+        [
+            get_covered_facility_identification_information(facility),
+            get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(facility),
+            get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data(facility),
+            get_potential_conservation_measures_per_technology_category(facility),
+        ],
+    )

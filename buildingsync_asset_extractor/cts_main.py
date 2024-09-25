@@ -33,19 +33,20 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+
 from pathlib import Path
 
 from buildingsync_asset_extractor.cts.cts import building_sync_to_cts
 
 # test input files
-PRIMARYSCHOOL_1_FILE_PATH = Path(__file__).parents[1] / 'tests/files/PrimarySchool-1.xml'
-PRIMARYSCHOOL_2_FILE_PATH = Path(__file__).parents[1] / 'tests/files/PrimarySchool-2.xml'
-OFFICE_3_FILE_PATH = Path(__file__).parents[1] / 'tests/files/Office-3.xml'
+PRIMARYSCHOOL_1_FILE_PATH = Path(__file__).parents[1] / "tests/files/PrimarySchool-1.xml"
+PRIMARYSCHOOL_2_FILE_PATH = Path(__file__).parents[1] / "tests/files/PrimarySchool-2.xml"
+OFFICE_3_FILE_PATH = Path(__file__).parents[1] / "tests/files/Office-3.xml"
 
 input_paths_list = [PRIMARYSCHOOL_1_FILE_PATH, PRIMARYSCHOOL_2_FILE_PATH, OFFICE_3_FILE_PATH]
 
 # test output file location
-output_path = Path(__file__).parents[1] / 'tests/output/cts_output.xlsx'
+output_path = Path(__file__).parents[1] / "tests/output/cts_output.xlsx"
 
 # run the CTS spreadsheet maker
 building_sync_to_cts(input_paths_list, output_path)
