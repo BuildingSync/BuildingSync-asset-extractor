@@ -33,6 +33,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+
 import unittest
 from pathlib import Path
 
@@ -44,7 +45,7 @@ from buildingsync_asset_extractor.processor import BSyncProcessor
 
 EMPTY_ASSET: Asset = Asset(name="", value=None)
 
-hvac_system_1 = etree.XML('''
+hvac_system_1 = etree.XML("""
     <auc:HVACSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
         <auc:HeatingAndCoolingSystems>
         <auc:HeatingSources>
@@ -61,9 +62,9 @@ hvac_system_1 = etree.XML('''
         </auc:HeatingSources>
         </auc:HeatingAndCoolingSystems>
     </auc:HVACSystem>
-''')
+""")
 
-hvac_system_2 = etree.XML('''
+hvac_system_2 = etree.XML("""
     <auc:HVACSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
         <auc:HeatingAndCoolingSystems>
         <auc:HeatingSources>
@@ -80,40 +81,40 @@ hvac_system_2 = etree.XML('''
         </auc:HeatingSources>
         </auc:HeatingAndCoolingSystems>
     </auc:HVACSystem>
-''')
+""")
 
 
 class TestBSyncProcessor(unittest.TestCase):
     def setUp(self) -> None:
-        self.testfile = Path(__file__).parent / 'files' / 'completetest.xml'
-        self.no_ns_testfile = Path(__file__).parent / 'files' / 'testfile2.xml'
-        self.output_dir = Path(__file__).parent / 'output'
-        self.out_file = 'testoutput.json'
-        self.out_file_2 = 'testoutput_2.json'
-        self.test_assets_file = Path(__file__).parent / 'files' / 'test_asset_defs.json'
+        self.testfile = Path(__file__).parent / "files" / "completetest.xml"
+        self.no_ns_testfile = Path(__file__).parent / "files" / "testfile2.xml"
+        self.output_dir = Path(__file__).parent / "output"
+        self.out_file = "testoutput.json"
+        self.out_file_2 = "testoutput_2.json"
+        self.test_assets_file = Path(__file__).parent / "files" / "test_asset_defs.json"
         self.num_assets_to_extract = 31
         self.num_sections_in_testfile = 3
 
         # create output dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        print("TESTFILE: {}".format(self.testfile))
+        print(f"TESTFILE: {self.testfile}")
         self.bp = BSyncProcessor(self.testfile)
 
     def test_initialize_and_parse(self) -> None:
         ns = self.bp.get_namespaces()
-        print('namespaces: {}'.format(ns))
-        self.assertIn('auc', ns)
+        print(f"namespaces: {ns}")
+        assert "auc" in ns
 
         doc = self.bp.get_doc()
-        self.assertIsNotNone(doc)
+        assert doc is not None
 
     def test_return_asset_definitions(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
         defs = self.bp.get_asset_defs()
-        self.assertEqual(len(defs), self.num_assets_to_extract - 10)
+        assert len(defs) == self.num_assets_to_extract - 10
 
-    def test_extract(self) -> None:
+    def test_extract(self) -> None:  # noqa: PLR0915
         filename = self.output_dir / self.out_file_2
         if filename.exists():
             filename.unlink()
@@ -121,114 +122,144 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp.extract()
         sections = self.bp.get_sections()
         # print("SECTIONS: EMPTY_ASSET".format(sections))
-        self.assertEqual(len(sections), self.num_sections_in_testfile)
+        assert len(sections) == self.num_sections_in_testfile
 
         assets = self.bp.get_assets()
-        print("ASSETS: {}".format(assets))
-        self.assertEqual(len(assets), self.num_assets_to_extract)
+        print(f"ASSETS: {assets}")
+        assert len(assets) == self.num_assets_to_extract
 
         # test that assets of each type were calculated
         # CUSTOM
-        LSE: Asset = next((item for item in assets if item.name == "Lighting System Efficiency"), EMPTY_ASSET)
-        self.assertTrue(isinstance(LSE.value, float))
-        self.assertLessEqual(LSE.value, 2)
-        LSEU: Asset = next((item for item in assets if item.name == "Lighting System Efficiency Units"), EMPTY_ASSET)
-        self.assertEqual(LSEU.value, 'W/ft2')
-
-        HSE: Asset = next((item for item in assets if item.name == "Heating System Efficiency"), EMPTY_ASSET)
-        self.assertTrue(isinstance(HSE.value, float))
-        self.assertLess(HSE.value, 70)
-        self.assertGreater(HSE.value, 69)
-        HSEU: Asset = next((item for item in assets if item.name == "Heating System Efficiency Units"), EMPTY_ASSET)
-        self.assertEqual(HSEU.value, 'Thermal Efficiency')
-
-        HSAA: Asset = next((item for item in assets if item.name == "Heating System Average Age"), EMPTY_ASSET)
-        self.assertTrue(isinstance(HSAA.value, str))
-        self.assertEqual(HSAA.value, '2010')
-
-        HFT: Asset = next((item for item in assets if item.name == "Heating Fuel Type"), EMPTY_ASSET)
-        self.assertTrue(isinstance(HFT.value, str))
-        self.assertEqual(HFT.value, 'Fuel oil no 1')
-
-        CSE: Asset = next((item for item in assets if item.name == "Cooling System Efficiency"), EMPTY_ASSET)
-        self.assertTrue(isinstance(CSE.value, float))
-        self.assertEqual(CSE.value, 3.0)
-        CSEU: Asset = next((item for item in assets if item.name == "Cooling System Efficiency Units"), EMPTY_ASSET)
-        self.assertEqual(CSEU.value, 'COP')
-
-        WHE: Asset = next((item for item in assets if item.name == "Hot Water System Efficiency"), EMPTY_ASSET)
-        self.assertEqual(WHE.value, 'mixed')
-
-        WHFT: Asset = next((item for item in assets if item.name == "Hot Water System Fuel Type"), EMPTY_ASSET)
-        self.assertEqual(WHFT.value, 'mixed')
-
-        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(HEP.value, 202200.0)
-
-        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, "kBtu/hr")
-
-        DHW: Asset = next((item for item in assets if item.name == "Domestic HotWater System Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(DHW.value, 0)
-
-        DHWU: Asset = next((
-            item for item in assets if item.name == "Domestic HotWater System Electrification Potential Units"),
-            EMPTY_ASSET
+        lighting_system_efficiency: Asset = next((item for item in assets if item.name == "Lighting System Efficiency"), EMPTY_ASSET)
+        assert isinstance(lighting_system_efficiency.value, float)
+        assert lighting_system_efficiency.value <= 2
+        lighting_system_efficiency_units: Asset = next(
+            (item for item in assets if item.name == "Lighting System Efficiency Units"),
+            EMPTY_ASSET,
         )
-        self.assertEqual(DHWU.value, None)
+        assert lighting_system_efficiency_units.value == "W/ft2"
 
-        CEP: Asset = next((item for item in assets if item.name == "Cooling Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(CEP.value, 1000.0)
+        heating_system_efficiency: Asset = next((item for item in assets if item.name == "Heating System Efficiency"), EMPTY_ASSET)
+        assert isinstance(heating_system_efficiency.value, float)
+        assert heating_system_efficiency.value < 70
+        assert heating_system_efficiency.value > 69
+        heating_system_efficiency_units: Asset = next(
+            (item for item in assets if item.name == "Heating System Efficiency Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_system_efficiency_units.value == "Thermal Efficiency"
 
-        CEPU: Asset = next((item for item in assets if item.name == "Cooling Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(CEPU.value, "kBtu/hr")
+        heating_system_average_age: Asset = next((item for item in assets if item.name == "Heating System Average Age"), EMPTY_ASSET)
+        assert isinstance(heating_system_average_age.value, str)
+        assert heating_system_average_age.value == "2010"
 
-        CSEP: Asset = next((item for item in assets if item.name == "Cooking System Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(CSEP.value, 2400.0)
+        heating_fuel_type: Asset = next((item for item in assets if item.name == "Heating Fuel Type"), EMPTY_ASSET)
+        assert isinstance(heating_fuel_type.value, str)
+        assert heating_fuel_type.value == "Fuel oil no 1"
 
-        CSEPU: Asset = next((item for item in assets if item.name == "Cooking System Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(CSEPU.value, "kBtu/hr")
+        cooling_system_efficiency: Asset = next((item for item in assets if item.name == "Cooling System Efficiency"), EMPTY_ASSET)
+        assert isinstance(cooling_system_efficiency.value, float)
+        assert cooling_system_efficiency.value == 3.0
+        cooling_system_efficiency_units: Asset = next(
+            (item for item in assets if item.name == "Cooling System Efficiency Units"),
+            EMPTY_ASSET,
+        )
+        assert cooling_system_efficiency_units.value == "COP"
+
+        hot_water_system_efficiency: Asset = next((item for item in assets if item.name == "Hot Water System Efficiency"), EMPTY_ASSET)
+        assert hot_water_system_efficiency.value == "mixed"
+
+        how_water_system_fuel_type: Asset = next((item for item in assets if item.name == "Hot Water System Fuel Type"), EMPTY_ASSET)
+        assert how_water_system_fuel_type.value == "mixed"
+
+        heating_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential.value == 202200.0
+
+        heating_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential_units.value == "kBtu/hr"
+
+        domestic_hot_water: Asset = next(
+            (item for item in assets if item.name == "Domestic HotWater System Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert domestic_hot_water.value == 0
+
+        domestic_hot_water_units: Asset = next(
+            (item for item in assets if item.name == "Domestic HotWater System Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert domestic_hot_water_units.value is None
+
+        cooling_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Cooling Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert cooling_electrification_potential.value == 1000.0
+
+        cooling_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Cooling Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert cooling_electrification_potential_units.value == "kBtu/hr"
+
+        cooking_system_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Cooking System Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert cooking_system_electrification_potential.value == 2400.0
+
+        cooking_system_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Cooking System Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert cooking_system_electrification_potential_units.value == "kBtu/hr"
 
         # count
-        cnt: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
-        self.assertTrue(isinstance(cnt.value, int))
-        self.assertEqual(cnt.value, 2)
+        lighting_systems: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
+        assert isinstance(lighting_systems.value, int)
+        assert lighting_systems.value == 2
         # avg_sqft
         # TODO: need to get better testfile with this information in it
         # avgHeat = next((item for item in assets if item.name == "Average Heating Setpoint"), None)
         # self.assertEqual(avgHeat.value, 71.5)
 
         # age
-        age: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
-        self.assertTrue(isinstance(age.value, str))
-        self.assertEqual(age.value, '2010')
+        heating_system_oldest: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
+        assert isinstance(heating_system_oldest.value, str)
+        assert heating_system_oldest.value == "2010"
 
         filename = self.output_dir / self.out_file_2
         self.bp.save(filename)
 
     def test_extract_data(self) -> None:
-        self.testfile = Path(__file__).parent / 'files' / 'testfile.xml'
-        with open(self.testfile, mode='rb') as file:
+        self.testfile = Path(__file__).parent / "files" / "testfile.xml"
+        with open(self.testfile, mode="rb") as file:
             file_data = file.read()
 
         self.bp2 = BSyncProcessor(data=file_data)
         self.bp2.set_asset_defs_file(self.test_assets_file)
         self.bp2.extract()
         sections = self.bp2.get_sections()
-        self.assertEqual(len(sections), self.num_sections_in_testfile)
+        assert len(sections) == self.num_sections_in_testfile
 
         assets = self.bp2.get_assets()
-        self.assertEqual(len(assets), self.num_assets_to_extract)
+        assert len(assets) == self.num_assets_to_extract
 
         # test 1 asset
         age: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
-        self.assertEqual(age.value, '2010')
+        assert age.value == "2010"
 
     def test_set_asset_defs(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)
         self.bp.extract()
         assets = self.bp.get_assets()
-        self.assertEqual(len(assets), self.num_assets_to_extract)
+        assert len(assets) == self.num_assets_to_extract
 
     def test_extract_no_ns(self) -> None:
         # test that assets from files without a namespace prefix can be extracted
@@ -236,15 +267,15 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp2.set_asset_defs_file(self.test_assets_file)
         self.bp2.extract()
         sections = self.bp2.get_sections()
-        self.assertEqual(len(sections), self.num_sections_in_testfile)
+        assert len(sections) == self.num_sections_in_testfile
 
         assets = self.bp2.get_assets()
-        self.assertEqual(len(assets), self.num_assets_to_extract)
+        assert len(assets) == self.num_assets_to_extract
         # test that assets of each type were calculated
         # num
         cnt: Asset = next((item for item in assets if item.name == "Number of Lighting Systems"), EMPTY_ASSET)
-        self.assertTrue(isinstance(cnt.value, int))
-        self.assertEqual(cnt.value, 2)
+        assert isinstance(cnt.value, int)
+        assert cnt.value == 2
         # avg_sqft
         # TODO: need to get better testfile with this information in it
         # avgHeat = next((item for item in assets if item.name == "Average Heating Setpoint"), None)
@@ -252,33 +283,36 @@ class TestBSyncProcessor(unittest.TestCase):
 
         # age
         age: Asset = next((item for item in assets if item.name == "Heating System Oldest"), EMPTY_ASSET)
-        self.assertEqual(age.value, '2010')
+        assert age.value == "2010"
 
     def test_save(self) -> None:
         filename = self.output_dir / self.out_file
         if filename.exists():
             filename.unlink()
         self.bp.save(filename)
-        self.assertTrue(filename.exists())
+        assert filename.exists()
 
 
 class TestElectrificationPotential(unittest.TestCase):
     def setUp(self) -> None:
-        self.testfile = Path(__file__).parent / 'files' / 'completetest.xml'
-        print("TESTFILE: {}".format(self.testfile))
+        self.testfile = Path(__file__).parent / "files" / "completetest.xml"
+        print(f"TESTFILE: {self.testfile}")
         self.bp = BSyncProcessor(self.testfile)
 
         # only try and get heating EP
-        self.heating_source_path = "/BuildingSync/Facilities/Facility/Systems/" \
-            "HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource"
-        self.bp.asset_defs = [AssetDef(
-            parent_path=self.heating_source_path,
-            key="PrimaryFuel",
-            name="ElectrificationPotential",
-            export_name="Heating Electrification Potential",
-            type="custom",
-            export_units=True,
-        )]
+        self.heating_source_path = (
+            "/BuildingSync/Facilities/Facility/Systems/HVACSystems/HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource"
+        )
+        self.bp.asset_defs = [
+            AssetDef(
+                parent_path=self.heating_source_path,
+                key="PrimaryFuel",
+                name="ElectrificationPotential",
+                export_name="Heating Electrification Potential",
+                type="custom",
+                export_units=True,
+            ),
+        ]
 
         # get hvac_systems and clear it
         hvac_systems_path = "/BuildingSync/Facilities/Facility/Systems/HVACSystems"
@@ -297,10 +331,16 @@ class TestElectrificationPotential(unittest.TestCase):
 
         # ASSERT
         assert len(assets) == 2
-        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(HEP.value, 6.0)
-        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, "kBtu/hr")
+        heating_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential.value == 6.0
+        heating_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential_units.value == "kBtu/hr"
 
     def test_extract_heating_source_electrification_potential_different_export_unit(self) -> None:
         # SET UP
@@ -316,14 +356,20 @@ class TestElectrificationPotential(unittest.TestCase):
 
         # ASSERT
         assert len(assets) == 2
-        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        assert HEP.value == pytest.approx(1758.42642)
-        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, "W")
+        heating_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential.value == pytest.approx(1758.42642)
+        heating_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential_units.value == "W"
 
     def test_extract_heating_source_electrification_potential_different_units(self) -> None:
-        # add in new ones with multipule heating sources.
-        hvac_system_1 = etree.XML('''
+        # add in new ones with multiple heating sources.
+        hvac_system_1 = etree.XML("""
             <auc:HVACSystem
                 xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
                 xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
@@ -342,7 +388,7 @@ class TestElectrificationPotential(unittest.TestCase):
                 </auc:HeatingSources>
                 </auc:HeatingAndCoolingSystems>
             </auc:HVACSystem>
-        ''')
+        """)
         self.hvac_systems.append(hvac_system_1)
 
         # ACTION
@@ -351,10 +397,16 @@ class TestElectrificationPotential(unittest.TestCase):
 
         # ASSERT
         assert len(assets) == 2
-        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        assert HEP.value == pytest.approx(1.00682)
-        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, "kBtu/hr")
+        heating_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential.value == pytest.approx(1.00682)
+        heating_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential_units.value == "kBtu/hr"
 
     def test_extract_heating_source_electrification_no_heating_sources(self) -> None:
         # ACTION
@@ -363,15 +415,21 @@ class TestElectrificationPotential(unittest.TestCase):
 
         # ASSERT
         assert len(assets) == 2
-        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(HEP.value, None)
-        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, None)
+        heating_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential.value is None
+        heating_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential_units.value is None
 
     def test_extract_heating_source_electrification_all_electric_heating_sources(self) -> None:
         self.bp.asset_defs[0].units = "kBtu/hr"
 
-        hvac_system_1 = etree.XML('''
+        hvac_system_1 = etree.XML("""
             <auc:HVACSystem
                 xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
                 xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
@@ -390,7 +448,7 @@ class TestElectrificationPotential(unittest.TestCase):
                 </auc:HeatingSources>
                 </auc:HeatingAndCoolingSystems>
             </auc:HVACSystem>
-        ''')
+        """)
         self.hvac_systems.append(hvac_system_1)
 
         # ACTION
@@ -399,7 +457,13 @@ class TestElectrificationPotential(unittest.TestCase):
 
         # ASSERT
         assert len(assets) == 2
-        HEP: Asset = next((item for item in assets if item.name == "Heating Electrification Potential"), EMPTY_ASSET)
-        self.assertEqual(HEP.value, 0)
-        HEPU: Asset = next((item for item in assets if item.name == "Heating Electrification Potential Units"), EMPTY_ASSET)
-        self.assertEqual(HEPU.value, "kBtu/hr")
+        heating_electrification_potential: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential.value == 0
+        heating_electrification_potential_units: Asset = next(
+            (item for item in assets if item.name == "Heating Electrification Potential Units"),
+            EMPTY_ASSET,
+        )
+        assert heating_electrification_potential_units.value == "kBtu/hr"

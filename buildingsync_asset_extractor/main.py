@@ -33,16 +33,17 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+
 import os
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
 # 1: regular test
-filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'tests/files/completetest.xml')
-out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output.json')
-out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets_output2.json')
+filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tests/files/completetest.xml")
+out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_output.json")
+out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_output2.json")
 
-print("filename: {}".format(filename))
+print(f"filename: {filename}")
 
 # bp = BSyncProcessor(filename=filename, logger_level='DEBUG')
 bp = BSyncProcessor(filename=filename)

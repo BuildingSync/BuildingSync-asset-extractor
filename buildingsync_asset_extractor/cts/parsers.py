@@ -6,11 +6,9 @@ from lxml import etree
 
 from buildingsync_asset_extractor.cts.classes import Facility
 from buildingsync_asset_extractor.cts.energy_and_water_conservation_measures import (
-    ENERGY_AND_WATER_CONSERVATION_MEASURES
+    ENERGY_AND_WATER_CONSERVATION_MEASURES,
 )
-from buildingsync_asset_extractor.cts.measure_type_to_CTS_field import (
-    technology_category_to_CTS_field
-)
+from buildingsync_asset_extractor.cts.measure_type_to_cts_field import technology_category_to_cts_field
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -21,13 +19,9 @@ logger.setLevel(logging.INFO)
 
 
 def get_covered_facility_identification_information(facility: Facility) -> pd.Series:
-    user_defined_fields_trees = [
-        fa.etree.find("./UserDefinedFields", fa.etree.nsmap)
-        for fa in facility.appearances
-    ]
+    user_defined_fields_trees = [fa.etree.find("./UserDefinedFields", fa.etree.nsmap) for fa in facility.appearances]
     user_defined_fields_dicts = [
-        parse_user_defined_fields(user_defined_fields_tree)
-        for user_defined_fields_tree in user_defined_fields_trees
+        parse_user_defined_fields(user_defined_fields_tree) for user_defined_fields_tree in user_defined_fields_trees
     ]
     print(user_defined_fields_dicts)
 
@@ -46,21 +40,13 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     # data["Evaluation Completion Date"] =
 
     # Retro/Re-Commissioning Assessment
-    is_retrocommissioned = [
-        fa.etree.find("./Reports/Report/RetrocommissioningAudit", fa.etree.nsmap)
-        for fa in facility.appearances
-    ]
-    data["Retro/Re-Commissioning Assessment"] = all([x is not None and x.text == "true" for x in is_retrocommissioned])
+    is_retrocommissioned = [fa.etree.find("./Reports/Report/RetrocommissioningAudit", fa.etree.nsmap) for fa in facility.appearances]
+    data["Retro/Re-Commissioning Assessment"] = all(x is not None and x.text == "true" for x in is_retrocommissioned)
 
     # Gross Evaluated Square Footage
-    floor_areas = [
-        fa.etree.find("./Sites/Site/Buildings/Building/FloorAreas/FloorArea", fa.etree.nsmap)
-        for fa in facility.appearances
-    ]
+    floor_areas = [fa.etree.find("./Sites/Site/Buildings/Building/FloorAreas/FloorArea", fa.etree.nsmap) for fa in facility.appearances]
     gross_floor_area = [
-        float(fa.find("./FloorAreaValue", fa.nsmap).text)
-        for fa in floor_areas
-        if fa.find("./FloorAreaType", fa.nsmap).text == "Gross"
+        float(fa.find("./FloorAreaValue", fa.nsmap).text) for fa in floor_areas if fa.find("./FloorAreaType", fa.nsmap).text == "Gross"
     ]
     data["Gross Evaluated Square Footage"] = sum(gross_floor_area)
 
@@ -72,12 +58,9 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     ]
 
     def sum_from_package_of_measures_scenarios(xpath: str) -> float:
-        trees = [
-            s.find("./ScenarioType/PackageOfMeasures/" + xpath, s.nsmap)
-            for s in package_of_measures_scenario_etrees
-        ]
+        trees = [s.find("./ScenarioType/PackageOfMeasures/" + xpath, s.nsmap) for s in package_of_measures_scenario_etrees]
 
-        return sum([float(t.text)for t in trees if t is not None])
+        return sum([float(t.text) for t in trees if t is not None])
 
     data["Estimated Implementation Cost of Measure(s)"] = sum_from_package_of_measures_scenarios("PackageFirstCost")
     data["Estimated Annual Energy Savings"] = sum_from_package_of_measures_scenarios("AnnualSavingsSiteEnergy")
@@ -89,22 +72,24 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     # data["Estimated Annual Renewable Thermal Output"] =
 
     # just sums of scenarios
-    data["Estimated Other Annual Ancillary Cost Savings"] = sum_from_package_of_measures_scenarios("OMCostAnnualSavings")
+    data["Estimated Other Annual Ancillary Cost Savings"] = sum_from_package_of_measures_scenarios(
+        "OMCostAnnualSavings",
+    )
 
     return data
 
 
-def get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data(facility: Facility) -> pd.Series:
+def get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data(_facility: Facility) -> pd.Series:
     data = pd.Series()
 
-    # building sync doesnt have these
+    # building sync doesn't have these
 
     return data
 
 
 def get_potential_conservation_measures_per_technology_category(facility: Facility) -> pd.Series:
-    results = {k: 0 for k in ENERGY_AND_WATER_CONSERVATION_MEASURES.keys()}
-    results.update({k: 0 for k in technology_category_to_CTS_field.values()})
+    results = {k: 0 for k in ENERGY_AND_WATER_CONSERVATION_MEASURES}
+    results.update({k: 0 for k in technology_category_to_cts_field.values()})
 
     # for each measure
     measures = [
@@ -115,20 +100,25 @@ def get_potential_conservation_measures_per_technology_category(facility: Facili
     ]
     for m in measures:
         # get measure type
-        (measure_type, _) = next(filter(
-            lambda x: asdict(m).items() >= x[1].items(),
-            ENERGY_AND_WATER_CONSERVATION_MEASURES.items()
-        ), (None, None))
+        (measure_type, _) = next(
+            filter(
+                lambda x: asdict(m).items() >= x[1].items(),
+                ENERGY_AND_WATER_CONSERVATION_MEASURES.items(),
+            ),
+            (None, None),
+        )
 
         # account for measure in result
         if measure_type is not None:
-            logger.info(f"Measure `{m.id}` counted under {measure_type}` and `{technology_category_to_CTS_field[m.technology_category]}`")
+            logger.info(
+                f"Measure `{m.id}` counted under {measure_type}` and `{technology_category_to_cts_field[m.technology_category]}`",
+            )
             results[measure_type] += 1
-            results[technology_category_to_CTS_field[m.technology_category]] += 1
+            results[technology_category_to_cts_field[m.technology_category]] += 1
 
         else:
             logger.warning(
-                f"Measure `{m.id}` unable to be mapped. TechnologyCategory: `{m.technology_category}`, MeasureName: `{m.measure_name}`"
+                f"Measure `{m.id}` unable to be mapped. TechnologyCategory: `{m.technology_category}`, MeasureName: `{m.measure_name}`",
             )
 
     return pd.Series(results)
@@ -136,7 +126,9 @@ def get_potential_conservation_measures_per_technology_category(facility: Facili
 
 def parse_user_defined_fields(user_defined_fields_tree: etree.Element) -> dict[str, str]:
     return {
-        user_defined_field_tree.find("./FieldName", user_defined_field_tree.nsmap).text:
-        user_defined_field_tree.find("./FieldValue", user_defined_field_tree.nsmap).text
+        user_defined_field_tree.find("./FieldName", user_defined_field_tree.nsmap).text: user_defined_field_tree.find(
+            "./FieldValue",
+            user_defined_field_tree.nsmap,
+        ).text
         for user_defined_field_tree in user_defined_fields_tree
     }

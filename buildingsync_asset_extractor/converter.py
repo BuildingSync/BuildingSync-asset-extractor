@@ -21,14 +21,15 @@ POWERUNITSLIST: list[PowerUnits] = list(get_args(PowerUnits))
 
 
 def unify_units(
-    system_datas: list[SystemData], to_units: Optional[str] = None
+    system_datas: list[SystemData],
+    to_units: Optional[str] = None,
 ) -> list[SystemData]:
     if to_units is None:
         to_units = system_datas[0].cap_units
     for sd in system_datas:
         if sd.cap is not None:
             try:
-                sd.cap = convert(float(sd.cap), sd.cap_units, to_units)  # type: ignore
+                sd.cap = convert(float(sd.cap), sd.cap_units, to_units)  # type: ignore[arg-type, assignment]
                 sd.cap_units = to_units
             except BSyncProcessorError:
                 pass

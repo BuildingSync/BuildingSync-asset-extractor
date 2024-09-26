@@ -9,9 +9,7 @@ from buildingsync_asset_extractor.cts import building_sync_to_cts
 from buildingsync_asset_extractor.cts.cts import aggregate_facilities
 
 BLANK_CTS_FILE_PATH = (
-    Path(__file__).parents[2] /
-    "buildingsync_asset_extractor" / "cts" /
-    "CTS Comprehensive Evaluation Upload Template_20240312_021125.xlsx"
+    Path(__file__).parents[2] / "buildingsync_asset_extractor" / "cts" / "CTS Comprehensive Evaluation Upload Template_20240312_021125.xlsx"
 )
 BLANK_CTS = pd.read_excel(BLANK_CTS_FILE_PATH, sheet_name="Evaluation Upload Template")
 
@@ -32,7 +30,10 @@ class TestCTS(unittest.TestCase):
     def test_cts(self) -> None:
         # Action
         with tempfile.TemporaryDirectory() as temp_dir:
-            building_sync_to_cts([PRIMARYSCHOOL_1_FILE_PATH, PRIMARYSCHOOL_2_FILE_PATH, OFFICE_3_FILE_PATH], Path(temp_dir) / "output.xlsx")
+            building_sync_to_cts(
+                [PRIMARYSCHOOL_1_FILE_PATH, PRIMARYSCHOOL_2_FILE_PATH, OFFICE_3_FILE_PATH],
+                Path(temp_dir) / "output.xlsx",
+            )
             populated_cts = pd.read_excel(Path(temp_dir) / "output.xlsx")
 
         # Assertion

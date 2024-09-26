@@ -33,6 +33,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
+
 import unittest
 from pathlib import Path
 
@@ -41,13 +42,13 @@ from lxml import etree
 from buildingsync_asset_extractor.lighting_processing.lighting_processing import (
     LightingDataLPD,
     LightingDataPower,
-    process_buildings_lighting_systems
+    process_buildings_lighting_systems,
 )
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
-SECTION_PATH = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section'
+SECTION_PATH = "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections/Section"
 
-linked_section_with_floor_area_percentage = etree.XML('''
+linked_section_with_floor_area_percentage = etree.XML("""
     <acc:LinkedSectionID
         IDref="Section-69928578013460"
         xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
@@ -59,9 +60,9 @@ linked_section_with_floor_area_percentage = etree.XML('''
             </acc:FloorArea>
         </acc:FloorAreas>
     </acc:LinkedSectionID>
-''')
+""")
 
-linked_section_with_floor_area_value = etree.XML('''
+linked_section_with_floor_area_value = etree.XML("""
     <acc:LinkedSectionID
         IDref="Section-101919600"
         xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
@@ -73,24 +74,24 @@ linked_section_with_floor_area_value = etree.XML('''
             </acc:FloorArea>
         </acc:FloorAreas>
     </acc:LinkedSectionID>
-''')
+""")
 
 
 class TestBSyncProcessor(unittest.TestCase):
     def setUp(self) -> None:
-        self.testfile = Path(__file__).parents[1] / 'files' / 'completetest.xml'
-        self.no_ns_testfile = Path(__file__).parents[1] / 'files' / 'testfile2.xml'
-        self.output_dir = Path(__file__).parents[1] / 'output'
-        self.out_file = 'testoutput.json'
-        self.out_file_2 = 'testoutput_2.json'
-        self.test_assets_file = Path(__file__).parents[1] / 'files' / 'test_asset_defs.json'
+        self.testfile = Path(__file__).parents[1] / "files" / "completetest.xml"
+        self.no_ns_testfile = Path(__file__).parents[1] / "files" / "testfile2.xml"
+        self.output_dir = Path(__file__).parents[1] / "output"
+        self.out_file = "testoutput.json"
+        self.out_file_2 = "testoutput_2.json"
+        self.test_assets_file = Path(__file__).parents[1] / "files" / "test_asset_defs.json"
         self.num_assets_to_extract = 23
         self.num_sections_in_testfile = 3
 
         # create output dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        print("TESTFILE: {}".format(self.testfile))
+        print(f"TESTFILE: {self.testfile}")
         self.bp = BSyncProcessor(self.testfile)
 
     def test_process_lighting_method_1(self) -> None:
@@ -104,7 +105,7 @@ class TestBSyncProcessor(unittest.TestCase):
             lighting_systems.remove(e)
 
         # add method 1 lighting system
-        method_1_ls = etree.XML('''
+        method_1_ls = etree.XML("""
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:InstalledPower>1.0</acc:InstalledPower>
                 <acc:InstalledPower>2.0</acc:InstalledPower>
@@ -114,11 +115,11 @@ class TestBSyncProcessor(unittest.TestCase):
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
             </acc:LightingSystem>
-        ''')
+        """)
         lighting_systems.append(method_1_ls)
 
         # add sections to lighting system
-        linked_sections = self.bp.xp(method_1_ls, './/LinkedPremises/Section')[0]
+        linked_sections = self.bp.xp(method_1_ls, ".//LinkedPremises/Section")[0]
         linked_sections.append(linked_section_with_floor_area_percentage)
         linked_sections.append(linked_section_with_floor_area_value)
 
@@ -150,7 +151,7 @@ class TestBSyncProcessor(unittest.TestCase):
             lighting_systems.remove(e)
 
         # add method 2 lighting system
-        method_2_ls = etree.XML('''
+        method_2_ls = etree.XML("""
             <acc:LightingSystem
                 xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
                 xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019"
@@ -164,11 +165,11 @@ class TestBSyncProcessor(unittest.TestCase):
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
             </acc:LightingSystem>
-        ''')
+        """)
         lighting_systems.append(method_2_ls)
 
         # add sections to lighting system
-        linked_sections = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
+        linked_sections = self.bp.xp(method_2_ls, ".//LinkedPremises/Section")[0]
         linked_sections.append(linked_section_with_floor_area_percentage)
         linked_sections.append(linked_section_with_floor_area_value)
 
@@ -200,7 +201,7 @@ class TestBSyncProcessor(unittest.TestCase):
             lighting_systems.remove(e)
 
         # add method 2 lighting system
-        method_2_ls = etree.XML('''
+        method_2_ls = etree.XML("""
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:LampPower>2</acc:LampPower>
                 <acc:NumberOfLampsPerLuminaire>3</acc:NumberOfLampsPerLuminaire>
@@ -208,34 +209,34 @@ class TestBSyncProcessor(unittest.TestCase):
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
             </acc:LightingSystem>
-        ''')
+        """)
         lighting_systems.append(method_2_ls)
 
         # add user defined feilds to lighting system
-        good_field = etree.XML('''
+        good_field = etree.XML("""
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName>Quantity Of Luminaires For</acc:FieldName>
                 <acc:FieldValue>2</acc:FieldValue>
             </acc:UserDefinedField>
-        ''')
-        bad_name_feild = etree.XML('''
+        """)
+        bad_name_feild = etree.XML("""
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName>irrelevant</acc:FieldName>
                 <acc:FieldValue>3</acc:FieldValue>
             </acc:UserDefinedField>
-        ''')
-        bad_value_field = etree.XML('''
+        """)
+        bad_value_field = etree.XML("""
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName>Quantity Of Luminaires For</acc:FieldName>
                 <acc:FieldValue>bad value</acc:FieldValue>
             </acc:UserDefinedField>
-        ''')
+        """)
         method_2_ls.append(good_field)
         method_2_ls.append(bad_name_feild)
         method_2_ls.append(bad_value_field)
 
         # add sections to lighting system
-        linked_sections = self.bp.xp(method_2_ls, './/LinkedPremises/Section')[0]
+        linked_sections = self.bp.xp(method_2_ls, ".//LinkedPremises/Section")[0]
         linked_sections.append(linked_section_with_floor_area_percentage)
         linked_sections.append(linked_section_with_floor_area_value)
 
@@ -267,40 +268,40 @@ class TestBSyncProcessor(unittest.TestCase):
             lighting_systems.remove(e)
 
         # add method 3 lighting system
-        method_3_ls = etree.XML('''
+        method_3_ls = etree.XML("""
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
             </acc:LightingSystem>
-        ''')
+        """)
         lighting_systems.append(method_3_ls)
 
         # add user defined feilds to lighting system
-        good_field = etree.XML('''
+        good_field = etree.XML("""
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName> Lighting Power Density For </acc:FieldName>
                 <acc:FieldValue>1</acc:FieldValue>
             </acc:UserDefinedField>
-        ''')
-        bad_name_feild = etree.XML('''
+        """)
+        bad_name_feild = etree.XML("""
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName> irrelevant </acc:FieldName>
                 <acc:FieldValue>2</acc:FieldValue>
             </acc:UserDefinedField>
-        ''')
-        bad_value_field = etree.XML('''
+        """)
+        bad_value_field = etree.XML("""
             <acc:UserDefinedField xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:FieldName>Lighting Power Density For</acc:FieldName>
                 <acc:FieldValue>bad value</acc:FieldValue>
             </acc:UserDefinedField>
-        ''')
+        """)
         method_3_ls.append(good_field)
         method_3_ls.append(bad_name_feild)
         method_3_ls.append(bad_value_field)
 
         # add sections to lighting system
-        linked_sections = self.bp.xp(method_3_ls, './/LinkedPremises/Section')[0]
+        linked_sections = self.bp.xp(method_3_ls, ".//LinkedPremises/Section")[0]
         linked_sections.append(linked_section_with_floor_area_percentage)
         linked_sections.append(linked_section_with_floor_area_value)
 
@@ -326,7 +327,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp.process_sections()
 
         # get sections and clear it
-        section_path = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections'
+        section_path = "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections"
         sections = self.bp.xp(self.bp.doc, section_path)[0]
         for s in sections:
             sections.remove(s)
@@ -337,19 +338,21 @@ class TestBSyncProcessor(unittest.TestCase):
         for e in lighting_systems:
             lighting_systems.remove(e)
 
-        building_path = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building'
+        building_path = "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building"
         building = self.bp.xp(self.bp.doc, building_path)[0]
-        building.append(etree.XML('''
+        building.append(
+            etree.XML("""
             <auc:OccupancyClassification xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019"
             >Assembly-Convention center</auc:OccupancyClassification>
-        '''))
+        """),
+        )
 
         # add section
-        section = etree.XML('''
+        section = etree.XML("""
             <auc:Section ID="Section-101919600" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <auc:OccupancyClassification>Auditorium</auc:OccupancyClassification>
             </auc:Section>
-        ''')
+        """)
         sections.append(section)
 
         # Action #
@@ -363,7 +366,7 @@ class TestBSyncProcessor(unittest.TestCase):
         self.bp.process_sections()
 
         # get sections and clear it
-        section_path = '/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections'
+        section_path = "/BuildingSync/Facilities/Facility/Sites/Site/Buildings/Building/Sections"
         sections = self.bp.xp(self.bp.doc, section_path)[0]
         for s in sections:
             sections.remove(s)
@@ -375,32 +378,34 @@ class TestBSyncProcessor(unittest.TestCase):
             lighting_systems.remove(e)
 
         # add section
-        section = etree.XML('''
+        section = etree.XML("""
             <auc:Section ID="Section-101919600" xmlns:auc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <auc:OccupancyClassification>Bad Classification</auc:OccupancyClassification>
             </auc:Section>
-        ''')
+        """)
         sections.append(section)
 
         # empty lighting systems
-        lighting_system = etree.XML('''
+        lighting_system = etree.XML("""
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
             </acc:LightingSystem>
-        ''')
+        """)
         lighting_systems.append(lighting_system)
 
         # add sections to lighting system
-        linked_sections = self.bp.xp(lighting_system, './/LinkedPremises/Section')[0]
-        linked_sections.append(etree.XML('''
+        linked_sections = self.bp.xp(lighting_system, ".//LinkedPremises/Section")[0]
+        linked_sections.append(
+            etree.XML("""
             <acc:LinkedSectionID
                 IDref="Section-101919600"
                 xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019"
             >
             </acc:LinkedSectionID>
-        '''))
+        """),
+        )
 
         # Action #
         results = process_buildings_lighting_systems(self.bp)
@@ -419,17 +424,17 @@ class TestBSyncProcessor(unittest.TestCase):
             lighting_systems.remove(e)
 
         # add method 1 lighting system
-        method_1_ls = etree.XML('''
+        method_1_ls = etree.XML("""
             <acc:LightingSystem xmlns:acc="http://buildingsync.net/schemas/bedes-auc/2019">
                 <acc:LinkedPremises>
                     <acc:Section></acc:Section>
                 </acc:LinkedPremises>
             </acc:LightingSystem>
-        ''')
+        """)
         lighting_systems.append(method_1_ls)
 
         # add sections to lighting system
-        linked_sections = self.bp.xp(method_1_ls, './/LinkedPremises/Section')[0]
+        linked_sections = self.bp.xp(method_1_ls, ".//LinkedPremises/Section")[0]
         linked_sections.append(linked_section_with_floor_area_percentage)
 
         # Action #

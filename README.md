@@ -9,8 +9,11 @@ This package processes a BuildingSync file to extract asset information that can
 ```bash
 pip install buildingsync-asset-extractor
 ```
+
 ### Install from source
+
 [Poetry](https://python-poetry.org/) is required to install buildingsync-asset-extractor.
+
 ```bash
 # Copy repo
 git clone https://github.com/BuildingSync/BuildingSync-asset-extractor.git
@@ -29,26 +32,35 @@ poetry run buildingsync_asset_extractor
 
 BuildingSync version 2.4.0.
 
-The pre-importer will identify assets defined in the `asset_definitions.json` file stored in the `config` directory.  There are various methods of calculating assets:
+The pre-importer will identify assets defined in the `asset_definitions.json` file stored in the `config` directory.
+There are various methods of calculating assets:
 
-1. `sqft`.  The sqft method will calculate a 'primary' and 'secondary' value for the asset based on the area it serves. This is calculated from the floor areas defined in each `Section` element.  `Conditioned` floor area values will be used if present; `Gross` otherwise.
+1. `sqft`. The sqft method will calculate a 'primary' and 'secondary' value for the asset based on the area it serves.
+   This is calculated from the floor areas defined in each `Section` element.  `Conditioned` floor area values will be
+   used if present; `Gross` otherwise.
 
 1. `num`. The num method will sum up all assets of the specified type and return a single overall number.
 
 1. `avg`. The avg method will return an average value for all assets of the specified type found.
 
-1. `avg_sqft`. The avg_sqft method will return a weighted average value for all assets of the specified type found based on the area they serve.
+1. `avg_sqft`. The avg_sqft method will return a weighted average value for all assets of the specified type found based
+   on the area they serve.
 
-1. `age_oldest`, `age_newest`, `age_average`. The age method will retrieve the 'YearOfManufacture' (or 'YearInstalled' if not present) element of a specified equipment type and return either the oldest or newest, or average age (year) as specified. Average age is calculated by a weighted average using the following (in order): capacity, served space area, regular average.
+1. `age_oldest`, `age_newest`, `age_average`. The age method will retrieve the 'YearOfManufacture' (or 'YearInstalled'
+   if not present) element of a specified equipment type and return either the oldest or newest, or average age (year)
+   as specified. Average age is calculated by a weighted average using the following (in order): capacity, served space
+   area, regular average.
 
-1. `custom`. Use this method for particular asset that do not fit in the other categories; i.e. Heating Efficiency. Note that a dedicated method may need to be written to support this type of asset.
+1. `custom`. Use this method for particular asset that do not fit in the other categories; i.e. Heating Efficiency. Note
+   that a dedicated method may need to be written to support this type of asset.
 
-When an asset has a unit associated with it, a separate asset will be generated to store the unit information. That asset will be named the same as the original asset, with ' Units' appended at the end.
+When an asset has a unit associated with it, a separate asset will be generated to store the unit information. That
+asset will be named the same as the original asset, with ' Units' appended at the end.
 
 To test usage:
 
 ```bash
-	python buildingsync_asset_extractor/main.py
+python buildingsync_asset_extractor/main.py
 ```
 
 This will extract assets from `tests/files/testfile.xml` and save the results to `assets_output.json`
@@ -58,6 +70,7 @@ There are 2 methods of initializing the Processor: with either a filename or dat
 ```bash
 bp = BSyncProcessor(filename=filename)
 ```
+
 or
 
 ```bash
@@ -65,33 +78,43 @@ bp = BSyncProcessor(data=file_data)
 ```
 
 #### Assumptions
+
 1. Assuming 1 building per file
 1. Assuming sqft method uses "Conditioned" floor area for calculations. If not present, uses "Gross"
-1. Assuming averages that use served space area must be defined in Sections (LinkedSectionIDs). LinkedBuildingID is not used.
+1. Assuming averages that use served space area must be defined in Sections (LinkedSectionIDs). LinkedBuildingID is not
+   used.
 
 #### TODO
-1. thermal zones: when spaces are listed within them with spaces (or multiple thermal zones), this would change the average setpoint calculations. Is this an exception or a normal case to handle?
+
+1. thermal zones: when spaces are listed within them with spaces (or multiple thermal zones), this would change the
+   average setpoint calculations. Is this an exception or a normal case to handle?
 
 #### Assets Definitions File
 
-This file is used to specify what assets to extract from a BuildingSync XML file. By default, the file found in `config/asset_definitions.json` is used, but a custom file can be specified with the `set_asset_defs_file` method in the `BSyncProcessor` class.
+This file is used to specify what assets to extract from a BuildingSync XML file. By default, the file found in
+`config/asset_definitions.json` is used, but a custom file can be specified with the `set_asset_defs_file` method in the
+`BSyncProcessor` class.
 
 There are currently 5 types of assets that can be extracted:
 
-1. sqft: Sqft assets take into account the floor area served by a specific asset and returns 'Primary' and 'Secondary' values.  For example: Primary HVAC System and Secondary HVAC System.
+1. sqft: Sqft assets take into account the floor area served by a specific asset and returns 'Primary' and 'Secondary'
+   values. For example: Primary HVAC System and Secondary HVAC System.
 
-1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value.  For example:  Average Heating Setpoint.
+1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value. For example:  Average Heating
+   Setpoint.
 
-1. num: Num assets count the total number of the specified asset found.  For example, Total number of lighting systems.
+1. num: Num assets count the total number of the specified asset found. For example, Total number of lighting systems.
 
-1. age_oldest, age_newest, and age_average: These types return the oldest or newest asset, or average age of a specific type.  For example: Oldest Boiler.
+1. age_oldest, age_newest, and age_average: These types return the oldest or newest asset, or average age of a specific
+   type. For example: Oldest Boiler.
 
-1. custom: For asset that need particular handling, such as Heating Efficiency. The current assets that have custom methods are:
-	- Heating System Efficiency
-	- Cooling System Efficiency
-	- Lighting System Efficiency
-	- Water Heater Efficiency
-	- Heating Fuel Type
+1. custom: For asset that need particular handling, such as Heating Efficiency. The current assets that have custom
+   methods are:
+    - Heating System Efficiency
+    - Cooling System Efficiency
+    - Lighting System Efficiency
+    - Water Heater Efficiency
+    - Heating Fuel Type
 
 The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
 
@@ -99,61 +122,76 @@ The schema for the assets definition JSON file is in `schemas/asset_definitions_
 
 The schema for the extracted assets JSON file is in `schemas/extracted_assets_schema.json`.
 
-This file lists the extracted assets information in name, value, units triples.  Names will match the `export_name` listed in the asset_definitions JSON file, except for assets of type 'sqft', which will be prepended by 'Primary' and 'Secondary'.
+This file lists the extracted assets information in name, value, units triples. Names will match the `export_name`
+listed in the asset_definitions JSON file, except for assets of type 'sqft', which will be prepended by 'Primary' and '
+Secondary'.
 
 ### BUILDINGSYNC to CTS Spreadsheet Processor
 
-This functionality takes in a list of buildingsync filepaths, runs the process to extract relevant information, aggregate at the Facility level, and generate an XLSX file in the expected CTS format.  This is the `CTS Comprehensive Evaluation Upload Template`.
+This functionality takes in a list of buildingsync filepaths, runs the process to extract relevant information,
+aggregate at the Facility level, and generate an XLSX file in the expected CTS format. This is the
+`CTS Comprehensive Evaluation Upload Template`.
 
 To test usage:
 
 ```bash
-	python buildingsync_asset_extractor/cts_main.py
+python buildingsync_asset_extractor/cts_main.py
 ```
 
-This will process the 2 primary schools XML files (that will be aggregated into 1 facility) and the office XML file (which will be another facility) found in `tests/files/` and generate a XLSX containing 2 facilities. The resulting file will be saved to `tests\output\cts_output.xlsx`.
+This will process the 2 primary schools XML files (that will be aggregated into 1 facility) and the office XML file (
+which will be another facility) found in `tests/files/` and generate a XLSX containing 2 facilities. The resulting file
+will be saved to `tests\output\cts_output.xlsx`.
 
 ###
-- BuildingSync files are aggregated by facility based on the Facility ID in the file. This ID can be found in the `<Facility>` section, within the `<UserDefinedFields>` subsection:
 
-	```
-	<UserDefinedFields>
-        <UserDefinedField>
-          <FieldName>Agency Designated Covered Facility ID</FieldName>
-          <FieldValue>ABC 123</FieldValue>
-        </UserDefinedField>
-        <UserDefinedField>
-          <FieldName>Sub-agency Acronym</FieldName>
-          <FieldValue>ABC</FieldValue>
-        </UserDefinedField>
-        <UserDefinedField>
-          <FieldName>Facility Name</FieldName>
-          <FieldValue>Test Facility</FieldValue>
-        </UserDefinedField>
-      </UserDefinedFields>
+- BuildingSync files are aggregated by facility based on the Facility ID in the file. This ID can be found in the
+  `<Facility>` section, within the `<UserDefinedFields>` subsection:
+
+  ```xml
+  <UserDefinedFields>
+    <UserDefinedField>
+      <FieldName>Agency Designated Covered Facility ID</FieldName>
+      <FieldValue>ABC 123</FieldValue>
+    </UserDefinedField>
+    <UserDefinedField>
+      <FieldName>Sub-agency Acronym</FieldName>
+      <FieldValue>ABC</FieldValue>
+    </UserDefinedField>
+    <UserDefinedField>
+      <FieldName>Facility Name</FieldName>
+      <FieldValue>Test Facility</FieldValue>
+    </UserDefinedField>
+  </UserDefinedFields>
   ```
-- The process will extract the measures that are part of the `cheapest` scenario within each file. The measures will be aggregated at the Facility level and the number of measures in each category will be added to the spreadsheet. If there is no cost, no measures will be counted.
-- More information about the BuildingSync to CTS mappings can be found in the [cts_map page](buildingsync_asset_extractor/cts/cts_map.md).
+
+- The process will extract the measures that are part of the `cheapest` scenario within each file. The measures will be
+  aggregated at the Facility level and the number of measures in each category will be added to the spreadsheet. If
+  there is no cost, no measures will be counted.
+- More information about the BuildingSync to CTS mappings can be found in
+  the [cts_map page](buildingsync_asset_extractor/cts/cts_map.md).
 
 ## Developing
 
 ### Pre-commit
 
 This project uses `pre-commit <https://pre-commit.com/>`_ to ensure code consistency.
-To enable pre-commit on every commit run the following from the command line from within the git checkout of the BuildingSync-asset-extractor
+To enable pre-commit on every commit run the following from the command line from within the git checkout of the
+BuildingSync-asset-extractor
 
 ```bash
-  pre-commit install
+pre-commit install
 ```
 
-To run pre-commit against the files without calling git commit, then run the following. This is useful when cleaning up the repo before committing.
+To run pre-commit against the files without calling git commit, then run the following. This is useful when cleaning up
+the repo before committing.
 
 ```bash
-  pre-commit run --all-files
+pre-commit run --all-files
 ```
+
 ### Testing
 
-	poetry run pytest
+    poetry run pytest
 
 ## Releasing
 
@@ -167,7 +205,9 @@ poetry publish -r testpypi
 # install from testpypi
 pip install --index-url https://test.pypi.org/simple/ buildingsync-asset-extractor
 ```
+
 If everything looks good, publish to pypi:
+
 ```bash
 poetry publish
 ```
