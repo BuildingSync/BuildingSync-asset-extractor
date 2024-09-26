@@ -14,6 +14,14 @@ homepage = "https://buildingsync.net"
 repository = "https://github.com/BuildingSync/BuildingSync-asset-extractor"
 documentation = "https://github.com/BuildingSync/BuildingSync-asset-extractor"
 keywords = ["BuildingSync", "Building Data Exchange"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 
 [tool.poetry.dependencies]
 python = ">=3.9, <3.13"

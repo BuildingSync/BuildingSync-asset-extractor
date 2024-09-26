@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, Optional
 
-from lxml import etree as ETree
+from lxml import etree as ETree  # noqa: N812
 
 # Gets or creates a logger
 logging.basicConfig()

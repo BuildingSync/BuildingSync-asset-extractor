@@ -149,17 +149,14 @@ class BSyncProcessor:
             # otherwise to matches are ever found in the schema with the xpath() method
             if value == BUILDINGSYNC_SCHEMA_URL:
                 self.key = key
-                if self.key != "" and self.key is not None:
-                    self.namespaces[key] = value
-                    etree.register_namespace(key, value)
-                    # also add the colon
-                    self.key = self.key + ":"
-                else:
-                    # make up a prefix since it's blank and assign it the key
-                    key = "auc"
-                    self.namespaces[key] = value
-                    etree.register_namespace(key, value)
-                    self.key = "auc:"
+                if not self.key:
+                    # make up a prefix since it's blank
+                    self.key = "auc"
+
+                self.namespaces[self.key] = value
+                etree.register_namespace(self.key, value)
+                # also add the colon
+                self.key = f"{self.key}:"
                 break
         logger.debug(f"Namespaces set to: {self.namespaces}")
         if not namespaces:
@@ -192,7 +189,7 @@ class BSyncProcessor:
 
     def parse_xml(self) -> None:
         """parse xml file"""
-        self.doc: etree = etree.parse(BytesIO(self.file_data))
+        self.doc: etree = etree.parse(BytesIO(self.file_data))  # noqa: S320
 
     def convert_to_ns(self, path: str) -> str:
         """modify the path to include the namespace (ns) prefix specified in the xml file
@@ -204,7 +201,7 @@ class BSyncProcessor:
 
         parts = path.split("/")
         for i, p in enumerate(parts):
-            if p != "" and p != ".":
+            if p not in ("", "."):
                 parts[i] = self.key + p
 
         newpath = "/".join(parts)
@@ -221,15 +218,15 @@ class BSyncProcessor:
         # TODO: add try blocks
         r = self.xp(self.doc, "/BuildingSync/Facilities/Facility/Sites/Site/" + "Buildings/Building/Sections/Section")
         for item in r:
-            id = item.get("ID")
-            self.sections[id] = Section(
+            item_id = item.get("ID")
+            self.sections[item_id] = Section(
                 type=None,
                 areas={},
             )
 
             types = self.xp(item, "./SectionType")
             if types:
-                self.sections[id].type = types[0].text
+                self.sections[item_id].type = types[0].text
 
             fas = self.xp(item, "./FloorAreas/FloorArea")
             for fa in fas:
@@ -242,7 +239,7 @@ class BSyncProcessor:
                     elif child.tag.endswith("FloorAreaValue"):
                         faval = float(child.text)
                 if fatype is not None:
-                    self.sections[id].areas[fatype] = faval
+                    self.sections[item_id].areas[fatype] = faval
 
         logger.debug(f"Sections set to: {self.sections}")
 
@@ -297,10 +294,10 @@ class BSyncProcessor:
         plant = None
         the_type = self.get_heat_cool_type(item.tag)
         if the_type is not None:
-            plantIDmatch = self.xp(item, ".//" + "Source" + the_type + "PlantID")
-            if len(plantIDmatch) > 0:
-                # logger.debug(f"found a plant ID match: {plantIDmatch[0].attrib['IDref']}")
-                plants = self.xp(self.doc, "//" + the_type + "Plant[@ID = '" + plantIDmatch[0].attrib["IDref"] + "']")
+            plant_id_match = self.xp(item, ".//" + "Source" + the_type + "PlantID")
+            if len(plant_id_match) > 0:
+                # logger.debug(f"found a plant ID match: {plant_id_match[0].attrib['IDref']}")
+                plants = self.xp(self.doc, "//" + the_type + "Plant[@ID = '" + plant_id_match[0].attrib["IDref"] + "']")
                 # logger.debug(f"found {len(plants)} plant matches!")
                 if len(plants) > 0:
                     plant = plants[0]
@@ -351,13 +348,13 @@ class BSyncProcessor:
                 if len(years) == 0:
                     # priority 2: YearInstalled
                     years = self.xp(m, ".//YearInstalled")
-                if len(years) == 0:
-                    # SPECIAL Case for HVAC HeatingSource / CoolingSource Equipment: can find plantID and look for
-                    # YearInstalled there
-                    if m.tag.endswith("HeatingSource") or m.tag.endswith("CoolingSource"):
-                        plant = self.get_plant(m)
-                        if plant is not None:
-                            years = self.xp(plant, ".//YearInstalled")
+
+                # SPECIAL Case for HVAC HeatingSource / CoolingSource Equipment: can find plantID and look for
+                # YearInstalled there
+                if len(years) == 0 and (m.tag.endswith("HeatingSource") or m.tag.endswith("CoolingSource")):
+                    plant = self.get_plant(m)
+                    if plant is not None:
+                        years = self.xp(plant, ".//YearInstalled")
 
                 if years:
                     match = years[0]
@@ -395,10 +392,7 @@ class BSyncProcessor:
         items = self.xp(self.doc, asset.parent_path)
         all_matches = [self.xp(item, ".//" + asset.key) for item in items]
         all_matches = [matches for matches in all_matches if matches]
-        if all_matches == []:
-            total = None
-        else:
-            total = sum([len(m) for m in all_matches])
+        total = None if all_matches == [] else sum([len(m) for m in all_matches])
 
         # set units
         units: Optional[str] = "No units"
@@ -427,10 +421,7 @@ class BSyncProcessor:
 
             for match in matches:
                 # get asset label and initialize results array in not done already
-                if isinstance(match, str):
-                    label = match
-                else:
-                    label = match.text
+                label = match if isinstance(match, str) else match.text
                 if label not in results:
                     results[label] = 0.0
 
@@ -488,24 +479,21 @@ class BSyncProcessor:
             results = custom_assets[asset.name]()
         else:
             logger.warn(f"Custom Processing for {asset.name} has not been implemented. Asset will be ignored.")
-            results = []  # type: ignore
+            results = []
 
         # calculate actual units
         units: Optional[str] = "No units"
         if asset.export_units:
-            if asset.units is not None:
-                units = asset.units
-            else:
-                units = self.get_units(results)
+            units = asset.units if asset.units is not None else self.get_units(results)
 
         if asset.name in assets_80_percent:
-            self.formatter.format_80_percent_results(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_80_percent_results(asset.export_name, results, units)  # type: ignore[arg-type]
         elif asset.name in assets_lighting:
-            self.formatter.format_lighting_results(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_lighting_results(asset.export_name, results, units)  # type: ignore[arg-type]
         elif asset.name == "ElectrificationPotential":
-            self.formatter.format_electrification_potential(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_electrification_potential(asset.export_name, results, units)  # type: ignore[arg-type]
         else:
-            self.formatter.format_custom_avg_results(asset.export_name, results, units)  # type: ignore
+            self.formatter.format_custom_avg_results(asset.export_name, results, units)  # type: ignore[arg-type]
 
     def process_system(self, asset: AssetDef, units_keyname: Optional[str]) -> list[SystemData]:
         """Process Heating/Cooling and DomesticHotWater System Assets
@@ -571,8 +559,8 @@ class BSyncProcessor:
         if paths[-1].endswith("Section"):
             # 1: key is within a Section element
             # within a section, grab ID to retrieve sqft
-            id = item.get("ID")
-            sqft_total += self.retrieve_sqft(id)
+            item_id = item.get("ID")
+            sqft_total += self.retrieve_sqft(item_id)
 
         else:
             # 2: assume LinkedPremises section within this path

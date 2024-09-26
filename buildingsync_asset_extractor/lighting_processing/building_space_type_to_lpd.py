@@ -402,7 +402,7 @@ building_space_type_to_lpd = [
     ),
     BuildingSpaceTypeLPD(
         building_type="Other",
-        section_type="Nurse’s station",
+        section_type="Nurse’s station",  # noqa: RUF001
         lpd_by_year={1999: 1.8, 2001: 1.0, 2004: 1.0, 2007: 1.0, 2010: 0.87, 2013: 0.71, 2019: 1.17},
     ),
     BuildingSpaceTypeLPD(

@@ -8,7 +8,7 @@ from buildingsync_asset_extractor.cts.classes import Facility
 from buildingsync_asset_extractor.cts.energy_and_water_conservation_measures import (
     ENERGY_AND_WATER_CONSERVATION_MEASURES,
 )
-from buildingsync_asset_extractor.cts.measure_type_to_CTS_field import technology_category_to_CTS_field
+from buildingsync_asset_extractor.cts.measure_type_to_cts_field import technology_category_to_cts_field
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -41,7 +41,7 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
 
     # Retro/Re-Commissioning Assessment
     is_retrocommissioned = [fa.etree.find("./Reports/Report/RetrocommissioningAudit", fa.etree.nsmap) for fa in facility.appearances]
-    data["Retro/Re-Commissioning Assessment"] = all([x is not None and x.text == "true" for x in is_retrocommissioned])
+    data["Retro/Re-Commissioning Assessment"] = all(x is not None and x.text == "true" for x in is_retrocommissioned)
 
     # Gross Evaluated Square Footage
     floor_areas = [fa.etree.find("./Sites/Site/Buildings/Building/FloorAreas/FloorArea", fa.etree.nsmap) for fa in facility.appearances]
@@ -79,7 +79,7 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     return data
 
 
-def get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data(facility: Facility) -> pd.Series:
+def get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data(_facility: Facility) -> pd.Series:
     data = pd.Series()
 
     # building sync doesn't have these
@@ -88,8 +88,8 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_da
 
 
 def get_potential_conservation_measures_per_technology_category(facility: Facility) -> pd.Series:
-    results = {k: 0 for k in ENERGY_AND_WATER_CONSERVATION_MEASURES.keys()}
-    results.update({k: 0 for k in technology_category_to_CTS_field.values()})
+    results = {k: 0 for k in ENERGY_AND_WATER_CONSERVATION_MEASURES}
+    results.update({k: 0 for k in technology_category_to_cts_field.values()})
 
     # for each measure
     measures = [
@@ -111,10 +111,10 @@ def get_potential_conservation_measures_per_technology_category(facility: Facili
         # account for measure in result
         if measure_type is not None:
             logger.info(
-                f"Measure `{m.id}` counted under {measure_type}` and `{technology_category_to_CTS_field[m.technology_category]}`",
+                f"Measure `{m.id}` counted under {measure_type}` and `{technology_category_to_cts_field[m.technology_category]}`",
             )
             results[measure_type] += 1
-            results[technology_category_to_CTS_field[m.technology_category]] += 1
+            results[technology_category_to_cts_field[m.technology_category]] += 1
 
         else:
             logger.warning(

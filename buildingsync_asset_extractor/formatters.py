@@ -74,13 +74,13 @@ class Formatter:
             # add all capacities
             # pick largest one and make sure it's 80% of total
             found = 0
-            total = sum(capacities)  # type: ignore
+            total = sum(capacities)  # type: ignore[arg-type]
             if total > 0:
                 primaries = {}
                 for res in results:
                     if res.value not in primaries:
                         primaries[res.value] = 0.0
-                    primaries[res.value] += float(res.cap)  # type: ignore
+                    primaries[res.value] += float(res.cap)  # type: ignore[arg-type]
 
                 for p in primaries:
                     if float(primaries[p]) / total >= 0.8:
@@ -91,14 +91,14 @@ class Formatter:
                         return
 
             if found == 0:
-                # nothing matched this criteria, return 'Mixed'
+                # nothing matched these criteria, return 'Mixed'
                 self.export_asset(name, "mixed")
                 self.export_asset_units(name, units)
                 return
 
         if None not in sqfts:
             # sqft method
-            total = sum(sqfts)  # type: ignore
+            total = sum(sqfts)  # type: ignore[arg-type]
             found = 0
             if total > 0:
                 primaries = {}
@@ -117,7 +117,7 @@ class Formatter:
                         return
 
             if found == 0:
-                # nothing matched this criteria, return 'Mixed'
+                # nothing matched these criteria, return 'Mixed'
                 self.export_asset(name, "mixed")
                 self.export_asset_units(name, units)
                 return
@@ -125,7 +125,6 @@ class Formatter:
         # still here? return unknown
         self.export_asset(name, "unknown")
         self.export_asset_units(name, units)
-        return
 
     def format_lighting_results(self, name: str, results: list[LightingData], units: Optional[str]) -> None:
         """custom processing for lighting efficiency
@@ -140,14 +139,14 @@ class Formatter:
             return
 
         # check method 1
-        has_lpd = all([isinstance(r, LightingDataLPD) for r in results])
+        has_lpd = all(isinstance(r, LightingDataLPD) for r in results)
 
         # for weighted average, re-find Watts from LPD and LinkedPremises and divide by total sqft
         if has_lpd:
             value = 0.0
             total_sqft = 0.0
             for r in results:
-                value += r.lpd * r.sqft  # type: ignore # TODO: remove.
+                value += r.lpd * r.sqft  # type: ignore[attr-defined]
                 total_sqft += r.sqft
             if value > 0:
                 value = value / total_sqft
@@ -159,14 +158,14 @@ class Formatter:
         # check method 2
         # need both PercentPremises AND LinkedPremises for this
         # running sum of all watts / running sum of all fractions of sqft
-        has_perc = all([r.sqft_percent is not None for r in results])
-        has_power = all([isinstance(r, LightingDataPower) for r in results])
+        has_perc = all(r.sqft_percent is not None for r in results)
+        has_power = all(isinstance(r, LightingDataPower) for r in results)
         if has_perc and has_power:
             power = 0
             sqft_total = 0.0
             for r in results:
-                power += r.power  # type: ignore
-                sqft_total = r.sqft_percent / 100 * r.sqft  # type: ignore
+                power += r.power  # type: ignore[attr-defined]
+                sqft_total = r.sqft_percent / 100 * r.sqft  # type: ignore[operator]
             if power > 0:
                 value = power / sqft_total
             self.export_asset(name, value)
@@ -177,7 +176,7 @@ class Formatter:
         sqfts = [sub.sqft if sub.sqft is None else float(sub.sqft) for sub in results]
         if None not in sqfts and has_power:
             # sqft methods
-            remapped_power = [sub.power for sub in results]  # type: ignore
+            remapped_power = [sub.power for sub in results]  # type: ignore[attr-defined]
             remapped_sqft = [sub.sqft for sub in results]
             top = sum(remapped_power)
             bottom = sum(remapped_sqft)
@@ -228,8 +227,8 @@ class Formatter:
             cap_total = 0.0
             eff_total = 0.0
             for res in results:
-                cap_total = cap_total + float(res.cap)  # type: ignore
-                eff_total = eff_total + (float(res.value) * float(res.cap))  # type: ignore
+                cap_total = cap_total + float(res.cap)  # type: ignore[arg-type]
+                eff_total = eff_total + (float(res.value) * float(res.cap))  # type: ignore[arg-type]
             total: Union[float, str] = eff_total / cap_total
 
             # special case for average age: take the floor since partial year doesn't make sense
@@ -243,11 +242,11 @@ class Formatter:
         elif None not in sqfts:
             # sqft methods
             remapped_res = {sub.value: sub.sqft for sub in results}
-            self.format_avg_sqft_results(name, remapped_res, units)  # type: ignore
+            self.format_avg_sqft_results(name, remapped_res, units)  # type: ignore[arg-type]
             return
         else:
             # just average
-            total = sum(values) / len(values)  # type: ignore
+            total = sum(values) / len(values)  # type: ignore[arg-type]
             # special case for average age: take the floor since partial year doesn't make sense
             if name.lower().endswith("age"):
                 total = int(total)

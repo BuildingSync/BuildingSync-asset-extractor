@@ -41,13 +41,17 @@ extend-select = [
 ]
 # except for these specific errors
 ignore = [
-    "E402", # module-import-not-at-top-of-file
-    "E501", # line-too-long
-    "E731", # lambda-assignment
+    "E402",    # module-import-not-at-top-of-file
+    "E501",    # line-too-long
+    "E731",    # lambda-assignment
+    "PLR2004", # magic-value-comparison
 ]
 
 [lint.per-file-ignores]
-"tests/test_*" = [
+"**/__init__.py" = [
+    "F401", # unused-import
+]
+"tests/**/test_*" = [
     "S101", # assert
 ]
 

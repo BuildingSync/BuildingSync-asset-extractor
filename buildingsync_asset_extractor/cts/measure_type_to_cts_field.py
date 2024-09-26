@@ -1,4 +1,4 @@
-technology_category_to_CTS_field = {
+technology_category_to_cts_field = {
     "BoilerPlantImprovements": "A_Uncategorized",
     "ChillerPlantImprovements": "B_Uncategorized",
     "BuildingAutomationSystems": "C_Uncategorized",

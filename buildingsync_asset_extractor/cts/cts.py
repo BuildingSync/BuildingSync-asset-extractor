@@ -42,7 +42,7 @@ def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
 
     # for each file, get the facilities in the file
     for f in files:
-        file_etree = etree.parse(f)
+        file_etree = etree.parse(f)  # noqa: S320
         facility_etrees = file_etree.findall("/Facilities/Facility", namespaces=file_etree.getroot().nsmap)
 
         # for each facility in the file, add it to facility_by_id
@@ -61,15 +61,15 @@ def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
 
 def building_sync_to_cts(files: list[Path], out_file: Path) -> None:
     # import blank template
-    df = pd.read_excel(BLANK_CTS_FILE_PATH, sheet_name="Evaluation Upload Template")
+    template_df = pd.read_excel(BLANK_CTS_FILE_PATH, sheet_name="Evaluation Upload Template")
 
     # for each facility, fill in a row
     facility_by_id = aggregate_facilities(files)
     for i, (facility_name, facility) in enumerate(facility_by_id.items()):
-        df.loc[3 + i] = to_cts_row(facility)
+        template_df.loc[3 + i] = to_cts_row(facility)
 
     # write back out
-    sf = StyleFrame.read_excel_as_template(BLANK_CTS_FILE_PATH, df=df, sheet_name="Evaluation Upload Template")
+    sf = StyleFrame.read_excel_as_template(BLANK_CTS_FILE_PATH, df=template_df, sheet_name="Evaluation Upload Template")
     writer = sf.to_excel(out_file, row_to_add_filters=0)
     writer.close()
 

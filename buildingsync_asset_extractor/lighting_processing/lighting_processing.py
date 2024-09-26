@@ -40,7 +40,7 @@ class LightingDataPower(LightingData):
     power: float
 
 
-def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> list[LightingData]:
+def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> list[LightingData]:  # noqa: PLR0915
     """Given a bsync_processor with a single building, get all of its lightingData.
 
     This function is HUGE, and thus broken down into a series of more digestible functions, starting
@@ -109,15 +109,15 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
     def get_sections_lighting_systems(section: ElementTree) -> list[ElementTree]:
         """Get all the lighting systems linked to the section."""
-        section_ID = section.get("ID")
+        section_id = section.get("ID")
         sections_lighting_systems = []
 
         all_lighting_systems = bsync_processor.xp(bsync_processor.doc, LIGHTING_SYSTEM_PATH)
         for ls in all_lighting_systems:
             linked_sections = bsync_processor.xp(ls, ".//" + "LinkedSectionID")
-            linked_section_IDs = [s.get("IDref") for s in linked_sections]
+            linked_section_ids = [s.get("IDref") for s in linked_sections]
 
-            if section_ID in linked_section_IDs:
+            if section_id in linked_section_ids:
                 sections_lighting_systems.append(ls)
 
         return sections_lighting_systems
@@ -135,15 +135,15 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
     def get_section_gross_floor_area(section: ElementTree) -> float:
         """Get sections gross floor area."""
-        section_ID = section.get("ID")
+        section_id = section.get("ID")
 
-        return bsync_processor.sections[section_ID].areas.get("Gross")  # type: ignore
+        return bsync_processor.sections[section_id].areas.get("Gross")  # type: ignore[return-value]
 
     def get_lighting_system_sqft(section: ElementTree, lighting_system: ElementTree) -> float:
         """Give a section and lighting system, get the sqft the lighting system covers within that section."""
-        section_ID = section.get("ID")
+        section_id = section.get("ID")
         all_linked_sections = bsync_processor.xp(lighting_system, ".//" + "LinkedSectionID")
-        linked_sections = [ls for ls in all_linked_sections if ls.get("IDref") == section_ID]
+        linked_sections = [ls for ls in all_linked_sections if ls.get("IDref") == section_id]
 
         return sum([bsync_processor.compute_sqft(ls) for ls in linked_sections])
 

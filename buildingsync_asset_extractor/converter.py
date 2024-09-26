@@ -29,7 +29,7 @@ def unify_units(
     for sd in system_datas:
         if sd.cap is not None:
             try:
-                sd.cap = convert(float(sd.cap), sd.cap_units, to_units)  # type: ignore
+                sd.cap = convert(float(sd.cap), sd.cap_units, to_units)  # type: ignore[arg-type, assignment]
                 sd.cap_units = to_units
             except BSyncProcessorError:
                 pass
