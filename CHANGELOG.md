@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 0.2.1
+
+- Replaced flake8 and other tools with Ruff, applied Ruff fixes
+- Fixed typos
+- Added explicit support for Python v3.12
+- Updated GitHub Actions, and added test matrix for 3.9 and 3.12
+- Updated dependencies
+
 ## Version 0.2.0
 
 - Added Export to CTS format functionality
