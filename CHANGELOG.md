@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.2.2
+
+- Added explicit support for Python v3.13
+
 ## Version 0.2.1
 
 - Replaced flake8 and other tools with Ruff, applied Ruff fixes

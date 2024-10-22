@@ -12,10 +12,10 @@ docstring-code-format = true
 extend-select = [
     "A",   # flake8-builtins
     "ARG", # flake8-unused-arguments
-    # "BLE", # flake8-blind-except
+    "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions
     "COM", # flake8-commas
-    # "DTZ", # flake8-datetimez
+    "DTZ", # flake8-datetimez
     "E",   # Error
     "EXE", # flake8-executable
     "F",   # Pyflakes
@@ -54,12 +54,6 @@ ignore = [
 "tests/**/test_*" = [
     "S101", # assert
 ]
-
-#exclude =
-#    .tox
-#    .eggs
-#    build
-#    dist
 
 [lint.pylint]
 # Raise the allowed limits the least possible amount https://docs.astral.sh/ruff/settings/#pylint-max-branches
