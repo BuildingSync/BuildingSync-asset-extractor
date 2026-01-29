@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class BuildingSpaceTypeLPD:
     building_type: str
     section_type: str
-    lpd_by_year: dict[int, Optional[float]]
+    lpd_by_year: dict[int, float | None]
 
 
 building_space_type_to_lpd = [

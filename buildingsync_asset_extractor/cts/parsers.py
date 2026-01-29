@@ -88,8 +88,8 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_da
 
 
 def get_potential_conservation_measures_per_technology_category(facility: Facility) -> pd.Series:
-    results = {k: 0 for k in ENERGY_AND_WATER_CONSERVATION_MEASURES}
-    results.update({k: 0 for k in technology_category_to_cts_field.values()})
+    results = dict.fromkeys(ENERGY_AND_WATER_CONSERVATION_MEASURES, 0)
+    results.update(dict.fromkeys(technology_category_to_cts_field.values(), 0))
 
     # for each measure
     measures = [

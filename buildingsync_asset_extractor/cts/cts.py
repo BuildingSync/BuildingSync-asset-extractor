@@ -42,7 +42,7 @@ def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
 
     # for each file, get the facilities in the file
     for f in files:
-        file_etree = etree.parse(f)  # noqa: S320
+        file_etree = etree.parse(f)
         facility_etrees = file_etree.findall("/Facilities/Facility", namespaces=file_etree.getroot().nsmap)
 
         # for each facility in the file, add it to facility_by_id

@@ -12,18 +12,15 @@ pip install buildingsync-asset-extractor
 
 ### Install from source
 
-[Poetry](https://python-poetry.org/) is required to install buildingsync-asset-extractor.
+[uv](https://docs.astral.sh/uv/) is required to install buildingsync-asset-extractor.
 
 ```bash
 # Copy repo
-git clone https://github.com/BuildingSync/BuildingSync-asset-extractor.git
+git clone git@github.com:BuildingSync/BuildingSync-asset-extractor.git
 
 # install the package
 cd BuildingSync-asset-extractor
-poetry install
-
-# Test that it works, you should see a message describing the usage
-poetry run buildingsync_asset_extractor
+uv sync
 ```
 
 ## Usage
@@ -60,7 +57,7 @@ asset will be named the same as the original asset, with ' Units' appended at th
 To test usage:
 
 ```bash
-python buildingsync_asset_extractor/main.py
+uv run buildingsync_asset_extractor/main.py
 ```
 
 This will extract assets from `tests/files/testfile.xml` and save the results to `assets_output.json`
@@ -179,41 +176,36 @@ To enable pre-commit on every commit run the following from the command line fro
 BuildingSync-asset-extractor
 
 ```bash
-pre-commit install
+uv run pre-commit install
 ```
 
 To run pre-commit against the files without calling git commit, then run the following. This is useful when cleaning up
 the repo before committing.
 
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ### Testing
 
-    poetry run pytest
+```bash
+uv run pytest -v
+```
 
 ## Releasing
 
 ```bash
-poetry build
+uv build
 
-# config and push to testpypi
-poetry config repositories.testpypi https://test.pypi.org/legacy/
-poetry publish -r testpypi
+# push to testpypi
+uv publish --publish-url https://test.pypi.org/legacy/
 
 # install from testpypi
 pip install --index-url https://test.pypi.org/simple/ buildingsync-asset-extractor
 ```
 
-If everything looks good, publish to pypi:
+If everything looks good, publish to PyPI:
 
 ```bash
-poetry publish
-```
-
-If you have environment variables setup for PYPI token username and password:
-
-```bash
-poetry publish --build --username $PYPI_USERNAME --password $PYPI_PASSWORD
+uv publish
 ```
