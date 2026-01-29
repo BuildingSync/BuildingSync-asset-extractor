@@ -1,8 +1,8 @@
 import functools
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Optional
 
 from lxml import etree as ETree  # noqa: N812
 
@@ -36,7 +36,7 @@ class FacilityAppearance:
     path: Path
 
     @functools.cached_property
-    def cheapest_package_of_measures_scenario(self) -> Optional[PackageOfMeasuresScenario]:
+    def cheapest_package_of_measures_scenario(self) -> PackageOfMeasuresScenario | None:
         # get the measures for reference
         measures_by_id = {m.get("ID"): Measure(m) for m in self.etree.findall("./Measures/Measure", self.etree.nsmap)}
 
