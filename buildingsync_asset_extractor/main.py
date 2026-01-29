@@ -1,6 +1,6 @@
 """
 *********************************************************************************************************
-:copyright (c) BuildingSync®, Copyright (c) 2015-2022, Alliance for Sustainable Energy, LLC,
+:copyright (c) BuildingSync®, Copyright (c) 2015-2026, Alliance for Energy Innovation, LLC,
 and other contributors.
 
 All rights reserved.
@@ -20,7 +20,7 @@ respective party.
 
 (4) Other than as required in clauses (1) and (2), distributions in any form of modifications or other
 derivative works may not use the "BuildingSync" trademark or any other confusingly similar designation
-without specific prior written permission from Alliance for Sustainable Energy, LLC.
+without specific prior written permission from Alliance for Energy Innovation, LLC.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER(S) AND ANY CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
 IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -34,14 +34,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************************************
 """
 
-import os
+from pathlib import Path
 
 from buildingsync_asset_extractor.processor import BSyncProcessor
 
 # 1: regular test
-filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tests/files/completetest.xml")
-out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_output.json")
-out_file2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets_output2.json")
+src = Path(__file__).resolve().parent
+filename = (src / ".." / "tests" / "files" / "completetest.xml").resolve()
+out_file = (src / "assets_output.json").resolve()
+out_file2 = (src / "assets_output2.json").resolve()
 
 print(f"filename: {filename}")
 

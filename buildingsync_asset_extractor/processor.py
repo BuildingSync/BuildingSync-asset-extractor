@@ -1,6 +1,6 @@
 """
 *********************************************************************************************************
-:copyright (c) BuildingSync®, Copyright (c) 2015-2022, Alliance for Sustainable Energy, LLC,
+:copyright (c) BuildingSync®, Copyright (c) 2015-2026, Alliance for Energy Innovation, LLC,
 and other contributors.
 
 All rights reserved.
@@ -20,7 +20,7 @@ respective party.
 
 (4) Other than as required in clauses (1) and (2), distributions in any form of modifications or other
 derivative works may not use the "BuildingSync" trademark or any other confusingly similar designation
-without specific prior written permission from Alliance for Sustainable Energy, LLC.
+without specific prior written permission from Alliance for Energy Innovation, LLC.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER(S) AND ANY CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
 IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -38,11 +38,12 @@ import dataclasses
 import json
 import logging
 import re
+from collections.abc import Callable
+from importlib.resources import files
 from io import BytesIO
 from pathlib import Path
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Any
 
-from importlib_resources import files
 from lxml import etree
 from lxml.etree import ElementTree
 
@@ -70,10 +71,10 @@ DEFAULT_ASSETS_DEF_FILE = "asset_definitions.json"  # in package's config direct
 class BSyncProcessor:
     def __init__(
         self,
-        filename: Optional[Union[Path, str]] = None,
-        data: Optional[bytes] = None,
-        asset_defs_filename: Optional[str] = None,
-        logger_level: Optional[str] = "INFO",
+        filename: Path | str | None = None,
+        data: bytes | None = None,
+        asset_defs_filename: str | None = None,
+        logger_level: str | None = "INFO",
     ) -> None:
         """class instantiator
         :param filename: str, xml to parse
@@ -103,7 +104,7 @@ class BSyncProcessor:
 
         self.formatter = Formatter(self.export_asset, self.export_asset_units)
 
-    def initialize_vars(self, asset_defs_filename: Optional[str]) -> None:
+    def initialize_vars(self, asset_defs_filename: str | None) -> None:
         # use default asset definitions file unless otherwise specified
         self.asset_defs: list[AssetDef]
         if asset_defs_filename:
@@ -123,10 +124,10 @@ class BSyncProcessor:
         self.round_digits = 5
 
         # set namespaces
-        self.key: Optional[str] = None
+        self.key: str | None = None
         self.set_namespaces()
 
-    def set_asset_defs_file(self, asset_defs_filename: Union[Path, str]) -> None:
+    def set_asset_defs_file(self, asset_defs_filename: Path | str) -> None:
         # set and parse
         self.config_filename = str(asset_defs_filename)
         with open(self.config_filename, mode="rb") as file:
@@ -177,7 +178,7 @@ class BSyncProcessor:
         """return asset data"""
         return self.asset_data.assets
 
-    def save(self, filename: Union[Path, str]) -> None:
+    def save(self, filename: Path | str) -> None:
         """save assets data to JSON file
         :param filename: str, filename to save
         """
@@ -188,7 +189,7 @@ class BSyncProcessor:
 
     def parse_xml(self) -> None:
         """parse xml file"""
-        self.doc: etree = etree.parse(BytesIO(self.file_data))  # noqa: S320
+        self.doc: etree = etree.parse(BytesIO(self.file_data))
 
     def convert_to_ns(self, path: str) -> str:
         """modify the path to include the namespace (ns) prefix specified in the xml file
@@ -270,13 +271,13 @@ class BSyncProcessor:
 
         self.asset_data.assets.append(Asset(name, value))
 
-    def export_asset_units(self, name: str, value: Optional[str]) -> None:
+    def export_asset_units(self, name: str, value: str | None) -> None:
         """export an asset's units
         append "Units" to name and save units name"""
         if value != "No units":
             self.asset_data.assets.append(Asset(name=name + " Units", value=value))
 
-    def get_units(self, results: Union[list[SystemData], list[LightingData]]) -> Optional[str]:
+    def get_units(self, results: list[SystemData] | list[LightingData]) -> str | None:
         """attempt to get units or return mixed if multiple units are listed"""
         units = None
         if len(results) > 0:
@@ -288,7 +289,7 @@ class BSyncProcessor:
                     units = "mixed"
         return units
 
-    def get_plant(self, item: ElementTree) -> Optional[ElementTree]:
+    def get_plant(self, item: ElementTree) -> ElementTree | None:
         # TODO: condenser plant?
         plant = None
         the_type = self.get_heat_cool_type(item.tag)
@@ -303,7 +304,7 @@ class BSyncProcessor:
 
         return plant
 
-    def get_heat_cool_type(self, asset: str) -> Optional[str]:
+    def get_heat_cool_type(self, asset: str) -> str | None:
         the_type = None
         logger.debug(f"GETTING HEAT COOL TYPE FOR ASSET: {asset}")
         if "Heating" in asset:
@@ -378,7 +379,7 @@ class BSyncProcessor:
         logger.debug(f"RESULTS for {asset.export_name}: {results}")
 
         # set units
-        units: Optional[str] = "No units"
+        units: str | None = "No units"
         if asset.export_units:
             units = None
 
@@ -394,7 +395,7 @@ class BSyncProcessor:
         total = None if all_matches == [] else sum([len(m) for m in all_matches])
 
         # set units
-        units: Optional[str] = "No units"
+        units: str | None = "No units"
         if asset.export_units is True:
             units = None
             if asset.units is not None:
@@ -432,7 +433,7 @@ class BSyncProcessor:
         logger.debug(f"RESULTS for {asset.export_name}: {results}")
 
         # set units
-        units: Optional[str] = "No units"
+        units: str | None = "No units"
         if asset.export_units:
             units = None
             if asset.units is not None:
@@ -460,7 +461,7 @@ class BSyncProcessor:
             # found the name holding the units field
             units_to_export = name_of_units_field[asset.name]
 
-        custom_assets: dict[str, Callable[[], Union[list[SystemData], list[LightingData]]]] = {
+        custom_assets: dict[str, Callable[[], list[SystemData] | list[LightingData]]] = {
             "AnnualHeatingEfficiency": lambda: self.process_system(asset, units_to_export),
             "AnnualCoolingEfficiency": lambda: self.process_system(asset, units_to_export),
             "PrimaryFuel": lambda: self.process_system(asset, units_to_export),
@@ -473,7 +474,7 @@ class BSyncProcessor:
         assets_80_percent = ["PrimaryFuel"]
         assets_lighting = ["LightingSystemEfficiency"]
 
-        results: Union[list[SystemData], list[LightingData]]
+        results: list[SystemData] | list[LightingData]
         if asset.name in custom_assets:
             results = custom_assets[asset.name]()
         else:
@@ -481,7 +482,7 @@ class BSyncProcessor:
             results = []
 
         # calculate actual units
-        units: Optional[str] = "No units"
+        units: str | None = "No units"
         if asset.export_units:
             units = asset.units if asset.units is not None else self.get_units(results)
 
@@ -494,7 +495,7 @@ class BSyncProcessor:
         else:
             self.formatter.format_custom_avg_results(asset.export_name, results, units)  # type: ignore[arg-type]
 
-    def process_system(self, asset: AssetDef, units_keyname: Optional[str]) -> list[SystemData]:
+    def process_system(self, asset: AssetDef, units_keyname: str | None) -> list[SystemData]:
         """Process Heating/Cooling and DomesticHotWater System Assets
         order to check in:
         3) 1 SPECIAL CASE - Heating Efficiency: check under HeatingSource/HeatingSourceType/Furnace
@@ -586,7 +587,7 @@ class BSyncProcessor:
 
         return sqft_total
 
-    def get_capacity(self, el: etree) -> Tuple[Optional[str], Optional[str]]:
+    def get_capacity(self, el: etree) -> tuple[str | None, str | None]:
         """Capacity order:
         1) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/Capacity and CapacityUnits
         2) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/OutputCapacity (deprecation soon)
@@ -615,7 +616,7 @@ class BSyncProcessor:
                     cap_units = "Thermal Efficiency"
         return cap, cap_units
 
-    def find_udf_values(self, matches: list[ElementTree], name: str) -> list[Optional[str]]:
+    def find_udf_values(self, matches: list[ElementTree], name: str) -> list[str | None]:
         """processes a list of UDF matches
         retrieves the FieldValue whose FieldName matches the name passed in
         returns an array of values
@@ -693,7 +694,7 @@ class BSyncProcessor:
         file = files("buildingsync_asset_extractor.config").joinpath(assets_defs_filename).read_text()
         return [AssetDef(**asset_def) for asset_def in json.loads(file)["asset_definitions"]]
 
-    def _get_user_defined_fields(self, element: etree.Element) -> list[Tuple[str, str]]:
+    def _get_user_defined_fields(self, element: etree.Element) -> list[tuple[str, str]]:
         """Return (name, value) tuples of UserDefinedFields in element."""
         res = []
         user_defined_fields = self.xp(element, ".//" + "UserDefinedField")

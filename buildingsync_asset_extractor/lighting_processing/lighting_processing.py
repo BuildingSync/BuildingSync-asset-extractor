@@ -1,6 +1,6 @@
 import abc
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING
 
 from lxml.etree import ElementTree
 
@@ -27,7 +27,7 @@ LIGHTING_SYSTEM_PATH = "/BuildingSync/Facilities/Facility/Systems/LightingSystem
 @dataclass
 class LightingData(abc.ABC):
     sqft: float
-    sqft_percent: Optional[float]
+    sqft_percent: float | None
 
 
 @dataclass
@@ -122,7 +122,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return sections_lighting_systems
 
-    def get_lighting_system_sqft_percent(lighting_system: ElementTree) -> Optional[float]:
+    def get_lighting_system_sqft_percent(lighting_system: ElementTree) -> float | None:
         """Get lighting systems PercentPremisesServed."""
         percent_premises_served = bsync_processor.xp(
             lighting_system,
@@ -147,7 +147,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return sum([bsync_processor.compute_sqft(ls) for ls in linked_sections])
 
-    def method_1(lighting_system: ElementTree) -> Optional[float]:
+    def method_1(lighting_system: ElementTree) -> float | None:
         """return lighting system's InstalledPower."""
         installed_powers = bsync_processor.xp(lighting_system, ".//" + "InstalledPower")
 
@@ -156,7 +156,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
         else:
             return None
 
-    def method_2(lighting_system: ElementTree) -> Optional[float]:
+    def method_2(lighting_system: ElementTree) -> float | None:
         """Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
 
         number_of_luminaires may be taken from user defined fields.
@@ -193,7 +193,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return None
 
-    def method_3(lighting_system: ElementTree) -> Optional[float]:
+    def method_3(lighting_system: ElementTree) -> float | None:
         """Look in UDF for "Lighting Power Density For ..." """
         user_defined_fields = bsync_processor._get_user_defined_fields(lighting_system)
         user_defined_values = [
@@ -208,7 +208,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return None
 
-    def method_4(section: ElementTree) -> Optional[float]:
+    def method_4(section: ElementTree) -> float | None:
         """Use decision matrix to get lpd from building/section occupancy class and year."""
         building = section.getparent().getparent()
         section_occ_class = get_occupancy_classification(section)
@@ -227,7 +227,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
             return None
 
         # if we have section type, filter building_space_type_to_lpd by section type.
-        possible_lpds: Union[list[BuildingSpaceTypeLPD], list[BuildingTypeLPD]]
+        possible_lpds: list[BuildingSpaceTypeLPD] | list[BuildingTypeLPD]
         if section_type:
             possible_lpds = building_space_type_to_lpd
             possible_lpds = [x for x in possible_lpds if x.section_type == section_type]
@@ -263,7 +263,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return lpds[best_year]
 
-    def get_occupancy_classification(element: ElementTree) -> Optional[str]:
+    def get_occupancy_classification(element: ElementTree) -> str | None:
         """Get a building or sections OccupancyClassification"""
         occupancy_classification = bsync_processor.xp(element, "./" + "OccupancyClassification")
 
@@ -272,7 +272,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
         else:
             return None
 
-    def get_year(building: ElementTree) -> Optional[float]:
+    def get_year(building: ElementTree) -> float | None:
         """Get a building's Year."""
         year_of_latest_retrofit = bsync_processor.xp(building, ".//" + "YearOfLatestRetrofit")
         if len(year_of_latest_retrofit) > 0:

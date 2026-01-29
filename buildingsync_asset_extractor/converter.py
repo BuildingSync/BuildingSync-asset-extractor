@@ -1,4 +1,4 @@
-from typing import Literal, Optional, get_args
+from typing import Literal, get_args
 
 from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.errors import BSyncProcessorError
@@ -22,7 +22,7 @@ POWERUNITSLIST: list[PowerUnits] = list(get_args(PowerUnits))
 
 def unify_units(
     system_datas: list[SystemData],
-    to_units: Optional[str] = None,
+    to_units: str | None = None,
 ) -> list[SystemData]:
     if to_units is None:
         to_units = system_datas[0].cap_units

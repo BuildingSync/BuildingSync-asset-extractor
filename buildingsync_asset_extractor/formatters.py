@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Callable, Optional, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 
 from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.converter import unify_units
@@ -25,7 +26,7 @@ class Formatter:
         self.export_asset = export_asset
         self.export_asset_units = export_asset_units
 
-    def format_age_results(self, name: str, results: list[SystemData], process_type: str, units: Optional[str]) -> None:
+    def format_age_results(self, name: str, results: list[SystemData], process_type: str, units: str | None) -> None:
         # process results
         value = None
         if process_type.endswith("oldest"):
@@ -48,7 +49,7 @@ class Formatter:
         elif process_type.endswith("average"):
             self.format_custom_avg_results(name, results, units)
 
-    def format_80_percent_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
+    def format_80_percent_results(self, name: str, results: list[SystemData], units: str | None) -> None:
         """format 80% rule results
         the "primary" type returned must at least serve 80% of the area by
         1. Capacity
@@ -68,7 +69,7 @@ class Formatter:
 
         results = unify_units(results)
 
-        values, capacities, cap_units, sqfts = self.remap_results(results)
+        _values, capacities, cap_units, sqfts = self.remap_results(results)
         if None not in capacities and len(set(cap_units)) <= 1:
             # capacity method
             # add all capacities
@@ -82,8 +83,8 @@ class Formatter:
                         primaries[res.value] = 0.0
                     primaries[res.value] += float(res.cap)  # type: ignore[arg-type]
 
-                for p in primaries:
-                    if float(primaries[p]) / total >= 0.8:
+                for p, value in primaries.items():
+                    if float(value) / total >= 0.8:
                         # this fuel meets the 80% threshold by capacity
                         found = 1
                         self.export_asset(name, p)
@@ -126,7 +127,7 @@ class Formatter:
         self.export_asset(name, "unknown")
         self.export_asset_units(name, units)
 
-    def format_lighting_results(self, name: str, results: list[LightingData], units: Optional[str]) -> None:
+    def format_lighting_results(self, name: str, results: list[LightingData], units: str | None) -> None:
         """custom processing for lighting efficiency
         1. if 'lpd' is present, average the values
         2. else if percentpremisesserved
@@ -191,7 +192,7 @@ class Formatter:
         self.export_asset_units(name, units)
         return
 
-    def format_custom_avg_results(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
+    def format_custom_avg_results(self, name: str, results: list[SystemData], units: str | None) -> None:
         """format weighted average
         1. Ensure all units are the same
         2. Attempt to calculate with installed power (NOT IMPLEMENTED)
@@ -229,7 +230,7 @@ class Formatter:
             for res in results:
                 cap_total = cap_total + float(res.cap)  # type: ignore[arg-type]
                 eff_total = eff_total + (float(res.value) * float(res.cap))  # type: ignore[arg-type]
-            total: Union[float, str] = eff_total / cap_total
+            total: float | str = eff_total / cap_total
 
             # special case for average age: take the floor since partial year doesn't make sense
             if name.lower().endswith("age"):
@@ -254,7 +255,7 @@ class Formatter:
             self.export_asset_units(name, units)
             return
 
-    def format_sqft_results(self, name: str, results: dict[str, float], units: Optional[str]) -> None:
+    def format_sqft_results(self, name: str, results: dict[str, float], units: str | None) -> None:
         """return primary and secondary for top 2 results by sqft"""
         # NOTE: this is the only method that modifies the export name '
         # by appending 'primary' and 'secondary'
@@ -279,13 +280,13 @@ class Formatter:
         self.export_asset("Secondary " + name, value2)
         self.export_asset_units("Secondary " + name, units)
 
-    def format_avg_sqft_results(self, name: str, results: dict[Any, float], units: Optional[str]) -> None:
+    def format_avg_sqft_results(self, name: str, results: dict[Any, float], units: str | None) -> None:
         """weighted average of results"""
 
         # in this case the result keys will convert to numbers
         # to calculate the weighted average
 
-        total: Union[str, float, None] = None
+        total: str | float | None = None
 
         if results:
             total_sqft = sum(results.values())
@@ -304,7 +305,7 @@ class Formatter:
         self.export_asset(name, total)
         self.export_asset_units(name, units)
 
-    def format_electrification_potential(self, name: str, results: list[SystemData], units: Optional[str]) -> None:
+    def format_electrification_potential(self, name: str, results: list[SystemData], units: str | None) -> None:
         """Sum non electric capacities"""
         # If no SystemDatas, then None
         if len(results) == 0:
@@ -340,7 +341,7 @@ class Formatter:
     def remap_results(
         self,
         results: list[SystemData],
-    ) -> Tuple[list[Optional[float]], list[Optional[float]], list[Optional[str]], list[Optional[float]]]:
+    ) -> tuple[list[float | None], list[float | None], list[str | None], list[float | None]]:
         """Remap results from a list of dictionaries to 4 lists"""
         try:
             values = [sub.value if sub.value is None else float(sub.value) for sub in results]

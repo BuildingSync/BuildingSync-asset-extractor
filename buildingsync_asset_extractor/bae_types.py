@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
 class Section:
-    type: Optional[str]
+    type: str | None
     areas: dict
 
 
@@ -27,13 +27,13 @@ class AssetDef:
     parent_path: str
     key: str
     export_units: bool
-    units: Optional[str] = None
+    units: str | None = None
 
 
 @dataclass
 class SystemData:
     value: Any
-    sqft: Optional[float] = None
-    cap: Optional[str] = None
-    cap_units: Optional[str] = None
-    units: Optional[str] = None
+    sqft: float | None = None
+    cap: str | None = None
+    cap_units: str | None = None
+    units: str | None = None
