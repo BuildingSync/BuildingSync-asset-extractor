@@ -113,7 +113,6 @@ class BSyncProcessor:
                 self.asset_defs = [AssetDef(**asset_def) for asset_def in json.load(f)["asset_definitions"]]
         else:
             self.config_filename = DEFAULT_ASSETS_DEF_FILE
-            # open with importlib.resources
             file = files("buildingsync_asset_extractor.config").joinpath(self.config_filename).read_text()
             self.asset_defs = [AssetDef(**asset_def) for asset_def in json.loads(file)["asset_definitions"]]
 

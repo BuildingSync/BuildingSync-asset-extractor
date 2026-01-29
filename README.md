@@ -36,7 +36,7 @@ The pre-importer will identify assets defined in the `asset_definitions.json` fi
 There are various methods of calculating assets:
 
 1. `sqft`. The sqft method will calculate a 'primary' and 'secondary' value for the asset based on the area it serves.
-   This is calculated from the floor areas defined in each `Section` element.  `Conditioned` floor area values will be
+   This is calculated from the floor areas defined in each `Section` element. `Conditioned` floor area values will be
    used if present; `Gross` otherwise.
 
 1. `num`. The num method will sum up all assets of the specified type and return a single overall number.
@@ -100,7 +100,7 @@ There are currently 5 types of assets that can be extracted:
 1. sqft: Sqft assets take into account the floor area served by a specific asset and returns 'Primary' and 'Secondary'
    values. For example: Primary HVAC System and Secondary HVAC System.
 
-1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value. For example:  Average Heating
+1. avg_sqft: Avg_sqft assets compute a weighted average to get the an average asset value. For example: Average Heating
    Setpoint.
 
 1. num: Num assets count the total number of the specified asset found. For example, Total number of lighting systems.
@@ -110,11 +110,11 @@ There are currently 5 types of assets that can be extracted:
 
 1. custom: For asset that need particular handling, such as Heating Efficiency. The current assets that have custom
    methods are:
-    - Heating System Efficiency
-    - Cooling System Efficiency
-    - Lighting System Efficiency
-    - Water Heater Efficiency
-    - Heating Fuel Type
+   - Heating System Efficiency
+   - Cooling System Efficiency
+   - Lighting System Efficiency
+   - Water Heater Efficiency
+   - Heating Fuel Type
 
 The schema for the assets definition JSON file is in `schemas/asset_definitions_schema.json`.
 
@@ -174,7 +174,7 @@ will be saved to `tests\output\cts_output.xlsx`.
 
 ### Pre-commit
 
-This project uses `pre-commit <https://pre-commit.com/>`_ to ensure code consistency.
+This project uses `pre-commit <https://pre-commit.com/>`\_ to ensure code consistency.
 To enable pre-commit on every commit run the following from the command line from within the git checkout of the
 BuildingSync-asset-extractor
 
