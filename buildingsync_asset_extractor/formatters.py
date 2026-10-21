@@ -174,9 +174,8 @@ class Formatter:
             sqft_total = 0.0
             for r, sqft_percent, sqft in zip(power_results, sqft_percents, sqfts, strict=True):
                 power += r.power
-                sqft_total = sqft_percent / 100 * sqft
-            if power > 0:
-                value = power / sqft_total
+                sqft_total += sqft_percent / 100 * sqft
+            value = power / sqft_total if sqft_total > 0 else "unknown"
             self.export_asset(name, value)
             self.export_asset_units(name, units)
             return
