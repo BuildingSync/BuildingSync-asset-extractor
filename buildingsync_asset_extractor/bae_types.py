@@ -5,7 +5,7 @@ from typing import Any
 @dataclass
 class Section:
     type: str | None
-    areas: dict
+    areas: dict[str, float]
 
 
 @dataclass
@@ -34,6 +34,6 @@ class AssetDef:
 class SystemData:
     value: Any
     sqft: float | None = None
-    cap: str | None = None
+    cap: float | str | None = None
     cap_units: str | None = None
     units: str | None = None

@@ -1,8 +1,26 @@
 # CHANGELOG
 
-## Version 0.2.2
+## Version 0.4.0
 
-- Added explicit support for Python v3.13
+- Upgraded to pandas v3
+- Replaced the unmaintained StyleFrame dependency with openpyxl for CTS export, with identical output formatting
+- Dropped support for Python v3.10 (pandas v3 requires Python v3.11+)
+- Replaced mypy with ty, added lxml type stubs, and fixed type annotations
+- Fixed CTS export failing when a facility has multiple package of measures scenarios with costs
+- Fixed iterating over a CTS `Facility`
+- Malformed BuildingSync elements (e.g. missing text or parent elements) now raise `BSyncProcessorError`
+
+## Version 0.3.0
+
+- Migrated from Poetry to uv for dependency management and building, and updated the README
+- Added explicit support for Python v3.13 and v3.14, and dropped support for Python v3.9
+- Replaced the `importlib-resources` dependency with the standard library's `importlib.resources`
+- Updated dependencies, including lxml v6
+- Updated GitHub Actions, and expanded the test matrix to Python v3.10-3.14 on Linux, macOS, and Windows
+- Added a workflow to publish releases to PyPI
+- Added pyupgrade and prettier pre-commit hooks, enabled additional Ruff rules, and applied fixes
+- Modernized type hints
+- Updated the license
 
 ## Version 0.2.1
 

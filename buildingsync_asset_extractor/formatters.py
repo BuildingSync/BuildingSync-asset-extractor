@@ -70,18 +70,20 @@ class Formatter:
         results = unify_units(results)
 
         _values, capacities, cap_units, sqfts = self.remap_results(results)
-        if None not in capacities and len(set(cap_units)) <= 1:
+        known_capacities = [c for c in capacities if c is not None]
+        known_sqfts = [s for s in sqfts if s is not None]
+        if len(known_capacities) == len(capacities) and len(set(cap_units)) <= 1:
             # capacity method
             # add all capacities
             # pick largest one and make sure it's 80% of total
             found = 0
-            total = sum(capacities)  # type: ignore[arg-type]
+            total = sum(known_capacities)
             if total > 0:
-                primaries = {}
-                for res in results:
+                primaries: dict[Any, float] = {}
+                for res, cap in zip(results, known_capacities, strict=True):
                     if res.value not in primaries:
                         primaries[res.value] = 0.0
-                    primaries[res.value] += float(res.cap)  # type: ignore[arg-type]
+                    primaries[res.value] += cap
 
                 for p, value in primaries.items():
                     if float(value) / total >= 0.8:
@@ -97,15 +99,15 @@ class Formatter:
                 self.export_asset_units(name, units)
                 return
 
-        if None not in sqfts:
+        if len(known_sqfts) == len(sqfts):
             # sqft method
-            total = sum(sqfts)  # type: ignore[arg-type]
+            total = sum(known_sqfts)
             found = 0
             if total > 0:
                 primaries = {}
                 for res in results:
                     if res.value not in primaries:
-                        primaries[res.value] = 0
+                        primaries[res.value] = 0.0
                     if res.sqft is not None:
                         primaries[res.value] += res.sqft
 
@@ -139,16 +141,22 @@ class Formatter:
             self.export_asset_units(name, units)
             return
 
+        lpd_results = [r for r in results if isinstance(r, LightingDataLPD)]
+        power_results = [r for r in results if isinstance(r, LightingDataPower)]
+        sqfts = [r.sqft for r in results if r.sqft is not None]
+        sqft_percents = [r.sqft_percent for r in results if r.sqft_percent is not None]
+        has_sqft = len(sqfts) == len(results)
+
         # check method 1
-        has_lpd = all(isinstance(r, LightingDataLPD) for r in results)
+        has_lpd = len(lpd_results) == len(results)
 
         # for weighted average, re-find Watts from LPD and LinkedPremises and divide by total sqft
-        if has_lpd:
+        if has_lpd and has_sqft:
             value = 0.0
             total_sqft = 0.0
-            for r in results:
-                value += r.lpd * r.sqft  # type: ignore[attr-defined]
-                total_sqft += r.sqft
+            for r, sqft in zip(lpd_results, sqfts, strict=True):
+                value += r.lpd * sqft
+                total_sqft += sqft
             if value > 0:
                 value = value / total_sqft
 
@@ -159,14 +167,14 @@ class Formatter:
         # check method 2
         # need both PercentPremises AND LinkedPremises for this
         # running sum of all watts / running sum of all fractions of sqft
-        has_perc = all(r.sqft_percent is not None for r in results)
-        has_power = all(isinstance(r, LightingDataPower) for r in results)
-        if has_perc and has_power:
-            power = 0
+        has_perc = len(sqft_percents) == len(results)
+        has_power = len(power_results) == len(results)
+        if has_perc and has_power and has_sqft:
+            power = 0.0
             sqft_total = 0.0
-            for r in results:
-                power += r.power  # type: ignore[attr-defined]
-                sqft_total = r.sqft_percent / 100 * r.sqft  # type: ignore[operator]
+            for r, sqft_percent, sqft in zip(power_results, sqft_percents, sqfts, strict=True):
+                power += r.power
+                sqft_total = sqft_percent / 100 * sqft
             if power > 0:
                 value = power / sqft_total
             self.export_asset(name, value)
@@ -174,13 +182,10 @@ class Formatter:
             return
 
         # check method 3
-        sqfts = [sub.sqft if sub.sqft is None else float(sub.sqft) for sub in results]
-        if None not in sqfts and has_power:
+        if has_sqft and has_power:
             # sqft methods
-            remapped_power = [sub.power for sub in results]  # type: ignore[attr-defined]
-            remapped_sqft = [sub.sqft for sub in results]
-            top = sum(remapped_power)
-            bottom = sum(remapped_sqft)
+            top = sum(r.power for r in power_results)
+            bottom = sum(sqfts)
             if bottom > 0:
                 value = top / bottom
                 self.export_asset(name, value)
@@ -216,6 +221,8 @@ class Formatter:
         results = unify_units(results)
 
         values, capacities, cap_units, sqfts = self.remap_results(results)
+        known_capacities = [c for c in capacities if c is not None]
+        known_sqfts = [s for s in sqfts if s is not None]
 
         # logger.debug(f"values: {values}")
         # logger.debug(f"capacities: {capacities}")
@@ -223,13 +230,13 @@ class Formatter:
 
         # 2 - capacity
         # check that there are capacities for all and the units are all the same
-        if None not in capacities and len(set(cap_units)) == 1:
+        if len(known_capacities) == len(capacities) and len(set(cap_units)) == 1:
             # capacity methods
             cap_total = 0.0
             eff_total = 0.0
-            for res in results:
-                cap_total = cap_total + float(res.cap)  # type: ignore[arg-type]
-                eff_total = eff_total + (float(res.value) * float(res.cap))  # type: ignore[arg-type]
+            for res, cap in zip(results, known_capacities, strict=True):
+                cap_total = cap_total + cap
+                eff_total = eff_total + (float(res.value) * cap)
             total: float | str = eff_total / cap_total
 
             # special case for average age: take the floor since partial year doesn't make sense
@@ -240,14 +247,14 @@ class Formatter:
             self.export_asset_units(name, units)
             return
 
-        elif None not in sqfts:
+        elif len(known_sqfts) == len(sqfts):
             # sqft methods
-            remapped_res = {sub.value: sub.sqft for sub in results}
-            self.format_avg_sqft_results(name, remapped_res, units)  # type: ignore[arg-type]
+            remapped_res = {sub.value: sqft for sub, sqft in zip(results, known_sqfts, strict=True)}
+            self.format_avg_sqft_results(name, remapped_res, units)
             return
         else:
             # just average
-            total = sum(values) / len(values)  # type: ignore[arg-type]
+            total = sum(values) / len(values)
             # special case for average age: take the floor since partial year doesn't make sense
             if name.lower().endswith("age"):
                 total = int(total)
@@ -255,7 +262,7 @@ class Formatter:
             self.export_asset_units(name, units)
             return
 
-    def format_sqft_results(self, name: str, results: dict[str, float], units: str | None) -> None:
+    def format_sqft_results(self, name: str, results: dict[str | None, float], units: str | None) -> None:
         """return primary and secondary for top 2 results by sqft"""
         # NOTE: this is the only method that modifies the export name '
         # by appending 'primary' and 'secondary'
@@ -341,8 +348,10 @@ class Formatter:
     def remap_results(
         self,
         results: list[SystemData],
-    ) -> tuple[list[float | None], list[float | None], list[str | None], list[float | None]]:
-        """Remap results from a list of dictionaries to 4 lists"""
+    ) -> tuple[list[Any], list[float | None], list[str | None], list[float | None]]:
+        """Remap results from a list of dictionaries to 4 lists
+        values are floats when they can all be converted, otherwise the raw values
+        """
         try:
             values = [sub.value if sub.value is None else float(sub.value) for sub in results]
         except ValueError:

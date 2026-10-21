@@ -3,16 +3,18 @@ from pathlib import Path
 
 import pandas as pd
 from lxml import etree
-from styleframe import StyleFrame
 
 from buildingsync_asset_extractor.cts.classes import Facility, FacilityAppearance
+from buildingsync_asset_extractor.cts.excel_template import write_excel_from_template
 from buildingsync_asset_extractor.cts.parsers import (
     get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data,
     get_aggregated_findings_of_comprehensive_evaluations_estimated_life_cycle_data,
     get_covered_facility_identification_information,
+    get_facility_id,
     get_potential_conservation_measures_per_technology_category,
     parse_user_defined_fields,
 )
+from buildingsync_asset_extractor.xml_helpers import find_element
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -47,8 +49,8 @@ def aggregate_facilities(files: list[Path]) -> dict[str, Facility]:
 
         # for each facility in the file, add it to facility_by_id
         for facility_etree in facility_etrees:
-            user_defined_fields_tree = facility_etree.find("./UserDefinedFields", facility_etree.nsmap)
-            facility_id = parse_user_defined_fields(user_defined_fields_tree)["Agency Designated Covered Facility ID"]
+            user_defined_fields_tree = find_element(facility_etree, "./UserDefinedFields")
+            facility_id = get_facility_id(parse_user_defined_fields(user_defined_fields_tree))
 
             facility = facility_by_id.get(facility_id, Facility(facility_id))
             facility.appearances.append(FacilityAppearance(facility_etree, f))
@@ -69,9 +71,7 @@ def building_sync_to_cts(files: list[Path], out_file: Path) -> None:
         template_df.loc[3 + i] = to_cts_row(facility)
 
     # write back out
-    sf = StyleFrame.read_excel_as_template(BLANK_CTS_FILE_PATH, df=template_df, sheet_name="Evaluation Upload Template")
-    writer = sf.to_excel(out_file, row_to_add_filters=0)
-    writer.close()
+    write_excel_from_template(BLANK_CTS_FILE_PATH, "Evaluation Upload Template", template_df, out_file, row_to_add_filters=0)
 
 
 def to_cts_row(facility: Facility) -> pd.Series:

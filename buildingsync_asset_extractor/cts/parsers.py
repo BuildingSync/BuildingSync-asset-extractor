@@ -9,6 +9,8 @@ from buildingsync_asset_extractor.cts.energy_and_water_conservation_measures imp
     ENERGY_AND_WATER_CONSERVATION_MEASURES,
 )
 from buildingsync_asset_extractor.cts.measure_type_to_cts_field import technology_category_to_cts_field
+from buildingsync_asset_extractor.errors import BSyncProcessorError
+from buildingsync_asset_extractor.xml_helpers import element_text, find_element
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -19,7 +21,7 @@ logger.setLevel(logging.INFO)
 
 
 def get_covered_facility_identification_information(facility: Facility) -> pd.Series:
-    user_defined_fields_trees = [fa.etree.find("./UserDefinedFields", fa.etree.nsmap) for fa in facility.appearances]
+    user_defined_fields_trees = [find_element(fa.etree, "./UserDefinedFields") for fa in facility.appearances]
     user_defined_fields_dicts = [
         parse_user_defined_fields(user_defined_fields_tree) for user_defined_fields_tree in user_defined_fields_trees
     ]
@@ -44,9 +46,11 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     data["Retro/Re-Commissioning Assessment"] = all(x is not None and x.text == "true" for x in is_retrocommissioned)
 
     # Gross Evaluated Square Footage
-    floor_areas = [fa.etree.find("./Sites/Site/Buildings/Building/FloorAreas/FloorArea", fa.etree.nsmap) for fa in facility.appearances]
+    floor_areas = [find_element(fa.etree, "./Sites/Site/Buildings/Building/FloorAreas/FloorArea") for fa in facility.appearances]
     gross_floor_area = [
-        float(fa.find("./FloorAreaValue", fa.nsmap).text) for fa in floor_areas if fa.find("./FloorAreaType", fa.nsmap).text == "Gross"
+        float(element_text(find_element(fa, "./FloorAreaValue")))
+        for fa in floor_areas
+        if find_element(fa, "./FloorAreaType").text == "Gross"
     ]
     data["Gross Evaluated Square Footage"] = sum(gross_floor_area)
 
@@ -60,7 +64,7 @@ def get_aggregated_findings_of_comprehensive_evaluations_estimated_annual_data(f
     def sum_from_package_of_measures_scenarios(xpath: str) -> float:
         trees = [s.find("./ScenarioType/PackageOfMeasures/" + xpath, s.nsmap) for s in package_of_measures_scenario_etrees]
 
-        return sum([float(t.text) for t in trees if t is not None])
+        return sum([float(element_text(t)) for t in trees if t is not None])
 
     data["Estimated Implementation Cost of Measure(s)"] = sum_from_package_of_measures_scenarios("PackageFirstCost")
     data["Estimated Annual Energy Savings"] = sum_from_package_of_measures_scenarios("AnnualSavingsSiteEnergy")
@@ -124,11 +128,15 @@ def get_potential_conservation_measures_per_technology_category(facility: Facili
     return pd.Series(results)
 
 
-def parse_user_defined_fields(user_defined_fields_tree: etree.Element) -> dict[str, str]:
+def parse_user_defined_fields(user_defined_fields_tree: etree._Element) -> dict[str | None, str | None]:
     return {
-        user_defined_field_tree.find("./FieldName", user_defined_field_tree.nsmap).text: user_defined_field_tree.find(
-            "./FieldValue",
-            user_defined_field_tree.nsmap,
-        ).text
+        find_element(user_defined_field_tree, "./FieldName").text: find_element(user_defined_field_tree, "./FieldValue").text
         for user_defined_field_tree in user_defined_fields_tree
     }
+
+
+def get_facility_id(user_defined_fields: dict[str | None, str | None]) -> str:
+    facility_id = user_defined_fields["Agency Designated Covered Facility ID"]
+    if facility_id is None:
+        raise BSyncProcessorError("`Agency Designated Covered Facility ID` user defined field has no value")
+    return facility_id

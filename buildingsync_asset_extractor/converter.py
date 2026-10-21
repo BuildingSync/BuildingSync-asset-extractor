@@ -1,4 +1,4 @@
-from typing import Literal, get_args
+from typing import Literal, TypeGuard, get_args
 
 from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.errors import BSyncProcessorError
@@ -20,6 +20,10 @@ PowerUnits = Literal[
 POWERUNITSLIST: list[PowerUnits] = list(get_args(PowerUnits))
 
 
+def is_power_unit(unit: str | None) -> TypeGuard[PowerUnits]:
+    return unit in POWERUNITSLIST
+
+
 def unify_units(
     system_datas: list[SystemData],
     to_units: str | None = None,
@@ -29,7 +33,7 @@ def unify_units(
     for sd in system_datas:
         if sd.cap is not None:
             try:
-                sd.cap = convert(float(sd.cap), sd.cap_units, to_units)  # type: ignore[arg-type, assignment]
+                sd.cap = convert(float(sd.cap), sd.cap_units, to_units)
                 sd.cap_units = to_units
             except BSyncProcessorError:
                 pass
@@ -37,10 +41,10 @@ def unify_units(
     return system_datas
 
 
-def convert(value: float, original_type: PowerUnits, to: PowerUnits) -> float:
-    if original_type not in POWERUNITSLIST:
+def convert(value: float, original_type: str | None, to: str | None) -> float:
+    if not is_power_unit(original_type):
         raise BSyncProcessorError(f"`{original_type}` not a valid power unit")
-    if to not in POWERUNITSLIST:
+    if not is_power_unit(to):
         raise BSyncProcessorError(f"`{to}` not a valid power unit")
 
     return value * from_to_table[original_type][to]

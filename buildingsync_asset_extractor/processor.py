@@ -42,10 +42,9 @@ from collections.abc import Callable
 from importlib.resources import files
 from io import BytesIO
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from lxml import etree
-from lxml.etree import ElementTree
 
 from buildingsync_asset_extractor.bae_types import Asset, AssetData, AssetDef, Section, SystemData
 from buildingsync_asset_extractor.errors import BSyncProcessorError
@@ -54,6 +53,7 @@ from buildingsync_asset_extractor.lighting_processing.lighting_processing import
     LightingData,
     process_buildings_lighting_systems,
 )
+from buildingsync_asset_extractor.xml_helpers import ancestor, element_tag, element_text
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -166,7 +166,7 @@ class BSyncProcessor:
         """return namespaces"""
         return self.namespaces
 
-    def get_doc(self) -> etree:
+    def get_doc(self) -> etree._ElementTree:
         """return parsed xml doc"""
         return self.doc
 
@@ -189,7 +189,7 @@ class BSyncProcessor:
 
     def parse_xml(self) -> None:
         """parse xml file"""
-        self.doc: etree = etree.parse(BytesIO(self.file_data))
+        self.doc: etree._ElementTree = etree.parse(BytesIO(self.file_data))
 
     def convert_to_ns(self, path: str) -> str:
         """modify the path to include the namespace (ns) prefix specified in the xml file
@@ -234,10 +234,10 @@ class BSyncProcessor:
                 faval = 0.0
 
                 for child in fa:
-                    if child.tag.endswith("FloorAreaType"):
+                    if element_tag(child).endswith("FloorAreaType"):
                         fatype = child.text
-                    elif child.tag.endswith("FloorAreaValue"):
-                        faval = float(child.text)
+                    elif element_tag(child).endswith("FloorAreaValue"):
+                        faval = float(element_text(child))
                 if fatype is not None:
                     self.sections[item_id].areas[fatype] = faval
 
@@ -289,10 +289,10 @@ class BSyncProcessor:
                     units = "mixed"
         return units
 
-    def get_plant(self, item: ElementTree) -> ElementTree | None:
+    def get_plant(self, item: etree._Element) -> etree._Element | None:
         # TODO: condenser plant?
         plant = None
-        the_type = self.get_heat_cool_type(item.tag)
+        the_type = self.get_heat_cool_type(element_tag(item))
         if the_type is not None:
             plant_id_match = self.xp(item, ".//" + "Source" + the_type + "PlantID")
             if len(plant_id_match) > 0:
@@ -313,7 +313,7 @@ class BSyncProcessor:
             the_type = "Cooling"
         return the_type
 
-    def hvac_search(self, item: ElementTree, asset: AssetDef) -> list[ElementTree]:
+    def hvac_search(self, item: etree._Element, asset: AssetDef) -> list[etree._Element]:
         """Perform a 2-level search
         1. First look in HeatingAndCoolingSystems/<type>Sources/<type>Source
         2. If not there, look for a plant ID and look in there
@@ -351,7 +351,7 @@ class BSyncProcessor:
 
                 # SPECIAL Case for HVAC HeatingSource / CoolingSource Equipment: can find plantID and look for
                 # YearInstalled there
-                if len(years) == 0 and (m.tag.endswith("HeatingSource") or m.tag.endswith("CoolingSource")):
+                if len(years) == 0 and (element_tag(m).endswith("HeatingSource") or element_tag(m).endswith("CoolingSource")):
                     plant = self.get_plant(m)
                     if plant is not None:
                         years = self.xp(plant, ".//YearInstalled")
@@ -369,7 +369,7 @@ class BSyncProcessor:
                         # check for sqft
                         sqft_total = 0.0
                         # EEK this will vary wildly
-                        hvac_system = item.getparent().getparent().getparent()
+                        hvac_system = ancestor(item, 3)
                         linked_sections = self.xp(hvac_system, ".//" + "LinkedSectionID")
                         for ls in linked_sections:
                             sqft_total += self.compute_sqft(ls)
@@ -408,20 +408,18 @@ class BSyncProcessor:
         """process sqft asset
         either a ranking by total sqft or a weighted average
         """
-        results: dict[str, float] = {}
+        results: dict[str | None, float] = {}
         items = self.xp(self.doc, asset.parent_path)
 
         for item in items:
             sqft_total = 0.0
             matches = self.xp(item, ".//" + asset.key)
 
-            # special processing for UDFs
-            if asset.key.endswith("UserDefinedField"):
-                matches = self.find_udf_values(matches, asset.name)
+            # get asset labels, with special processing for UDFs
+            labels = self.find_udf_values(matches, asset.name) if asset.key.endswith("UserDefinedField") else [m.text for m in matches]
 
-            for match in matches:
-                # get asset label and initialize results array in not done already
-                label = match if isinstance(match, str) else match.text
+            for label in labels:
+                # initialize results array in not done already
                 if label not in results:
                     results[label] = 0.0
 
@@ -461,39 +459,44 @@ class BSyncProcessor:
             # found the name holding the units field
             units_to_export = name_of_units_field[asset.name]
 
-        custom_assets: dict[str, Callable[[], list[SystemData] | list[LightingData]]] = {
+        custom_assets: dict[str, Callable[[], list[SystemData]]] = {
             "AnnualHeatingEfficiency": lambda: self.process_system(asset, units_to_export),
             "AnnualCoolingEfficiency": lambda: self.process_system(asset, units_to_export),
             "PrimaryFuel": lambda: self.process_system(asset, units_to_export),
             "ElectrificationPotential": lambda: self.process_system(asset, units_to_export),
             "WaterHeaterEfficiency": lambda: self.process_system(asset, units_to_export),
-            "LightingSystemEfficiency": lambda: process_buildings_lighting_systems(self),
         }
 
         # these will get formated with the 80% function and lighting respectively (rest will use custom avg)
         assets_80_percent = ["PrimaryFuel"]
         assets_lighting = ["LightingSystemEfficiency"]
 
-        results: list[SystemData] | list[LightingData]
+        def get_export_units(results: list[SystemData] | list[LightingData]) -> str | None:
+            """calculate actual units"""
+            if not asset.export_units:
+                return "No units"
+            return asset.units if asset.units is not None else self.get_units(results)
+
+        if asset.name in assets_lighting:
+            lighting_results = process_buildings_lighting_systems(self)
+            self.formatter.format_lighting_results(asset.export_name, lighting_results, get_export_units(lighting_results))
+            return
+
+        results: list[SystemData]
         if asset.name in custom_assets:
             results = custom_assets[asset.name]()
         else:
-            logger.warn(f"Custom Processing for {asset.name} has not been implemented. Asset will be ignored.")
+            logger.warning(f"Custom Processing for {asset.name} has not been implemented. Asset will be ignored.")
             results = []
 
-        # calculate actual units
-        units: str | None = "No units"
-        if asset.export_units:
-            units = asset.units if asset.units is not None else self.get_units(results)
+        units = get_export_units(results)
 
         if asset.name in assets_80_percent:
-            self.formatter.format_80_percent_results(asset.export_name, results, units)  # type: ignore[arg-type]
-        elif asset.name in assets_lighting:
-            self.formatter.format_lighting_results(asset.export_name, results, units)  # type: ignore[arg-type]
+            self.formatter.format_80_percent_results(asset.export_name, results, units)
         elif asset.name == "ElectrificationPotential":
-            self.formatter.format_electrification_potential(asset.export_name, results, units)  # type: ignore[arg-type]
+            self.formatter.format_electrification_potential(asset.export_name, results, units)
         else:
-            self.formatter.format_custom_avg_results(asset.export_name, results, units)  # type: ignore[arg-type]
+            self.formatter.format_custom_avg_results(asset.export_name, results, units)
 
     def process_system(self, asset: AssetDef, units_keyname: str | None) -> list[SystemData]:
         """Process Heating/Cooling and DomesticHotWater System Assets
@@ -516,11 +519,11 @@ class BSyncProcessor:
             for match in matches:
                 units = None
                 if units_keyname is not None and units_keyname != "No units":
-                    unit_match = self.xp(match.getparent(), ".//" + units_keyname)
+                    unit_match = self.xp(ancestor(match), ".//" + units_keyname)
 
                     if len(unit_match) > 0:
                         units = unit_match[0].text
-                    elif "ThermalEfficiency" in match.tag:
+                    elif "ThermalEfficiency" in element_tag(match):
                         # special case for Heating Efficiency
                         units = "Thermal Efficiency"
 
@@ -543,7 +546,7 @@ class BSyncProcessor:
         logger.debug(f"RESULTS for {asset.export_name}: {results}")
         return results
 
-    def get_linked_section_sqft(self, item: ElementTree) -> float:
+    def get_linked_section_sqft(self, item: etree._Element) -> float:
         """Find LinkedPremises at the right level (2 down from Systems)
         and calculate total sqft from the sections returned
         """
@@ -573,8 +576,7 @@ class BSyncProcessor:
                 if sys_idx > 0:
                     # get_parent() recurse backwards to 2 levels past Systems
                     diff = len(paths) - 1 - (sys_idx + 2)
-                    for x in range(diff):
-                        system = system.getparent()
+                    system = ancestor(system, diff)
 
                 logger.debug(f"Assuming linked premises is in element: {self.doc.getpath(system)}")
                 linked_sections = self.xp(system, ".//" + "LinkedSectionID")
@@ -587,7 +589,7 @@ class BSyncProcessor:
 
         return sqft_total
 
-    def get_capacity(self, el: etree) -> tuple[str | None, str | None]:
+    def get_capacity(self, el: etree._Element) -> tuple[str | None, str | None]:
         """Capacity order:
         1) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/Capacity and CapacityUnits
         2) HVACSystem/HeatingAndCoolingSystems/HeatingSources/HeatingSource/OutputCapacity (deprecation soon)
@@ -596,10 +598,10 @@ class BSyncProcessor:
         """
         cap = None
         cap_units = None
-        path = el.getparent()
+        path = ancestor(el)
         # for ThermalEfficiency, need to go up 3 levels
-        if "ThermalEfficiency" in el.tag:
-            path = path.getparent().getparent()
+        if "ThermalEfficiency" in element_tag(el):
+            path = ancestor(path, 2)
 
         # prefer Capacity over OutputCapacity as it will be deprecated
         matches = self.xp(path, ".//" + "Capacity")
@@ -612,11 +614,11 @@ class BSyncProcessor:
                 unit_match = self.xp(path, ".//" + "CapacityUnits")
                 if len(unit_match) > 0:
                     cap_units = unit_match[0].text
-                elif "ThermalEfficiency" in el.tag:
+                elif "ThermalEfficiency" in element_tag(el):
                     cap_units = "Thermal Efficiency"
         return cap, cap_units
 
-    def find_udf_values(self, matches: list[ElementTree], name: str) -> list[str | None]:
+    def find_udf_values(self, matches: list[etree._Element], name: str) -> list[str | None]:
         """processes a list of UDF matches
         retrieves the FieldValue whose FieldName matches the name passed in
         returns an array of values
@@ -626,9 +628,9 @@ class BSyncProcessor:
             keep = 0
             tmp_val = None
             for child in list(match):
-                if child.tag.endswith("FieldName") and child.text == name:
+                if element_tag(child).endswith("FieldName") and child.text == name:
                     keep = 1
-                if child.tag.endswith("FieldValue"):
+                if element_tag(child).endswith("FieldValue"):
                     tmp_val = child.text
 
             if keep == 1:
@@ -641,14 +643,14 @@ class BSyncProcessor:
         name = name.replace("HVAC", "Hvac").replace(" ", "")
         return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
-    def xp(self, element: ElementTree, path: str) -> list[ElementTree]:
+    def xp(self, element: etree._Element | etree._ElementTree, path: str) -> list[etree._Element]:
         """use xpath function and specify namespace
-        Returns results of xpath operation
+        Returns results of xpath operation (the paths used here only select elements)
         """
         newpath = self.convert_to_ns(path)
-        return element.xpath(newpath, namespaces=self.namespaces)
+        return cast("list[etree._Element]", element.xpath(newpath, namespaces=self.namespaces))
 
-    def retrieve_sqft(self, section_id: str) -> float:
+    def retrieve_sqft(self, section_id: str | None) -> float:
         """retrieves square footage given the sectionID
         assumes 'Conditioned' if it exists; otherwise uses the 'Gross' floor area
         returns square footage
@@ -664,7 +666,7 @@ class BSyncProcessor:
             f"Error retrieving section sqft...No Conditioned area or Gross area found for section {section_id}",
         )
 
-    def compute_sqft(self, section: ElementTree) -> float:
+    def compute_sqft(self, section: etree._Element) -> float:
         """compute square footage by either percentage or value method
         returns sum of squarefootages the asset is applied to in the LinkedSection
         the type of floor area to use in the calculation should be specified with "FloorAreaType" element.
@@ -679,12 +681,12 @@ class BSyncProcessor:
             percent = self.xp(f, ".//FloorAreaPercentage")
             if percent and the_type in self.sections[sid].areas:
                 logger.debug(f"type: {the_type}, section: {sid}, areas: {self.sections[sid].areas}")
-                sqft += float(percent[0].text) * self.sections[sid].areas[the_type] / 100
+                sqft += float(element_text(percent[0])) * self.sections[sid].areas[the_type] / 100
             else:
                 # get value instead
                 val = self.xp(f, ".//FloorAreaValue")
                 if val:
-                    sqft += float(val[0].text)
+                    sqft += float(element_text(val[0]))
 
         return sqft
 
@@ -694,7 +696,7 @@ class BSyncProcessor:
         file = files("buildingsync_asset_extractor.config").joinpath(assets_defs_filename).read_text()
         return [AssetDef(**asset_def) for asset_def in json.loads(file)["asset_definitions"]]
 
-    def _get_user_defined_fields(self, element: etree.Element) -> list[tuple[str, str]]:
+    def _get_user_defined_fields(self, element: etree._Element) -> list[tuple[str, str]]:
         """Return (name, value) tuples of UserDefinedFields in element."""
         res = []
         user_defined_fields = self.xp(element, ".//" + "UserDefinedField")
