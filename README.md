@@ -27,7 +27,7 @@ uv sync
 
 ### BUILDINGSYNC ASSET EXTRACTOR
 
-BuildingSync version 2.4.0.
+BuildingSync version 2.7.0.
 
 The pre-importer will identify assets defined in the `asset_definitions.json` file stored in the `config` directory.
 There are various methods of calculating assets:

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<BuildingSync xmlns="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://buildingsync.net/schemas/bedes-auc/2019 ../BuildingSync.xsd" version="2.4.0">
+<BuildingSync xmlns="http://buildingsync.net/schemas/bedes-auc/2019" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://buildingsync.net/schemas/bedes-auc/2019 ../BuildingSync.xsd" version="2.7.0">
   <Facilities>
     <Facility ID="Facility-69928597382680">
       <Sites>
@@ -8,7 +8,7 @@
             <Building ID="BuildingType-69928596381380">
               <PremisesName>Example San Francisco Audit Report </PremisesName>
               <PremisesNotes>Example San Francisco audit report building for import/export.  Input data entered may not necessarily be considered reflective of a typical building.  &#13;
-This example is configured to import and export with BuildingSync version 2.2.0.  The building will also successfully convert to an Asset Score building for modeling.  </PremisesNotes>
+This example is configured to import and export with BuildingSync version 2.7.0.  The building will also successfully convert to an Asset Score building for modeling.  </PremisesNotes>
               <PremisesIdentifiers>
                 <PremisesIdentifier>
                   <IdentifierLabel>Custom</IdentifierLabel>

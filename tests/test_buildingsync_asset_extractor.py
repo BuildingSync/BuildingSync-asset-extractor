@@ -108,6 +108,7 @@ class TestBSyncProcessor(unittest.TestCase):
 
         doc = self.bp.get_doc()
         assert doc is not None
+        assert doc.getroot().get("version") == "2.7.0"
 
     def test_return_asset_definitions(self) -> None:
         self.bp.set_asset_defs_file(self.test_assets_file)

@@ -3,6 +3,7 @@
 ## Version 0.4.0
 
 - Upgraded to pandas v3
+- Updated BuildingSync support and test fixtures to v2.7.0
 - Replaced the unmaintained StyleFrame dependency with openpyxl for CTS export, with identical output formatting
 - Dropped support for Python v3.10 (pandas v3 requires Python v3.11+)
 - Replaced mypy with ty, added lxml type stubs, and fixed type annotations
