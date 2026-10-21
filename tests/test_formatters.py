@@ -5,6 +5,7 @@ import pytest
 
 from buildingsync_asset_extractor.bae_types import SystemData
 from buildingsync_asset_extractor.formatters import Formatter
+from buildingsync_asset_extractor.lighting_processing.lighting_processing import LightingDataPower
 
 
 class TestFormatters(unittest.TestCase):
@@ -82,3 +83,30 @@ class TestFormatters(unittest.TestCase):
         assert name == "Heating System Efficiency"
         assert value == pytest.approx(1.0068010770219646)
         self.export_asset_units.assert_called_with("Heating System Efficiency", "Thermal Efficiency")
+
+    def test_format_lighting_results_sums_percent_served_area(self) -> None:
+        results = [
+            LightingDataPower(power=100.0, sqft=1000.0, sqft_percent=50.0),
+            LightingDataPower(power=100.0, sqft=2000.0, sqft_percent=50.0),
+        ]
+
+        self.formatter.format_lighting_results("Lighting System Efficiency", results, "W/ft2")
+
+        self.export_asset.assert_called_once_with("Lighting System Efficiency", pytest.approx(200.0 / 1500.0))
+        self.export_asset_units.assert_called_once_with("Lighting System Efficiency", "W/ft2")
+
+    def test_format_lighting_results_zero_power(self) -> None:
+        results = [LightingDataPower(power=0.0, sqft=1000.0, sqft_percent=50.0)]
+
+        self.formatter.format_lighting_results("Lighting System Efficiency", results, "W/ft2")
+
+        self.export_asset.assert_called_once_with("Lighting System Efficiency", 0.0)
+        self.export_asset_units.assert_called_once_with("Lighting System Efficiency", "W/ft2")
+
+    def test_format_lighting_results_zero_served_area(self) -> None:
+        results = [LightingDataPower(power=0.0, sqft=1000.0, sqft_percent=0.0)]
+
+        self.formatter.format_lighting_results("Lighting System Efficiency", results, "W/ft2")
+
+        self.export_asset.assert_called_once_with("Lighting System Efficiency", "unknown")
+        self.export_asset_units.assert_called_once_with("Lighting System Efficiency", "W/ft2")

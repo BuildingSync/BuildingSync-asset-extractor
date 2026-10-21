@@ -3,12 +3,14 @@
 ## Version 0.4.0
 
 - Upgraded to pandas v3
+- Updated BuildingSync support and test fixtures to v2.7.0
 - Replaced the unmaintained StyleFrame dependency with openpyxl for CTS export, with identical output formatting
 - Dropped support for Python v3.10 (pandas v3 requires Python v3.11+)
 - Replaced mypy with ty, added lxml type stubs, and fixed type annotations
 - Fixed CTS export failing when a facility has multiple package of measures scenarios with costs
 - Fixed iterating over a CTS `Facility`
 - Malformed BuildingSync elements (e.g. missing text or parent elements) now raise `BSyncProcessorError`
+- Fixed a bug in Lighting Results sqft total
 
 ## Version 0.3.0
 
