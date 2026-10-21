@@ -1,5 +1,5 @@
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from buildingsync_asset_extractor.bae_types import SystemData
@@ -129,7 +129,7 @@ class Formatter:
         self.export_asset(name, "unknown")
         self.export_asset_units(name, units)
 
-    def format_lighting_results(self, name: str, results: list[LightingData], units: str | None) -> None:
+    def format_lighting_results(self, name: str, results: Sequence[LightingData], units: str | None) -> None:
         """custom processing for lighting efficiency
         1. if 'lpd' is present, average the values
         2. else if percentpremisesserved
