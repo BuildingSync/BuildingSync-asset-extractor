@@ -2,8 +2,9 @@ import abc
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from lxml.etree import ElementTree
+from lxml import etree
 
+from buildingsync_asset_extractor.errors import BSyncProcessorError
 from buildingsync_asset_extractor.lighting_processing.building_occ_class_to_building_type import (
     building_occ_class_to_building_type,
 )
@@ -15,6 +16,7 @@ from buildingsync_asset_extractor.lighting_processing.building_type_to_lpd impor
 from buildingsync_asset_extractor.lighting_processing.section_occ_class_to_section_type import (
     section_occ_class_to_section_type,
 )
+from buildingsync_asset_extractor.xml_helpers import ancestor, element_text
 
 if TYPE_CHECKING:
     from buildingsync_asset_extractor.processor import BSyncProcessor
@@ -26,7 +28,7 @@ LIGHTING_SYSTEM_PATH = "/BuildingSync/Facilities/Facility/Systems/LightingSystem
 
 @dataclass
 class LightingData(abc.ABC):
-    sqft: float
+    sqft: float | None
     sqft_percent: float | None
 
 
@@ -66,9 +68,9 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return lighting_datas
 
-    def process_sections_lighting_systems(section: ElementTree) -> list[LightingData]:
+    def process_sections_lighting_systems(section: etree._Element) -> list[LightingData]:
         """Get all the section's lightingData."""
-        lighting_systems: list[ElementTree] = get_sections_lighting_systems(section)
+        lighting_systems: list[etree._Element] = get_sections_lighting_systems(section)
 
         # if no lighting systems, method_4 on the whole section.
         if len(lighting_systems) == 0:
@@ -107,7 +109,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return lighting_datas
 
-    def get_sections_lighting_systems(section: ElementTree) -> list[ElementTree]:
+    def get_sections_lighting_systems(section: etree._Element) -> list[etree._Element]:
         """Get all the lighting systems linked to the section."""
         section_id = section.get("ID")
         sections_lighting_systems = []
@@ -122,24 +124,24 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return sections_lighting_systems
 
-    def get_lighting_system_sqft_percent(lighting_system: ElementTree) -> float | None:
+    def get_lighting_system_sqft_percent(lighting_system: etree._Element) -> float | None:
         """Get lighting systems PercentPremisesServed."""
         percent_premises_served = bsync_processor.xp(
             lighting_system,
             ".//" + "PercentPremisesServed",
         )
         if len(percent_premises_served) > 0:
-            return float(percent_premises_served[0].text)
+            return float(element_text(percent_premises_served[0]))
         else:
             return None
 
-    def get_section_gross_floor_area(section: ElementTree) -> float:
+    def get_section_gross_floor_area(section: etree._Element) -> float | None:
         """Get sections gross floor area."""
         section_id = section.get("ID")
 
-        return bsync_processor.sections[section_id].areas.get("Gross")  # type: ignore[return-value]
+        return bsync_processor.sections[section_id].areas.get("Gross")
 
-    def get_lighting_system_sqft(section: ElementTree, lighting_system: ElementTree) -> float:
+    def get_lighting_system_sqft(section: etree._Element, lighting_system: etree._Element) -> float:
         """Give a section and lighting system, get the sqft the lighting system covers within that section."""
         section_id = section.get("ID")
         all_linked_sections = bsync_processor.xp(lighting_system, ".//" + "LinkedSectionID")
@@ -147,16 +149,16 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return sum([bsync_processor.compute_sqft(ls) for ls in linked_sections])
 
-    def method_1(lighting_system: ElementTree) -> float | None:
+    def method_1(lighting_system: etree._Element) -> float | None:
         """return lighting system's InstalledPower."""
         installed_powers = bsync_processor.xp(lighting_system, ".//" + "InstalledPower")
 
         if len(installed_powers) > 0:
-            return float(installed_powers[0].text)
+            return float(element_text(installed_powers[0]))
         else:
             return None
 
-    def method_2(lighting_system: ElementTree) -> float | None:
+    def method_2(lighting_system: etree._Element) -> float | None:
         """Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
 
         number_of_luminaires may be taken from user defined fields.
@@ -168,9 +170,13 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         # method 2a: Lamp Power * # Lamps per Luminaire * # Luminaire * Quantity
         if len(lamp_powers) > 0 and len(number_of_lamps_per_luminaires) > 0 and len(number_of_luminaires) > 0:
-            power = float(lamp_powers[0].text) * float(number_of_lamps_per_luminaires[0].text) * float(number_of_luminaires[0].text)
+            power = (
+                float(element_text(lamp_powers[0]))
+                * float(element_text(number_of_lamps_per_luminaires[0]))
+                * float(element_text(number_of_luminaires[0]))
+            )
             if quantity_elements:
-                power *= float(quantity_elements[0].text)
+                power *= float(element_text(quantity_elements[0]))
 
             return power
 
@@ -189,11 +195,11 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
             qty_val = sum(user_defined_values)
 
             if qty_val > 0:
-                return int(lamp_powers[0].text) * int(number_of_lamps_per_luminaires[0].text) * qty_val
+                return int(element_text(lamp_powers[0])) * int(element_text(number_of_lamps_per_luminaires[0])) * qty_val
 
         return None
 
-    def method_3(lighting_system: ElementTree) -> float | None:
+    def method_3(lighting_system: etree._Element) -> float | None:
         """Look in UDF for "Lighting Power Density For ..." """
         user_defined_fields = bsync_processor._get_user_defined_fields(lighting_system)
         user_defined_values = [
@@ -208,9 +214,9 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return None
 
-    def method_4(section: ElementTree) -> float | None:
+    def method_4(section: etree._Element) -> float | None:
         """Use decision matrix to get lpd from building/section occupancy class and year."""
-        building = section.getparent().getparent()
+        building = ancestor(section, 2)
         section_occ_class = get_occupancy_classification(section)
         building_occ_class = get_occupancy_classification(building)
         year = get_year(building)
@@ -250,7 +256,8 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
         elif len(possible_lpds) == 1:
             lpds = possible_lpds[0].lpd_by_year
         else:
-            raise Exception  # we should not have gotten here.
+            # we should not have gotten here.
+            raise BSyncProcessorError(f"Expected at most 1 matching LPD, found {len(possible_lpds)}")
 
         # get the closest year
         lpds = {year: lpd for (year, lpd) in lpds.items() if lpd is not None}
@@ -263,7 +270,7 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
 
         return lpds[best_year]
 
-    def get_occupancy_classification(element: ElementTree) -> str | None:
+    def get_occupancy_classification(element: etree._Element) -> str | None:
         """Get a building or sections OccupancyClassification"""
         occupancy_classification = bsync_processor.xp(element, "./" + "OccupancyClassification")
 
@@ -272,19 +279,19 @@ def process_buildings_lighting_systems(bsync_processor: "BSyncProcessor") -> lis
         else:
             return None
 
-    def get_year(building: ElementTree) -> float | None:
+    def get_year(building: etree._Element) -> float | None:
         """Get a building's Year."""
         year_of_latest_retrofit = bsync_processor.xp(building, ".//" + "YearOfLatestRetrofit")
         if len(year_of_latest_retrofit) > 0:
-            return float(year_of_latest_retrofit[0].text)
+            return float(element_text(year_of_latest_retrofit[0]))
 
         year_of_last_major_remodel = bsync_processor.xp(building, ".//" + "YearOfLastMajorRemodel")
         if len(year_of_last_major_remodel) > 0:
-            return float(year_of_last_major_remodel[0].text)
+            return float(element_text(year_of_last_major_remodel[0]))
 
         year_of_construction = bsync_processor.xp(building, ".//" + "YearOfConstruction")
         if len(year_of_construction) > 0:
-            return float(year_of_construction[0].text)
+            return float(element_text(year_of_construction[0]))
 
         return None
 

@@ -1,10 +1,12 @@
 import functools
 import logging
-from collections.abc import Iterable
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from lxml import etree as ETree  # noqa: N812
+from lxml.etree import _Element
+
+from buildingsync_asset_extractor.xml_helpers import element_tag, element_text, find_element
 
 # Gets or creates a logger
 logging.basicConfig()
@@ -14,22 +16,22 @@ logger = logging.getLogger("")
 @dataclass
 class Measure:
     technology_category: str
-    measure_name: str
-    id: str
+    measure_name: str | None
+    id: str | None
 
-    def __init__(self, etree: ETree) -> None:
-        technology_category = etree.find("./TechnologyCategories/TechnologyCategory", etree.nsmap)[0]
+    def __init__(self, etree: _Element) -> None:
+        technology_category = find_element(etree, "./TechnologyCategories/TechnologyCategory")[0]
 
-        self.technology_category = technology_category.tag.split("}")[1]
+        self.technology_category = element_tag(technology_category).split("}")[1]
         self.measure_name = technology_category[0].text
         self.id = etree.get("ID")
 
 
 @dataclass
 class PackageOfMeasuresScenario:
-    id: str
-    etree: ETree
-    measures_by_id: dict[str, Measure]
+    id: str | None
+    etree: _Element
+    measures_by_id: dict[str | None, Measure]
 
 
 class FacilityAppearance:
@@ -50,8 +52,10 @@ class FacilityAppearance:
                 continue
 
             # if its the cheapest, use it
-            cost = package_of_measures.find("./PackageFirstCost", self.etree.nsmap)
-            if cheapest_package_of_measures_scenario is None or (cost is not None and cost < cheapest_cost):
+            cost_etree = package_of_measures.find("./PackageFirstCost", self.etree.nsmap)
+            cost = None if cost_etree is None else float(element_text(cost_etree))
+            if cheapest_package_of_measures_scenario is None or (cost is not None and (cheapest_cost is None or cost < cheapest_cost)):
+                cheapest_cost = cost
                 measure_ids = [m.get("IDref") for m in package_of_measures.findall("./MeasureIDs/MeasureID", self.etree.nsmap)]
                 cheapest_package_of_measures_scenario = PackageOfMeasuresScenario(
                     id=scenario_etree.get("ID"),
@@ -61,7 +65,7 @@ class FacilityAppearance:
 
         return cheapest_package_of_measures_scenario
 
-    def __init__(self, etree: ETree, path: Path) -> None:
+    def __init__(self, etree: _Element, path: Path) -> None:
         self.etree = etree
         self.path = path
 
@@ -73,5 +77,5 @@ class Facility:
     name: str
     appearances: list[FacilityAppearance] = field(default_factory=list)
 
-    def __iter__(self) -> Iterable[FacilityAppearance]:
-        return self.appearances
+    def __iter__(self) -> Iterator[FacilityAppearance]:
+        return iter(self.appearances)
