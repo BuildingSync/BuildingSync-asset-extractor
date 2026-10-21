@@ -10,6 +10,7 @@
 - Fixed CTS export failing when a facility has multiple package of measures scenarios with costs
 - Fixed iterating over a CTS `Facility`
 - Malformed BuildingSync elements (e.g. missing text or parent elements) now raise `BSyncProcessorError`
+- Fixed a bug in Lighting Results sqft total
 
 ## Version 0.3.0
 
